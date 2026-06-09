@@ -1,0 +1,106 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ── Sui dapp-kit default styles ─────────────────── */
+@import '@mysten/dapp-kit/dist/index.css';
+
+:root {
+  --wc-dark:   #080D1A;
+  --wc-card:   #0F1929;
+  --wc-border: #1A2C42;
+  --wc-gold:   #C9A84C;
+  --wc-blue:   #1A56DB;
+}
+
+body {
+  background-color: var(--wc-dark);
+  color: #F9FAFB;
+  font-family: 'Inter', system-ui, sans-serif;
+}
+
+/* ── Utilities ────────────────────────────────────── */
+.card {
+  background: var(--wc-card);
+  border: 1px solid var(--wc-border);
+  border-radius: 0.75rem;
+}
+
+.pill {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.2rem 0.65rem;
+  border-radius: 9999px;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+
+/* ── Sticker card ────────────────────────────────── */
+.sticker {
+  border-radius: 0.5rem;
+  border: 3px solid white;
+  box-shadow: 0 3px 12px rgba(0,0,0,0.5);
+  object-fit: cover;
+  background: #fff;
+}
+
+.sticker-sm  { width: 40px;  height: 48px;  }
+.sticker-md  { width: 60px;  height: 72px;  }
+.sticker-lg  { width: 80px;  height: 96px;  }
+.sticker-xl  { width: 100px; height: 120px; }
+
+/* ── Chat bubbles ────────────────────────────────── */
+.bubble-user  { background: #1A56DB; border-radius: 1rem 1rem 0 1rem; }
+.bubble-agent { background: #1A2C42; border-radius: 1rem 1rem 1rem 0; border: 1px solid var(--wc-border); }
+
+/* ── Rank badges ─────────────────────────────────── */
+.rank-1 { background: linear-gradient(135deg, #FFD700, #FFA500); }
+.rank-2 { background: linear-gradient(135deg, #C0C0C0, #A0A0A0); }
+.rank-3 { background: linear-gradient(135deg, #CD7F32, #9A5F24); }
+.rank-n { background: #1A2C42; }
+
+/* ── Hero gradient ───────────────────────────────── */
+.hero-bg {
+  background: radial-gradient(ellipse at 60% 40%, rgba(26,86,219,0.25) 0%, transparent 65%),
+              radial-gradient(ellipse at 20% 80%, rgba(201,168,76,0.15) 0%, transparent 55%),
+              var(--wc-dark);
+}
+
+/* ── Scrollbar ───────────────────────────────────── */
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-track { background: var(--wc-dark); }
+::-webkit-scrollbar-thumb { background: var(--wc-border); border-radius: 2px; }
+
+/* ── Dapp-kit connect button override ────────────── */
+.wc-connect-btn button,
+[data-dapp-kit] button {
+  background: #1A56DB !important;
+  color: white !important;
+  border: none !important;
+  border-radius: 0.5rem !important;
+  font-weight: 600 !important;
+  font-size: 0.875rem !important;
+  padding: 0.5rem 1.1rem !important;
+  cursor: pointer !important;
+  transition: background 0.2s !important;
+}
+[data-dapp-kit] button:hover { background: #1648c0 !important; }
+
+/* ── Animations ──────────────────────────────────── */
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50%       { transform: translateY(-8px); }
+}
+.float { animation: float 4s ease-in-out infinite; }
+.float-delay { animation: float 4s ease-in-out 1.5s infinite; }
+
+@keyframes shimmer {
+  0%   { background-position: -200% 0; }
+  100% { background-position:  200% 0; }
+}
+.shimmer {
+  background: linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.06) 50%, transparent 100%);
+  background-size: 200% 100%;
+  animation: shimmer 2s infinite;
+}
