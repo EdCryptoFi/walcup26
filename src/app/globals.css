@@ -14,10 +14,11 @@
 }
 
 html {
-  background: #f7f9fb url('/imgs/bkg.png') center center / cover fixed no-repeat;
+  background: #f7f9fb url('/imgs/bkg1.png') center center / cover fixed no-repeat;
+  color-scheme: light only;
 }
 body {
-  background-color: rgba(247, 249, 251, 0.96);
+  background-color: rgba(247, 249, 251, 0.92);
   color: #191c1e;
   font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
   min-height: 100vh;

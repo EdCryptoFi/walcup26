@@ -35,9 +35,22 @@ export default async function HomePage() {
 
       {/* ── HERO ────────────────────────────────────────────────── */}
       <section className="relative bg-surface-container-low rounded-3xl overflow-hidden border border-outline-variant">
-        <div className="relative grid lg:grid-cols-2 items-center gap-0 min-h-[480px]">
+        <div className="relative grid lg:grid-cols-2 items-center gap-0 min-h-[540px]">
+
+          {/* WalCup logo — first col, big and prominent */}
+          <div className="relative flex items-center justify-center px-4 py-10 lg:py-4 overflow-hidden">
+            <Image
+              src="/imgs/walcup-wal-logo.png"
+              alt="WalCup 26"
+              width={780}
+              height={620}
+              className="float object-contain select-none drop-shadow-2xl w-full max-w-[480px] lg:max-w-[680px]"
+              priority
+            />
+          </div>
+
           {/* Text side */}
-          <div className="px-8 py-12 lg:px-14 space-y-6 z-10">
+          <div className="px-8 py-12 lg:px-12 space-y-6 z-10">
             <div className="flex items-center gap-2">
               <span className="pill bg-secondary-container text-on-secondary-container border border-secondary-container rotate-[-2deg] font-bold text-xs px-4 py-1.5">
                 🔴 LIVE
@@ -48,7 +61,7 @@ export default async function HomePage() {
             </div>
 
             <div>
-              <h1 className="text-5xl lg:text-6xl font-black leading-none tracking-tight text-on-surface">
+              <h1 className="text-4xl lg:text-5xl font-black leading-none tracking-tight text-on-surface">
                 Predict.<br />
                 <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-sky-blue">
                   Collect.
@@ -58,7 +71,7 @@ export default async function HomePage() {
                   powered by Walrus Memory
                 </span>
               </h1>
-              <p className="mt-4 text-on-surface-variant text-lg leading-relaxed max-w-md">
+              <p className="mt-4 text-on-surface-variant text-base leading-relaxed">
                 FIFA World Cup 2026 prediction arena with an AI agent that <strong className="text-on-surface">remembers everything</strong>. Your picks, opinions, and biases — stored on-chain via <strong className="text-on-surface">Walrus Memory</strong>. Collect stickers. Build your album. The agent evolves with you.
               </p>
             </div>
@@ -66,44 +79,32 @@ export default async function HomePage() {
             <div className="flex gap-3 flex-wrap">
               <Link
                 href="/predict"
-                className="inline-flex items-center gap-2 bg-primary text-white rounded-xl px-8 py-4 font-bold hover:scale-105 shadow-lg rotate-1 transition-all active:scale-95"
+                className="inline-flex items-center gap-2 bg-primary text-white rounded-xl px-7 py-3.5 font-bold hover:scale-105 shadow-lg rotate-1 transition-all active:scale-95"
               >
                 ⚽ Make Predictions
               </Link>
               <Link
                 href="/groups"
-                className="inline-flex items-center gap-2 bg-cyan-500 text-white border-2 border-cyan-500 rounded-xl px-8 py-4 font-bold hover:bg-cyan-600 hover:border-cyan-600 rotate-[-1deg] transition-all shadow-md"
+                className="inline-flex items-center gap-2 bg-cyan-500 text-white border-2 border-cyan-500 rounded-xl px-7 py-3.5 font-bold hover:bg-cyan-600 hover:border-cyan-600 rotate-[-1deg] transition-all shadow-md"
               >
                 View Groups →
               </Link>
             </div>
 
-            {/* Mini stats */}
-            <div className="flex gap-4 pt-2 flex-wrap">
+            {/* Mini stats — evenly distributed */}
+            <div className="grid grid-cols-4 gap-3 pt-2">
               {[
                 { n: leaderboard.length, label: 'Players', primary: true },
                 { n: 48, label: 'Teams' },
                 { n: playedCount, label: 'Played' },
                 { n: MATCHES.length, label: 'Matches' },
               ].map(({ n, label, primary }) => (
-                <div key={label} className="sticker-card sticker-tilt-1 peel-corner rounded-2xl p-6 text-center min-w-[80px]">
+                <div key={label} className="sticker-card sticker-tilt-1 peel-corner rounded-2xl p-4 text-center">
                   <p className={`text-2xl font-black ${primary ? 'text-primary' : 'text-on-surface-variant'}`}>{n}</p>
                   <p className="text-xs text-on-surface-variant">{label}</p>
                 </div>
               ))}
             </div>
-          </div>
-
-          {/* WalCup logo */}
-          <div className="relative flex items-center justify-center lg:justify-end px-4 py-8 lg:py-0 overflow-hidden">
-            <Image
-              src="/imgs/walcup-wal-logo.png"
-              alt="WalCup 26"
-              width={600}
-              height={480}
-              className="float object-contain select-none drop-shadow-2xl"
-              priority
-            />
           </div>
         </div>
       </section>

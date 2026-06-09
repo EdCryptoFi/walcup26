@@ -67,7 +67,7 @@ function Header() {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className={plusJakartaSans.variable}>
+    <html lang="en" className={plusJakartaSans.variable} style={{ colorScheme: 'light' }}>
       <body className={`${plusJakartaSans.className} paper-texture text-on-surface`}>
         <Providers>
           <Header />

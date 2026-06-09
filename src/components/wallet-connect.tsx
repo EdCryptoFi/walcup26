@@ -20,7 +20,7 @@ export function WalletConnect() {
     <div className="flex items-center gap-2">
       <Link
         href="/dashboard"
-        className="flex items-center gap-2 rounded-lg bg-wc-card border border-wc-border px-3 py-1.5 text-sm font-medium text-white hover:border-blue-500 transition-colors"
+        className="flex items-center gap-2 rounded-lg bg-primary border border-primary px-3 py-1.5 text-sm font-bold text-white hover:bg-primary/90 transition-colors shadow-sm"
       >
         <span className="h-2 w-2 rounded-full bg-green-400 animate-pulse" />
         <span className="font-mono">{short}</span>
