@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Sticker Arena 2026 - Predict &amp; Win</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@100..900&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-error-container": "#93000a",
+                        "on-secondary-fixed-variant": "#5c4300",
+                        "tertiary": "#006229",
+                        "secondary-fixed": "#ffdf9f",
+                        "surface-container-low": "#f2f4f6",
+                        "paper-shadow": "#0A0F1E1A",
+                        "on-primary-container": "#eeefff",
+                        "inverse-primary": "#b4c5ff",
+                        "tertiary-container": "#007e37",
+                        "on-primary-fixed": "#00174b",
+                        "secondary": "#795900",
+                        "background": "#f7f9fb",
+                        "error-container": "#ffdad6",
+                        "surface-dim": "#d8dadc",
+                        "surface-bright": "#f7f9fb",
+                        "on-surface": "#191c1e",
+                        "on-surface-variant": "#434655",
+                        "surface-container": "#eceef0",
+                        "inverse-surface": "#2d3133",
+                        "secondary-container": "#ffc329",
+                        "primary-fixed-dim": "#b4c5ff",
+                        "tertiary-fixed-dim": "#4ae176",
+                        "on-tertiary-container": "#c1ffc5",
+                        "on-background": "#191c1e",
+                        "surface-container-high": "#e6e8ea",
+                        "outline": "#737686",
+                        "surface-container-lowest": "#ffffff",
+                        "inverse-on-surface": "#eff1f3",
+                        "on-secondary-fixed": "#261a00",
+                        "surface": "#f7f9fb",
+                        "tertiary-fixed": "#6bff8f",
+                        "on-error": "#ffffff",
+                        "secondary-fixed-dim": "#f9bd22",
+                        "pitch-green": "#16A34A",
+                        "error": "#ba1a1a",
+                        "outline-variant": "#c3c6d7",
+                        "on-primary": "#ffffff",
+                        "primary-fixed": "#dbe1ff",
+                        "primary": "#004ac6",
+                        "primary-container": "#2563eb",
+                        "surface-variant": "#e0e3e5",
+                        "sky-blue": "#60A5FA",
+                        "surface-container-highest": "#e0e3e5",
+                        "on-secondary": "#ffffff",
+                        "on-tertiary": "#ffffff",
+                        "on-tertiary-fixed": "#002109",
+                        "surface-tint": "#0053db",
+                        "on-tertiary-fixed-variant": "#005321",
+                        "on-primary-fixed-variant": "#003ea8",
+                        "sticker-white": "#FFFFFF",
+                        "on-secondary-container": "#6f5100"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "base": "8px",
+                        "section-padding": "48px",
+                        "sticker-gap": "16px",
+                        "page-margin": "24px"
+                    },
+                    "fontFamily": {
+                        "headline-lg": ["Plus Jakarta Sans"],
+                        "body-md": ["Plus Jakarta Sans"],
+                        "headline-xl-mobile": ["Plus Jakarta Sans"],
+                        "headline-xl": ["Plus Jakarta Sans"],
+                        "body-lg": ["Plus Jakarta Sans"],
+                        "label-sm": ["Plus Jakarta Sans"],
+                        "label-bold": ["Plus Jakarta Sans"]
+                    },
+                    "fontSize": {
+                        "headline-lg": ["24px", {"lineHeight": "32px", "fontWeight": "700"}],
+                        "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                        "headline-xl-mobile": ["32px", {"lineHeight": "38px", "letterSpacing": "-0.02em", "fontWeight": "800"}],
+                        "headline-xl": ["40px", {"lineHeight": "48px", "letterSpacing": "-0.02em", "fontWeight": "800"}],
+                        "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "500"}],
+                        "label-sm": ["12px", {"lineHeight": "16px", "fontWeight": "600"}],
+                        "label-bold": ["14px", {"lineHeight": "20px", "fontWeight": "700"}]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        .sticker-tilt-1 { transform: rotate(-1.2deg); }
+        .sticker-tilt-2 { transform: rotate(0.8deg); }
+        .sticker-tilt-3 { transform: rotate(-0.5deg); }
+        .sticker-tilt-4 { transform: rotate(1.5deg); }
+        
+        .peeled-corner {
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 32px;
+            height: 32px;
+            background: linear-gradient(135deg, transparent 50%, rgba(0,0,0,0.05) 50%, rgba(255,255,255,0.8) 100%);
+            border-bottom-left-radius: 8px;
+            box-shadow: -2px 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .sticker-shadow {
+            box-shadow: 0px 4px 12px rgba(10, 15, 30, 0.1);
+        }
+
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            vertical-align: middle;
+        }
+
+        .shiny-sticker::after {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(
+                45deg,
+                rgba(255,255,255,0) 0%,
+                rgba(255,255,255,0.2) 45%,
+                rgba(255,255,255,0.5) 50%,
+                rgba(255,255,255,0.2) 55%,
+                rgba(255,255,255,0) 100%
+            );
+            transform: rotate(30deg);
+            animation: shine 4s infinite linear;
+            pointer-events: none;
+        }
+
+        @keyframes shine {
+            from { transform: translateX(-100%) rotate(30deg); }
+            to { transform: translateX(100%) rotate(30deg); }
+        }
+
+        .jagged-edge {
+            clip-path: polygon(0% 0%, 100% 0%, 100% 95%, 98% 100%, 96% 95%, 94% 100%, 92% 95%, 90% 100%, 88% 95%, 86% 100%, 84% 95%, 82% 100%, 80% 95%, 78% 100%, 76% 95%, 74% 100%, 72% 95%, 70% 100%, 68% 95%, 66% 100%, 64% 95%, 62% 100%, 60% 95%, 58% 100%, 56% 95%, 54% 100%, 52% 95%, 50% 100%, 48% 95%, 46% 100%, 44% 95%, 42% 100%, 40% 95%, 38% 100%, 36% 95%, 34% 100%, 32% 95%, 30% 100%, 28% 95%, 26% 100%, 24% 95%, 22% 100%, 20% 95%, 18% 100%, 16% 95%, 14% 100%, 12% 95%, 10% 100%, 8% 95%, 6% 100%, 4% 95%, 2% 100%, 0% 95%);
+        }
+    </style>
+</head>
+<body class="bg-background text-on-surface min-h-screen font-body-md overflow-x-hidden selection:bg-primary-container selection:text-on-primary-container">
+<!-- TopNavBar -->
+<nav class="bg-surface-container-low dark:bg-surface-container-highest shadow-sm flex justify-between items-center w-full px-page-margin py-4 max-w-full mx-auto z-50 sticky top-0">
+<div class="font-headline-xl text-headline-xl text-primary dark:text-primary-fixed tracking-tight hover:scale-105 transition-transform cursor-pointer">
+            Sticker Arena 2026
+        </div>
+<div class="hidden md:flex items-center space-x-8">
+<a class="text-on-surface-variant dark:text-outline-variant hover:text-primary dark:hover:text-primary-fixed transition-colors font-label-bold text-label-bold" href="#">Home</a>
+<a class="text-on-surface-variant dark:text-outline-variant hover:text-primary dark:hover:text-primary-fixed transition-colors font-label-bold text-label-bold" href="#">Groups</a>
+<a class="text-primary dark:text-inverse-primary border-b-4 border-primary dark:border-inverse-primary pb-2 font-bold font-label-bold text-label-bold" href="#">Predict</a>
+<a class="text-on-surface-variant dark:text-outline-variant hover:text-primary dark:hover:text-primary-fixed transition-colors font-label-bold text-label-bold" href="#">Leaderboard</a>
+</div>
+<div class="flex items-center gap-4">
+<button class="bg-primary-container text-on-primary-container px-6 py-2 rounded-full font-label-bold text-label-bold hover:scale-105 hover:shadow-md transition-all active:scale-95 active:-rotate-1">
+                Connect Wallet
+            </button>
+<div class="w-10 h-10 rounded-full border-2 border-primary overflow-hidden hover:scale-110 transition-transform">
+<img alt="User Collector Avatar" class="w-full h-full object-cover" data-alt="A clean, close-up digital portrait of a diverse football fan character icon with a vibrant blue background, soft cinematic lighting, and a modern minimal aesthetic consistent with high-quality sticker art." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAoVZXAZezgZ8heIO1dO2ACQ2DTAOuW78cx5-_ZWOybh09FzEz7cOE8Q2jkH0-JlRkjL-5TjkOcWMp2sF2ZZ5Hu30EdfS1Xx3v7LnpulVIumIAilaG0k9iXVm0ChXRq6wek4bzmrKQvPDj7Ca4MviS5PzhnwvfhdYluW2iJ5kTFVzxdrvMSHjECytmTlBju4eAr68BmMZyR9e52stTr3jkBJTsFNytWKIFVQaEi5znQFqpy2aC9zcJHPcJA7s7AKGVxDx_PUyiS873U"/>
+</div>
+</div>
+</nav>
+<main class="max-w-[1440px] mx-auto px-page-margin py-10 relative">
+<!-- Floating Mascot Decorative Element -->
+<div class="absolute -top-10 -right-20 w-80 h-80 opacity-20 pointer-events-none transform rotate-12 select-none">
+<img alt="World Cup Mascot" class="w-full h-full object-contain" src="https://lh3.googleusercontent.com/aida/AP1WRLuUT0Vi1kbH7O3hYGy96b-26AYSvJ4oB1br6Cg1lcC8KjpT13MYUdBEZdahKeD4tbA8kOBFwLGxkGxhchEmiksRL8yXHXEW7kq6NSLGRNXHf1YNS5S6rDXATGgYXzbXNKledV69XYlHRX0IPFtGK8V-RRVim1WbocOxL3BXzGjEk986wMZJQPxydhx7uOQlnG0BMdnpg_U28W0-mYe2yOGKlxINDTIwabDnNDtShJ32_pMRVcthzG4AO4ns"/>
+</div>
+<div class="grid grid-cols-12 gap-sticker-gap">
+<!-- Left Sidebar: Album Progress -->
+<aside class="col-span-3 space-y-sticker-gap">
+<div class="bg-sticker-white border-2 border-white rounded-xl sticker-shadow p-6 sticker-tilt-1">
+<div class="peeled-corner"></div>
+<h3 class="font-headline-lg text-headline-lg text-primary mb-4">Album Progress</h3>
+<div class="space-y-4">
+<div>
+<div class="flex justify-between font-label-bold text-label-sm mb-1">
+<span>Stickers Collected</span>
+<span>42 / 120</span>
+</div>
+<div class="w-full bg-surface-container rounded-full h-3">
+<div class="bg-primary h-3 rounded-full" style="width: 35%"></div>
+</div>
+</div>
+<div class="grid grid-cols-2 gap-2 pt-4">
+<div class="bg-surface-container-low p-3 rounded-lg text-center">
+<span class="block font-headline-lg text-primary">12</span>
+<span class="font-label-sm text-on-surface-variant">Predictions</span>
+</div>
+<div class="bg-surface-container-low p-3 rounded-lg text-center">
+<span class="block font-headline-lg text-tertiary">5</span>
+<span class="font-label-sm text-on-surface-variant">Shiny Wins</span>
+</div>
+</div>
+</div>
+</div>
+<div class="bg-sticker-white border-2 border-white rounded-xl sticker-shadow p-6 sticker-tilt-3">
+<h3 class="font-headline-lg text-headline-lg text-secondary mb-4">Open Slots</h3>
+<ul class="space-y-3">
+<li class="flex items-center gap-3 p-2 hover:bg-surface-container rounded-lg transition-colors cursor-pointer group">
+<span class="material-symbols-outlined text-outline group-hover:text-primary" data-icon="pending">pending</span>
+<div>
+<p class="font-label-bold text-on-surface">Group A Match #12</p>
+<p class="text-xs text-on-surface-variant">Closes in 2h 45m</p>
+</div>
+</li>
+<li class="flex items-center gap-3 p-2 hover:bg-surface-container rounded-lg transition-colors cursor-pointer group">
+<span class="material-symbols-outlined text-outline group-hover:text-primary" data-icon="pending">pending</span>
+<div>
+<p class="font-label-bold text-on-surface">Group C Match #08</p>
+<p class="text-xs text-on-surface-variant">Closes in 5h 10m</p>
+</div>
+</li>
+</ul>
+</div>
+</aside>
+<!-- Main Content: Match Grid -->
+<section class="col-span-9">
+<div class="flex items-end justify-between mb-8">
+<div>
+<h1 class="font-headline-xl text-headline-xl text-on-surface">Upcoming Matches</h1>
+<p class="text-on-surface-variant font-body-lg">Predict the winners and lock them into your digital album.</p>
+</div>
+<div class="flex gap-2">
+<button class="bg-sticker-white sticker-shadow px-4 py-2 rounded-lg font-label-bold flex items-center gap-2 hover:scale-105 transition-transform">
+<span class="material-symbols-outlined" data-icon="filter_list">filter_list</span> Filter
+                        </button>
+</div>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-sticker-gap">
+<!-- Match Card 1: Live Shiny -->
+<div class="bg-sticker-white border-4 border-white rounded-xl sticker-shadow p-5 sticker-tilt-2 shiny-sticker overflow-hidden relative group">
+<div class="flex justify-between items-start mb-6">
+<span class="bg-error text-on-error px-3 py-1 rounded-full text-label-sm font-label-bold animate-pulse">LIVE</span>
+<span class="font-label-sm text-outline-variant">Match #24 • Group E</span>
+</div>
+<div class="flex flex-col items-center gap-6">
+<div class="flex items-center justify-between w-full">
+<div class="text-center flex-1">
+<div class="w-16 h-16 mx-auto mb-2 bg-surface-container rounded-full flex items-center justify-center p-2 border-2 border-outline-variant">
+<img alt="Team 1" class="w-full h-full object-contain" data-alt="A stylized, clean illustration of a national football team emblem on a high-gloss circular badge, featuring vibrant colors and a subtle three-dimensional sticker effect." src="https://lh3.googleusercontent.com/aida-public/AB6AXuALe23o_t7kBlUAWZrIjJnT6DWa3qgghwglo_80MgS0XvilWaLyJlYLHveQsRxkEMEg9obfBrpLRBurmcNk2FmqL7krc8RfpacZYlJxym0YzR03JJATs31SujSHJ_FOorcZ-5XXigVDmcmtp7FB8VEQjlswM4dX25UT2TD590Efwv4oegKnCsNWam0Ss7Uy4rExt1NTXH3K5NlIpmIXWrBcKTKXnSkSgIN2x1Fqh_9Skq4YOleiqc8O3aP2d2zua1Dv5SutUY43Rvln"/>
+</div>
+<span class="font-headline-lg text-primary">BRA</span>
+</div>
+<div class="font-headline-xl text-primary-container">VS</div>
+<div class="text-center flex-1">
+<div class="w-16 h-16 mx-auto mb-2 bg-surface-container rounded-full flex items-center justify-center p-2 border-2 border-outline-variant">
+<img alt="Team 2" class="w-full h-full object-contain" data-alt="A stylized, clean illustration of a European national football team crest on a high-gloss circular badge, vibrant navy and white colors with professional sticker finish." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAjIs5OhvrpAgMWOeL1cDKkEn0H6PpY-Lzvnojw2pN-kiRlgD5dX0nk9TMnsReBuO63bUzAqKUrUeaczwJHGpJ96MqBKiyQPNvAQYHL2hDxYn7oe8hNokWEJCcLajh3pbJhEo88apdVIzf_csb49APKeJLjtle4dpg3zTcmRwAZgaBrkThTLHcAyVtv9Y8W-b7NJkp9533Yx8i-kcrxSsGnZdDVWWjaTsGbXz-IPvGTTb_wVLV_Yh2-HSBQCZ_IuHW3c_z7FC0qkyMV"/>
+</div>
+<span class="font-headline-lg text-primary">FRA</span>
+</div>
+</div>
+<button class="w-full py-3 bg-secondary-container text-on-secondary-container rounded-xl font-label-bold hover:scale-105 active:scale-95 transition-all sticker-shadow">
+                                STICK PREDICTION
+                            </button>
+</div>
+</div>
+<!-- Match Card 2 -->
+<div class="bg-sticker-white border-4 border-white rounded-xl sticker-shadow p-5 sticker-tilt-4 relative group">
+<div class="peeled-corner opacity-0 group-hover:opacity-100 transition-opacity"></div>
+<div class="flex justify-between items-start mb-6">
+<span class="bg-surface-container text-on-surface-variant px-3 py-1 rounded-full text-label-sm font-label-bold">TOMORROW</span>
+<span class="font-label-sm text-outline-variant">Match #25 • Group B</span>
+</div>
+<div class="flex flex-col items-center gap-6">
+<div class="flex items-center justify-between w-full">
+<div class="text-center flex-1">
+<div class="w-16 h-16 mx-auto mb-2 bg-surface-container rounded-full flex items-center justify-center p-2 border-2 border-outline-variant">
+<img alt="Team 3" class="w-full h-full object-contain" data-alt="A clean circular sticker badge featuring the Argentine national flag colors in a modern graphic football crest style, bright and energetic against a white border." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBXsS3uR1x0UQ_-_HPq9grYXUoq85HiKVT0prMNMLmddPXu3wFIDrBm9PdsyoCt8SvG5yvgvCwnbNgZ6kvrryrOs-ch2AfpP4hI-AJfYtfql7N7nyGydCjwEjbwadbh9qUQFUSWTIYeyei9a9r70LzE1IlAaNt06opQMuRaByhw1ezBxUuNdhtI03Wlm_SKkR20ivBvnt7Hupl2DDnfwDSNLMb9Cm4lz3GicFazmhlwo5Amc9ahyH9JpLG9OQFZ6dCRk_hmTipGxZd8"/>
+</div>
+<span class="font-headline-lg text-primary">ARG</span>
+</div>
+<div class="font-headline-xl text-primary-container">VS</div>
+<div class="text-center flex-1">
+<div class="w-16 h-16 mx-auto mb-2 bg-surface-container rounded-full flex items-center justify-center p-2 border-2 border-outline-variant">
+<img alt="Team 4" class="w-full h-full object-contain" data-alt="A modern stylized circular football badge sticker for the German national team, featuring minimalist aesthetic and high contrast colors on a pristine white base." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBzB7Q47mFJD6hnz4OqrnFxgzNQeUQt4edSd967R2atp6Vt3MOf9CRIFMU9YPbWB5flMu39vY3YF4gUcPDfi6KGK-n0dJqRAJXwv7Ih5AC5_kV-jqTo0TX7NzL8TcsYnMnuGXI0ce6W-WS-1P8SawkExUdU6lfvVxvSuDabe_MatMjhE-OseUPbU8qgQ2xkY53dPKEJZjGPtBmtevz_ViNw8oST4o0jqZPa4e1mLa6kFhFWBJuwdrqfptDNE2gLlSyecX_dEalEAQKj"/>
+</div>
+<span class="font-headline-lg text-primary">GER</span>
+</div>
+</div>
+<button class="w-full py-3 bg-primary-container text-on-primary-container rounded-xl font-label-bold hover:scale-105 active:scale-95 transition-all sticker-shadow">
+                                STICK PREDICTION
+                            </button>
+</div>
+</div>
+<!-- Match Card 3 -->
+<div class="bg-sticker-white border-4 border-white rounded-xl sticker-shadow p-5 sticker-tilt-1 relative group">
+<div class="flex justify-between items-start mb-6">
+<span class="bg-surface-container text-on-surface-variant px-3 py-1 rounded-full text-label-sm font-label-bold">JUL 04, 20:00</span>
+<span class="font-label-sm text-outline-variant">Match #26 • Group A</span>
+</div>
+<div class="flex flex-col items-center gap-6">
+<div class="flex items-center justify-between w-full">
+<div class="text-center flex-1">
+<div class="w-16 h-16 mx-auto mb-2 bg-surface-container rounded-full flex items-center justify-center p-2 border-2 border-outline-variant">
+<img alt="Team 5" class="w-full h-full object-contain" data-alt="A vibrant circular badge for the Spanish national football team, designed as a premium vinyl sticker with sharp edges and sun-drenched lighting." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBnutDrBjpHyydoKLpOSPAVXUm9NGOujcUk0s1Qc8fOTe8uZze1Ur2gd0FO93pS4zV0DOEZAMF0vfs6ZPC9tLXEHXh8Z82lsDoOY_6b4aIyMGNJ6IMEDHlW8fTU-iiHhxZXDBR1fhP20vFlyW13UzJDvPiwzH3E6fEt2R-P60UtfMXdZqN_g_wgKB77cKnVyyB8Ldv1PVASeS6Xibdfm6laeCSTaW6h24T13j6STzapkGdY6ufDy3VNEax53g6j0Tk_8BzkFNZPQqeI"/>
+</div>
+<span class="font-headline-lg text-primary">ESP</span>
+</div>
+<div class="font-headline-xl text-primary-container">VS</div>
+<div class="text-center flex-1">
+<div class="w-16 h-16 mx-auto mb-2 bg-surface-container rounded-full flex items-center justify-center p-2 border-2 border-outline-variant">
+<img alt="Team 6" class="w-full h-full object-contain" data-alt="A clean, modern circular football crest sticker for the Portuguese national team, featuring iconic colors and professional vector art style." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDidBGzoIWOVUeqm7eQZG1vyimdeW3stTxaSBA-Uwn2lZJj2OJVgX2zxKRegJDldqZFz65K8fvJMdxUwXIIxalxroYi3FGkZWbUIGpaTtfye8vOQF-HT1B9RJDdUTkAwclFkDuO4e2BGb_y5eKIg36BCJ1oIrQaa4KXFGsr3JkqDzTebI0725ty19UIjR82SDPp2gkPh73X-HJyuNzkAMFMioRVXmwmwa84NE7d6jNgch0L0MSVUccmBt6T2zfTwRdZ6k-yjiNwZsMK"/>
+</div>
+<span class="font-headline-lg text-primary">POR</span>
+</div>
+</div>
+<button class="w-full py-3 bg-primary-container text-on-primary-container rounded-xl font-label-bold hover:scale-105 active:scale-95 transition-all sticker-shadow">
+                                STICK PREDICTION
+                            </button>
+</div>
+</div>
+<!-- Match Card 4 -->
+<div class="bg-sticker-white border-4 border-white rounded-xl sticker-shadow p-5 sticker-tilt-3 relative group">
+<div class="flex justify-between items-start mb-6">
+<span class="bg-surface-container text-on-surface-variant px-3 py-1 rounded-full text-label-sm font-label-bold">JUL 05, 14:00</span>
+<span class="font-label-sm text-outline-variant">Match #27 • Group C</span>
+</div>
+<div class="flex flex-col items-center gap-6">
+<div class="flex items-center justify-between w-full">
+<div class="text-center flex-1">
+<div class="w-16 h-16 mx-auto mb-2 bg-surface-container rounded-full flex items-center justify-center p-2 border-2 border-outline-variant">
+<img alt="Team 7" class="w-full h-full object-contain" data-alt="A stylish circular sticker emblem for the USA national soccer team, featuring a contemporary crest with blue, white, and red accents on a matte finish." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCDJFavx6ewuTC_z6fKHmJQHopqoNczRgOANWUPbcPmUulArZAft4Q2tPNelJuSGfPgTPSjT4l9itANSZcOi-ps-Cs9linZ1sKBHfQ1C7OyLL4uF4_We_mzJNNVENLgjXGmf9DDetYM-q3fJ_39c3j3Fzd8WZ2Hvf9JsOA5U3e97g38wUra0m_vUsR9TjJjKBN8r3BQUuR9MzpoSF3Dif9owP1AndG2YU5Ubt4KRJ2BtDOZOGvrQNObXuICHfFu0TBLcdSR0qqzfYNk"/>
+</div>
+<span class="font-headline-lg text-primary">USA</span>
+</div>
+<div class="font-headline-xl text-primary-container">VS</div>
+<div class="text-center flex-1">
+<div class="w-16 h-16 mx-auto mb-2 bg-surface-container rounded-full flex items-center justify-center p-2 border-2 border-outline-variant">
+<img alt="Team 8" class="w-full h-full object-contain" data-alt="A clean circular badge sticker representing the Japanese national football team, featuring the rising sun motif in a modern minimalist graphic design." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAD5TLkLHPG1Nrq-mjzWWvp6UvATh93gOag8X_mrWz90T3GbUAFthCXHX8tl5Bg4gixDlvNwjf4c0lEw4ZS9COmrsEYmBiFNRT5PZxt2EpyL06cnwUXI0xlnCfkF7uoF0ek9i9g2qzyBGP4zLqpGVZ9Gl3bho_DmEV2w-n-y4s-Enjwjrl-oFKVwiE4LliiV23hlOSrd4kl28oRSgtwGTLhah_qFBXxwZUCMIyjAbDTM-dXM19hOlNQYPrySRqqCEBHEOI_wlwuuLb1"/>
+</div>
+<span class="font-headline-lg text-primary">JPN</span>
+</div>
+</div>
+<button class="w-full py-3 bg-primary-container text-on-primary-container rounded-xl font-label-bold hover:scale-105 active:scale-95 transition-all sticker-shadow">
+                                STICK PREDICTION
+                            </button>
+</div>
+</div>
+</div>
+<!-- Recent Activity Horizontal Tape -->
+<div class="mt-12 bg-secondary-container/20 jagged-edge p-6 flex items-center justify-between">
+<div class="flex items-center gap-4 overflow-x-auto no-scrollbar whitespace-nowrap">
+<span class="font-label-bold text-secondary uppercase tracking-widest text-xs">Recent Tapes:</span>
+<div class="bg-sticker-white px-4 py-1 rounded sticker-shadow text-xs font-label-bold border-l-4 border-primary">User @StickerKing predicted BRA Win</div>
+<div class="bg-sticker-white px-4 py-1 rounded sticker-shadow text-xs font-label-bold border-l-4 border-tertiary">User @AlbumMaster collected 5th Shiny</div>
+<div class="bg-sticker-white px-4 py-1 rounded sticker-shadow text-xs font-label-bold border-l-4 border-primary">Match ARG vs GER starting soon</div>
+</div>
+</div>
+</section>
+</div>
+</main>
+<!-- Footer -->
+<footer class="bg-surface-container dark:bg-surface-container-lowest border-t border-outline-variant dark:border-outline mt-20">
+<div class="flex flex-col md:flex-row justify-between items-center w-full px-section-padding py-8 gap-sticker-gap max-w-[1440px] mx-auto">
+<div class="flex flex-col gap-2">
+<span class="font-headline-lg text-headline-lg text-on-surface">Sticker Arena</span>
+<p class="text-on-surface-variant font-label-sm text-label-sm">© 2026 Sticker Arena. All Rights Reserved. Not affiliated with FIFA.</p>
+</div>
+<div class="flex gap-8">
+<a class="text-on-surface-variant dark:text-outline-variant font-label-sm text-label-sm hover:text-primary dark:hover:text-primary-fixed underline transition-colors" href="#">Terms of Service</a>
+<a class="text-on-surface-variant dark:text-outline-variant font-label-sm text-label-sm hover:text-primary dark:hover:text-primary-fixed underline transition-colors" href="#">Privacy Policy</a>
+<a class="text-on-surface-variant dark:text-outline-variant font-label-sm text-label-sm hover:text-primary dark:hover:text-primary-fixed underline transition-colors" href="#">Help Center</a>
+<a class="text-on-surface-variant dark:text-outline-variant font-label-sm text-label-sm hover:text-primary dark:hover:text-primary-fixed underline transition-colors" href="#">Partner Program</a>
+</div>
+<div class="flex gap-4">
+<button class="material-symbols-outlined text-on-surface-variant hover:text-primary transition-colors" data-icon="share">share</button>
+<button class="material-symbols-outlined text-on-surface-variant hover:text-primary transition-colors" data-icon="language">language</button>
+</div>
+</div>
+</footer>
+<script>
+        // Micro-interactions for buttons
+        document.querySelectorAll('button').forEach(btn => {
+            btn.addEventListener('mousedown', () => {
+                btn.style.transform = 'scale(0.95) rotate(-1deg)';
+            });
+            btn.addEventListener('mouseup', () => {
+                btn.style.transform = 'scale(1.05) rotate(0deg)';
+                setTimeout(() => {
+                    btn.style.transform = 'scale(1) rotate(0deg)';
+                }, 150);
+            });
+        });
+
+        // Toggle Dark Mode (Optional logic)
+        function toggleDarkMode() {
+            document.documentElement.classList.toggle('dark');
+        }
+    </script>
+</body></html>

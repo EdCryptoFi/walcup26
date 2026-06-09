@@ -1,0 +1,594 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Sticker Arena 2026 - Groups &amp; Leaderboard</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "on-error-container": "#93000a",
+                    "on-secondary-fixed-variant": "#5c4300",
+                    "tertiary": "#006229",
+                    "secondary-fixed": "#ffdf9f",
+                    "surface-container-low": "#f2f4f6",
+                    "paper-shadow": "#0A0F1E1A",
+                    "on-primary-container": "#eeefff",
+                    "inverse-primary": "#b4c5ff",
+                    "tertiary-container": "#007e37",
+                    "on-primary-fixed": "#00174b",
+                    "secondary": "#795900",
+                    "background": "#f7f9fb",
+                    "error-container": "#ffdad6",
+                    "surface-dim": "#d8dadc",
+                    "surface-bright": "#f7f9fb",
+                    "on-surface": "#191c1e",
+                    "on-surface-variant": "#434655",
+                    "surface-container": "#eceef0",
+                    "inverse-surface": "#2d3133",
+                    "secondary-container": "#ffc329",
+                    "primary-fixed-dim": "#b4c5ff",
+                    "tertiary-fixed-dim": "#4ae176",
+                    "on-tertiary-container": "#c1ffc5",
+                    "on-background": "#191c1e",
+                    "surface-container-high": "#e6e8ea",
+                    "outline": "#737686",
+                    "surface-container-lowest": "#ffffff",
+                    "inverse-on-surface": "#eff1f3",
+                    "on-secondary-fixed": "#261a00",
+                    "surface": "#f7f9fb",
+                    "tertiary-fixed": "#6bff8f",
+                    "on-error": "#ffffff",
+                    "secondary-fixed-dim": "#f9bd22",
+                    "pitch-green": "#16A34A",
+                    "error": "#ba1a1a",
+                    "outline-variant": "#c3c6d7",
+                    "on-primary": "#ffffff",
+                    "primary-fixed": "#dbe1ff",
+                    "primary": "#004ac6",
+                    "primary-container": "#2563eb",
+                    "surface-variant": "#e0e3e5",
+                    "sky-blue": "#60A5FA",
+                    "surface-container-highest": "#e0e3e5",
+                    "on-secondary": "#ffffff",
+                    "on-tertiary": "#ffffff",
+                    "on-tertiary-fixed": "#002109",
+                    "surface-tint": "#0053db",
+                    "on-tertiary-fixed-variant": "#005321",
+                    "on-primary-fixed-variant": "#003ea8",
+                    "sticker-white": "#FFFFFF",
+                    "on-secondary-container": "#6f5100"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "base": "8px",
+                    "section-padding": "48px",
+                    "sticker-gap": "16px",
+                    "page-margin": "24px"
+            },
+            "fontFamily": {
+                    "headline-lg": ["Plus Jakarta Sans"],
+                    "body-md": ["Plus Jakarta Sans"],
+                    "headline-xl-mobile": ["Plus Jakarta Sans"],
+                    "headline-xl": ["Plus Jakarta Sans"],
+                    "body-lg": ["Plus Jakarta Sans"],
+                    "label-sm": ["Plus Jakarta Sans"],
+                    "label-bold": ["Plus Jakarta Sans"]
+            },
+            "fontSize": {
+                    "headline-lg": ["24px", {"lineHeight": "32px", "fontWeight": "700"}],
+                    "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                    "headline-xl-mobile": ["32px", {"lineHeight": "38px", "letterSpacing": "-0.02em", "fontWeight": "800"}],
+                    "headline-xl": ["40px", {"lineHeight": "48px", "letterSpacing": "-0.02em", "fontWeight": "800"}],
+                    "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "500"}],
+                    "label-sm": ["12px", {"lineHeight": "16px", "fontWeight": "600"}],
+                    "label-bold": ["14px", {"lineHeight": "20px", "fontWeight": "700"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #f7f9fb; }
+        
+        .sticker-tilt-1 { transform: rotate(-1.2deg); }
+        .sticker-tilt-2 { transform: rotate(0.8deg); }
+        .sticker-tilt-3 { transform: rotate(-0.5deg); }
+        
+        .sticker-card {
+            background: white;
+            border: 2px solid white;
+            box-shadow: 0px 4px 12px rgba(10, 15, 30, 0.1);
+            transition: all 0.2s ease-in-out;
+            position: relative;
+        }
+        
+        .sticker-card:hover {
+            transform: scale(1.05) rotate(0deg) !important;
+            box-shadow: 0px 8px 24px rgba(10, 15, 30, 0.15);
+            z-index: 10;
+        }
+
+        .peel-corner::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 0;
+            height: 0;
+            border-style: solid;
+            border-width: 0 16px 16px 0;
+            border-color: transparent #f0f0f0 transparent transparent;
+            box-shadow: -2px 2px 4px rgba(0,0,0,0.05);
+            transition: border-width 0.2s;
+        }
+        
+        .sticker-card:hover .peel-corner::after {
+            border-width: 0 24px 24px 0;
+        }
+
+        .holographic {
+            position: relative;
+            overflow: hidden;
+        }
+
+        .holographic::before {
+            content: '';
+            position: absolute;
+            top: -150%;
+            left: -150%;
+            width: 300%;
+            height: 300%;
+            background: linear-gradient(
+                45deg, 
+                rgba(255,255,255,0) 0%, 
+                rgba(255,255,255,0.2) 45%, 
+                rgba(255,255,255,0.8) 50%, 
+                rgba(255,255,255,0.2) 55%, 
+                rgba(255,255,255,0) 100%
+            );
+            transform: rotate(45deg);
+            transition: all 0.5s;
+            pointer-events: none;
+        }
+
+        .holographic:hover::before {
+            left: 100%;
+            top: 100%;
+        }
+
+        .glossy-btn {
+            background: linear-gradient(180deg, rgba(255,255,255,0.15) 0%, rgba(255,255,255,0) 100%);
+            box-shadow: inset 0 1px 0 rgba(255,255,255,0.4), 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .torn-edge {
+            mask-image: radial-gradient(circle at 0px 50%, transparent 10px, black 11px), 
+                        radial-gradient(circle at 100% 50%, transparent 10px, black 11px);
+            mask-composite: intersect;
+        }
+    </style>
+</head>
+<body class="bg-background text-on-surface antialiased">
+<!-- TopNavBar -->
+<header class="bg-surface-container-low shadow-sm z-50 sticky top-0 flex justify-between items-center w-full px-page-margin py-4 max-w-full mx-auto">
+<div class="font-headline-xl text-[24px] md:text-headline-xl text-primary tracking-tight">Sticker Arena 2026</div>
+<nav class="hidden md:flex gap-8 items-center">
+<a class="text-on-surface-variant hover:text-primary transition-colors font-label-bold text-label-bold" href="#">Home</a>
+<a class="text-primary border-b-4 border-primary pb-2 font-bold font-label-bold text-label-bold" href="#">Groups</a>
+<a class="text-on-surface-variant hover:text-primary transition-colors font-label-bold text-label-bold" href="#">Predict</a>
+<a class="text-on-surface-variant hover:text-primary transition-colors font-label-bold text-label-bold" href="#">Leaderboard</a>
+</nav>
+<div class="flex items-center gap-4">
+<button class="bg-primary text-on-primary px-6 py-2 rounded-full font-label-bold text-label-bold hover:scale-105 hover:shadow-md transition-all duration-200 Active:-rotate-1 Active:scale-95">
+            Connect Wallet
+        </button>
+<img alt="User Collector Avatar" class="w-10 h-10 rounded-full border-2 border-white shadow-sm" src="https://lh3.googleusercontent.com/aida-public/AB6AXuD3WDYGAw6cHyjOADdelIzRKEyTtpUAuFSN6IQ54b1mQt2BvRHZU8pwUX_r_FxL860gsE1EADTIZ984fR_lQRyhlvUh92Xp5yD2_vvvIsGJWisDIIK_LMz7brLZmufA22s8EEjFaoRlMNsJTZeimA2pqk-VaHJtyeOiil17IZ3PQCWQRaEelkuV2EamFIR7aVSgeeyAHon8a0k1fXvfFJpHCv7DFuhyn1-9KL-6bJVJ1zc4ZbQ0P82fB15behAeLuGCFBQibVi9an5-"/>
+</div>
+</header>
+<main class="max-w-[1440px] mx-auto px-page-margin py-10">
+<!-- Hero Welcome / Mascot Section -->
+<section class="mb-12 flex flex-col md:flex-row items-center gap-10 bg-white p-8 rounded-xl shadow-sm sticker-tilt-3">
+<div class="flex-1">
+<h1 class="font-headline-xl text-headline-xl text-on-surface mb-4">World Cup 2026 Groups &amp; Rankings</h1>
+<p class="font-body-lg text-body-lg text-on-surface-variant mb-6">Explore the full album of the 2026 tournament. Track group standings, see who's dominating the global leaderboard, and complete your collection of predictions.</p>
+<div class="flex flex-wrap gap-4">
+<span class="bg-secondary-container text-on-secondary-container px-4 py-2 rounded-full font-label-bold text-label-bold flex items-center gap-2">
+<span class="material-symbols-outlined text-[18px]">verified</span> 12 Groups Total
+                </span>
+<span class="bg-tertiary-container text-on-tertiary-container px-4 py-2 rounded-full font-label-bold text-label-bold flex items-center gap-2">
+<span class="material-symbols-outlined text-[18px]">workspace_premium</span> Global Top 100
+                </span>
+</div>
+</div>
+<div class="flex-1 flex justify-center">
+<div class="relative group">
+<div class="absolute -inset-1 bg-gradient-to-r from-sky-blue to-primary rounded-2xl blur opacity-25 group-hover:opacity-50 transition duration-1000"></div>
+<img alt="Mascot Group" class="relative rounded-xl w-full max-w-[400px] shadow-xl" src="https://lh3.googleusercontent.com/aida/AP1WRLuUT0Vi1kbH7O3hYGy96b-26AYSvJ4oB1br6Cg1lcC8KjpT13MYUdBEZdahKeD4tbA8kOBFwLGxkGxhchEmiksRL8yXHXEW7kq6NSLGRNXHf1YNS5S6rDXATGgYXzbXNKledV69XYlHRX0IPFtGK8V-RRVim1WbocOxL3BXzGjEk986wMZJQPxydhx7uOQlnG0BMdnpg_U28W0-mYe2yOGKlxINDTIwabDnNDtShJ32_pMRVcthzG4AO4ns"/>
+</div>
+</div>
+</section>
+<!-- Main Content Layout -->
+<div class="flex flex-col lg:flex-row gap-sticker-gap">
+<!-- Groups Grid (Main Area) -->
+<div class="flex-1 lg:w-3/4">
+<div class="flex items-center justify-between mb-6">
+<h2 class="font-headline-lg text-headline-lg flex items-center gap-3">
+<span class="material-symbols-outlined text-primary">auto_awesome_motion</span>
+                    The Group Stage Album
+                </h2>
+<div class="flex gap-2">
+<button class="p-2 hover:bg-surface-container rounded-full transition-colors"><span class="material-symbols-outlined">grid_view</span></button>
+<button class="p-2 hover:bg-surface-container rounded-full transition-colors"><span class="material-symbols-outlined">filter_list</span></button>
+</div>
+</div>
+<!-- Grid Fix: 3-4 columns on desktop -->
+<div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-sticker-gap">
+<!-- Group A Sticker -->
+<div class="sticker-card p-4 rounded-lg sticker-tilt-1 peel-corner">
+<div class="flex justify-between items-start mb-4">
+<span class="bg-primary text-on-primary text-[10px] px-2 py-0.5 rounded font-bold">GROUP A</span>
+<span class="material-symbols-outlined text-outline-variant">push_pin</span>
+</div>
+<div class="space-y-3">
+<div class="flex items-center justify-between border-b border-surface-container pb-2">
+<div class="flex items-center gap-2">
+<img alt="USA" class="w-6 h-4 object-cover rounded-sm shadow-sm" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCNBGYmVRF6OfUerVUwhw5v6QqOMVjm_kfEiDExsbAQCTrtHnEaSkDheWEWrltanW3iy02qFWLYcN3jahhRypAp-d7ftqsKkK00COrSFM2pN4bQuypMLI5K2mQguUVjx4OkwvJG8uz-lRqCoVnjb3oqUZdKnCuWqJJKK5K-9HScPDY-nEyEHiPeWBtO7JLR34LlZbNxOz9R4JSUU02amIf2Z08F5GN1WPmhgnAmztXXRYv1HV2-dW6kRnRyoXLZ_TLk4PNdpiPtBtdL"/>
+<span class="font-label-bold text-label-bold">USA</span>
+</div>
+<span class="font-bold text-primary">7 pts</span>
+</div>
+<div class="flex items-center justify-between border-b border-surface-container pb-2 opacity-80">
+<div class="flex items-center gap-2">
+<img alt="Mexico" class="w-6 h-4 object-cover rounded-sm shadow-sm" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAefNjnJn59laLgy5DLzKGrEFh2YwSKkybbRXf8m-T8pMcI84l-VoV1nfAOvX4JH9kHV8z37-d67W5cmfH-SV9fxM4cjsUWrrE77rc-BDlJbuWnL8W6P0FXsFp7GQgq6nyJgE-bkzwsLa33vy-YC6TNAXz67FFZEydtYeNXYpusnJRwcudeflqiuECBc1lVkyYRcbiRxxrUEQkUm-iTFQixasU8EZQLjJwXo-JZkhiUHfkUgII4fSuc5cmU4LI6CruWRN62LD2T1qRQ"/>
+<span class="font-label-bold text-label-bold">MEX</span>
+</div>
+<span class="font-bold">5 pts</span>
+</div>
+<div class="flex items-center justify-between border-b border-surface-container pb-2 opacity-60">
+<div class="flex items-center gap-2">
+<img alt="Canada" class="w-6 h-4 object-cover rounded-sm shadow-sm" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDjiReXVsqnh8aOifSsikOnB-JhSEqqZRftejzWTaCEQMSyVm6kEmBiIz02Jp4J44vwpjvOKwrf0NBXkim6od2OTREDrzqM4hGEGB0u7qVWrFSuTf9OldokCeBvyprAS9HGIfPPEBr1CDIwCLs1oETJWjCySbxlHKaqK700_61MKwJEbxNKVK0Sihs31wG3ttnWwLSyZ3ieO5KS7jj0VmODx2kWHB9hdQ3bj8UddxPT-WK__aas-kbJq_j4Z1uHW1kYq08gBJga8YJX"/>
+<span class="font-label-bold text-label-bold">CAN</span>
+</div>
+<span class="font-bold text-on-surface-variant">4 pts</span>
+</div>
+<div class="flex items-center justify-between opacity-40">
+<div class="flex items-center gap-2">
+<img alt="Jamaica" class="w-6 h-4 object-cover rounded-sm shadow-sm" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAD4KECCW76AYqYu89AMtd-_evlBd9uSUs0P46yakXr-WdDlm_vkyB8_jPnYNH4RjWKpEBLryh5qPKqK2m0gfhUWS82WXmwuoGxL-9tlLWHnwMPUgyOo2bfOiLmSgF6G9xKyERPQ8Yhsq79rKUbcco4CoTOvbvF9y5oeRH2izJheBdDrmwdgJOo_G8XimfPSSNurfb5Lc_qhLhy7U2eufH04M85TPH-94AThEkV3Xag2diJgsLepIU5WSTsXMYau3U_kRsB0PUnbX6M"/>
+<span class="font-label-bold text-label-bold">JAM</span>
+</div>
+<span class="text-[12px] font-bold">0 pts</span>
+</div>
+</div>
+</div>
+<!-- Group B Sticker -->
+<div class="sticker-card p-4 rounded-lg sticker-tilt-2 peel-corner">
+<div class="flex justify-between items-start mb-4">
+<span class="bg-secondary text-on-secondary text-[10px] px-2 py-0.5 rounded font-bold">GROUP B</span>
+<span class="material-symbols-outlined text-outline-variant">push_pin</span>
+</div>
+<div class="space-y-3">
+<div class="flex items-center justify-between border-b border-surface-container pb-2">
+<div class="flex items-center gap-2">
+<img alt="Brazil" class="w-6 h-4 object-cover rounded-sm shadow-sm" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBFH3fmVVr8y1nDjOccwZdyp8F8uuYsRp_ebE4JDlkzskdDoEgy-6E7VvfGWoubEREiECXIxIKbJx6f9fuuwutZ9Pgz2aHcm-qFo_H-eGXUreCJPkGqQvRjCgUXUu7AWzSefUa64_rTqhuI13gb3EPgUzGIvkahWMWf9ejV8cpRzdkqJEZ5N-sbQTqv18ioIZr62d_uVqyHFs96hLasjlcddbuFsU3cWTZHv-mNjhE2DkerCJuo4sig5frOwkBGUtMSkfhaEuh-7wH0"/>
+<span class="font-label-bold text-label-bold">BRA</span>
+</div>
+<span class="font-bold text-primary">9 pts</span>
+</div>
+<div class="flex items-center justify-between border-b border-surface-container pb-2">
+<div class="flex items-center gap-2">
+<img alt="France" class="w-6 h-4 object-cover rounded-sm shadow-sm" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAMzaxPKddJwLHbAEFTQjS25NndoNN11ez6Bi-Mia9jm6e2y-MFlMjJMacwb5FEhyPrSJIRa8amM1_Nf0OREYMlZdgFxKRsCgpGcnzSeIaiehddiVJ3fzWXE74pfga1SyGT6KB_125zKTyfq3R8LzrN_RQugytkaw8JVe-F5D5VcI-Xb7w158MR1xmFZjF0CHPGLDzEHlvgFfky71tkPpb7ilEY4_gSrW3EAhEh_b4E8wIeoH5duqdTr6BfFVJo3zhI9FXAJd9qsTTJ"/>
+<span class="font-label-bold text-label-bold">FRA</span>
+</div>
+<span class="font-bold">6 pts</span>
+</div>
+<div class="flex items-center justify-between border-b border-surface-container pb-2 opacity-60">
+<div class="flex items-center gap-2">
+<img alt="Japan" class="w-6 h-4 object-cover rounded-sm shadow-sm" src="https://lh3.googleusercontent.com/aida-public/AB6AXuC6HEr-3az5qQrKP3c5sE84nbqRZND-qop4lpv7BxWtXjGYs1nY3PKIH96QBCvSKhbn7iCvR4y0jdmaW9kXR_WajtyUv8djlNN3uxj-RsjYuzqMffLot1Kfyif75aX_B0zdUB4O4ZD1EWypdsFez3djO5m_sQNJzdqs2o6F-DvYlikYvpAitue4llSo8Pty_y-Ubm8MPO3RlEfZehJKd9f5Y1rm9u1U4WjDyHBV7VcFDNpwnLPUpvNJvdsLFLiR_xKfvSkREq_joh5F"/>
+<span class="font-label-bold text-label-bold">JPN</span>
+</div>
+<span class="font-bold">3 pts</span>
+</div>
+<div class="flex items-center justify-between opacity-40">
+<div class="flex items-center gap-2">
+<img alt="Ghana" class="w-6 h-4 object-cover rounded-sm shadow-sm" src="https://lh3.googleusercontent.com/aida-public/AB6AXuA0uyMv51yjfrZSxakM7m70hNycyB-FPfXUKkd3HsXXzKq-z6A6dqvKeO3z6gvgGiQHDsrEJE_tEi2soB-PAZyE4ycydP_1eHOJnqBQLmw_8GN34wvdqnBxdAzZMDsFReSH78b2KDG5JZblAXqbCZlbntOjRByKOSzVpHgzNLQXqlkh6nmc3OAwRizGeJvw1dpBqz4-lSYfv1y7G5iny1IXMaEB-xV0aKMGzboXRvtjIXVKzPx_ovKM-Xi9P82FY1V0JHrBWer91Bxy"/>
+<span class="font-label-bold text-label-bold">GHA</span>
+</div>
+<span class="text-[12px] font-bold">0 pts</span>
+</div>
+</div>
+</div>
+<!-- Group C Sticker -->
+<div class="sticker-card p-4 rounded-lg sticker-tilt-3 peel-corner">
+<div class="flex justify-between items-start mb-4">
+<span class="bg-tertiary text-on-tertiary text-[10px] px-2 py-0.5 rounded font-bold">GROUP C</span>
+<span class="material-symbols-outlined text-outline-variant">push_pin</span>
+</div>
+<div class="space-y-3">
+<div class="flex items-center justify-between border-b border-surface-container pb-2">
+<div class="flex items-center gap-2">
+<img alt="Argentina" class="w-6 h-4 object-cover rounded-sm shadow-sm" src="https://lh3.googleusercontent.com/aida-public/AB6AXuB076Ht-xEPMa7HqRDzVAjz6Uaoiu9q4Nc0BfJ95HX9Kq3KqAl76JDcx4-kMPAYGwZ6kA8FxW_PvlGzXyMkQtboVMMBAEntEsAGy9JHZAdTn60e2phaEJFwdIKe5vZeooqA-WQkYqTpwTjplmeU5f-0VB1-v81G5ibRe8oc7-H5lhslJSZ1YCsoRJnN05MLm4hNghE4MK9xyIg6SSQ-iH6KNEFLnUETwrAGpdb7pMceE6tLrqr5FBAyf8jWDEZ-OKp3UpzBnn0HlyGn"/>
+<span class="font-label-bold text-label-bold">ARG</span>
+</div>
+<span class="font-bold text-primary">7 pts</span>
+</div>
+<div class="flex items-center justify-between border-b border-surface-container pb-2">
+<div class="flex items-center gap-2">
+<img alt="Portugal" class="w-6 h-4 object-cover rounded-sm shadow-sm" src="https://lh3.googleusercontent.com/aida-public/AB6AXuB_Dur6BQ-7C9vavZMeFFUEmlj5tsrDZabfQKr5zhek49W08C9XXETbPk_IsQPGWh3cWTfuyVuZUgBab2P6VfSVB-3ngNa4DvVPdGbLtpR4ip75fe6sfv0q-LTkZ-8cQKptX1m8rs7I9xp3ByiYVlI0temdJwnx-K27XZTA8XqKdtxzhzsiG-RpXdx_Jl6v36m8cEWyt02vrL9flLZW9PigqBDk3BXppTcuwItfdW9W8apDYFQTxy5pihgybkyJ7JtZhX0X1jGl_avN"/>
+<span class="font-label-bold text-label-bold">POR</span>
+</div>
+<span class="font-bold">7 pts</span>
+</div>
+<div class="flex items-center justify-between border-b border-surface-container pb-2 opacity-60">
+<div class="flex items-center gap-2">
+<img alt="Korea" class="w-6 h-4 object-cover rounded-sm shadow-sm" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBNbu77JX-p2guqpc46iGwRzQgwInFvKxwXN64vFqDQAdU2GQh4c7e58NJEqik5kL-RyrYEXe_O6L2IROlHWuxSIy68rOkuvVzTL0CvWWC3E_vozpgL8HiuZqGeW5bvHFBVC_N1MjNcjdAR2YQL2CKG6-o_wtbhWe9xyEzIviKoE650G4X5Rrw0HHPWdUvzgGiLJP_j6Jn-vup8tG5dii6bv_PLlDKEVWCfHgYhsx0sNmM_7QgKj9Uj-ji7E2AVDYwrqPmKat1ykDPu"/>
+<span class="font-label-bold text-label-bold">KOR</span>
+</div>
+<span class="font-bold">1 pts</span>
+</div>
+<div class="flex items-center justify-between opacity-40">
+<div class="flex items-center gap-2">
+<img alt="Senegal" class="w-6 h-4 object-cover rounded-sm shadow-sm" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCJi8dgTQr-60cn9TlJMYsRauieNt8Wo9CVgPjYa3cfd7rNFDbsWWunPTtWp3ppNWWsZEaV7vqk1haR-nvLk9TB0eN2RIj65pPvtt4kDa_nxNPmTTpwMc8DUC-KXa2TKv5kWlLbQsxgxBLJYImNPDSdU9wYSTyRt-j0S2LOx_XX8x78BbrQoIBKg8VpSORJdA76c2KlUuxmlkhMlEz0xxLmuArj0b-UkQ6D4MNwCOYDFMfJIM5UthjAxoKxS-xji8IjRhtIDGXQWXtW"/>
+<span class="font-label-bold text-label-bold">SEN</span>
+</div>
+<span class="text-[12px] font-bold">1 pts</span>
+</div>
+</div>
+</div>
+<!-- Group D Sticker -->
+<div class="sticker-card p-4 rounded-lg sticker-tilt-1 peel-corner">
+<div class="flex justify-between items-start mb-4">
+<span class="bg-sky-blue text-white text-[10px] px-2 py-0.5 rounded font-bold">GROUP D</span>
+<span class="material-symbols-outlined text-outline-variant">push_pin</span>
+</div>
+<div class="flex items-center justify-center py-10 opacity-30 text-center">
+<span class="font-label-bold text-xs">Matches In Progress...</span>
+</div>
+</div>
+<!-- Group E Sticker -->
+<div class="sticker-card p-4 rounded-lg sticker-tilt-2 peel-corner">
+<div class="flex justify-between items-start mb-4">
+<span class="bg-pitch-green text-white text-[10px] px-2 py-0.5 rounded font-bold">GROUP E</span>
+<span class="material-symbols-outlined text-outline-variant">push_pin</span>
+</div>
+<div class="flex items-center justify-center py-10 opacity-30 text-center">
+<span class="font-label-bold text-xs">Matches In Progress...</span>
+</div>
+</div>
+<!-- Group F Sticker -->
+<div class="sticker-card p-4 rounded-lg sticker-tilt-3 peel-corner">
+<div class="flex justify-between items-start mb-4">
+<span class="bg-orange-500 text-white text-[10px] px-2 py-0.5 rounded font-bold">GROUP F</span>
+<span class="material-symbols-outlined text-outline-variant">push_pin</span>
+</div>
+<div class="flex items-center justify-center py-10 opacity-30 text-center">
+<span class="font-label-bold text-xs">Matches In Progress...</span>
+</div>
+</div>
+<!-- Group G Sticker -->
+<div class="sticker-card p-4 rounded-lg sticker-tilt-1 peel-corner">
+<div class="flex justify-between items-start mb-4">
+<span class="bg-primary-container text-white text-[10px] px-2 py-0.5 rounded font-bold">GROUP G</span>
+<span class="material-symbols-outlined text-outline-variant">push_pin</span>
+</div>
+<div class="flex items-center justify-center py-10 opacity-30 text-center">
+<span class="font-label-bold text-xs">Matches In Progress...</span>
+</div>
+</div>
+<!-- Group H Sticker -->
+<div class="sticker-card p-4 rounded-lg sticker-tilt-2 peel-corner">
+<div class="flex justify-between items-start mb-4">
+<span class="bg-secondary-fixed-dim text-white text-[10px] px-2 py-0.5 rounded font-bold">GROUP H</span>
+<span class="material-symbols-outlined text-outline-variant">push_pin</span>
+</div>
+<div class="flex items-center justify-center py-10 opacity-30 text-center">
+<span class="font-label-bold text-xs">Matches In Progress...</span>
+</div>
+</div>
+<!-- Group I Sticker -->
+<div class="sticker-card p-4 rounded-lg sticker-tilt-3 peel-corner">
+<div class="flex justify-between items-start mb-4">
+<span class="bg-tertiary-fixed-dim text-white text-[10px] px-2 py-0.5 rounded font-bold">GROUP I</span>
+<span class="material-symbols-outlined text-outline-variant">push_pin</span>
+</div>
+<div class="flex items-center justify-center py-10 opacity-30 text-center">
+<span class="font-label-bold text-xs">Matches In Progress...</span>
+</div>
+</div>
+<!-- Loading Groups J-L Placeholder cards -->
+<div class="sticker-card p-4 rounded-lg sticker-tilt-1 border-dashed border-2 border-outline-variant bg-surface-container-low opacity-50">
+<div class="flex justify-between items-start mb-4">
+<span class="bg-outline-variant text-white text-[10px] px-2 py-0.5 rounded font-bold uppercase">Group J</span>
+</div>
+<div class="flex items-center justify-center py-10">
+<span class="material-symbols-outlined animate-spin text-outline">sync</span>
+</div>
+</div>
+<div class="sticker-card p-4 rounded-lg sticker-tilt-2 border-dashed border-2 border-outline-variant bg-surface-container-low opacity-50">
+<div class="flex justify-between items-start mb-4">
+<span class="bg-outline-variant text-white text-[10px] px-2 py-0.5 rounded font-bold uppercase">Group K</span>
+</div>
+<div class="flex items-center justify-center py-10">
+<span class="material-symbols-outlined animate-spin text-outline">sync</span>
+</div>
+</div>
+<div class="sticker-card p-4 rounded-lg sticker-tilt-3 border-dashed border-2 border-outline-variant bg-surface-container-low opacity-50">
+<div class="flex justify-between items-start mb-4">
+<span class="bg-outline-variant text-white text-[10px] px-2 py-0.5 rounded font-bold uppercase">Group L</span>
+</div>
+<div class="flex items-center justify-center py-10">
+<span class="material-symbols-outlined animate-spin text-outline">sync</span>
+</div>
+</div>
+</div>
+<!-- Tattered edge notification bar -->
+<div class="mt-12 p-6 bg-surface-container rounded-xl flex flex-col md:flex-row items-center justify-between torn-edge gap-4">
+<div class="flex items-center gap-4">
+<span class="material-symbols-outlined text-3xl text-primary">info</span>
+<div>
+<h4 class="font-label-bold text-label-bold">Groups J through L are currently loading.</h4>
+<p class="font-label-sm text-label-sm text-on-surface-variant">Live updates every 60 seconds from the prediction market pools.</p>
+</div>
+</div>
+<button class="bg-white px-6 py-2 rounded-lg font-label-bold text-label-bold text-primary hover:shadow-md transition-shadow">Refresh Album</button>
+</div>
+</div>
+<!-- Global Leaderboard (Sidebar) -->
+<aside class="lg:w-1/4">
+<div class="space-y-sticker-gap">
+<!-- Leaderboard Card -->
+<div class="bg-white rounded-xl shadow-md p-6 sticky top-24">
+<h2 class="font-headline-lg text-headline-lg mb-6 flex items-center gap-2">
+<span class="material-symbols-outlined text-secondary">military_tech</span>
+                        Leaderboard
+                    </h2>
+<div class="space-y-4">
+<!-- Top Player (Shiny Holographic) -->
+<div class="holographic sticker-card p-4 rounded-xl flex items-center gap-4 bg-gradient-to-br from-white to-surface-container-low border-2 border-primary/20 cursor-default">
+<div class="relative">
+<img alt="Top Player Avatar" class="w-12 h-12 rounded-full border-2 border-secondary bg-white" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCiYMinBYkRvN6p-cToeVaAaVAstCMos_5yk9fRMNk0xt9G32u7CpPXGZ0f1gJBz-5NmlzgmA_Nmw3_AyFJT91sxG9_0wLTjyig2PtVa9H6mqMSMsOgBIDhKnk5ldWcajvNsJi7nAfwpbmqAijsUoj6DowoXMkmFB7VfFEGjNZ1lOLhsqDEbnQlAkAvcjel86GaHJRAyKQntoJamZUylodArOMMlSA2ylNoA7us2TzIG6-9DpMYvMpkJHNg7Liz7PCUh1rOb1qnvi8O"/>
+<div class="absolute -top-2 -left-2 bg-secondary text-on-secondary rounded-full w-6 h-6 flex items-center justify-center text-[10px] font-bold shadow-md">1</div>
+</div>
+<div class="flex-1 overflow-hidden">
+<div class="font-label-bold text-label-bold text-primary truncate">Cryptosticker_King</div>
+<div class="text-[10px] text-on-surface-variant font-bold uppercase tracking-wider">Holographic Pro</div>
+</div>
+<div class="text-right">
+<div class="font-bold text-primary">12,450</div>
+<div class="text-[10px] font-bold text-pitch-green">PTS</div>
+</div>
+</div>
+<!-- 2nd Player -->
+<div class="sticker-card p-4 rounded-xl flex items-center gap-4 hover:bg-surface-container-low cursor-default">
+<div class="relative">
+<img alt="Player Avatar" class="w-12 h-12 rounded-full border-2 border-outline-variant bg-white" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDOA4dIS2dGBnpzFfrl6OkzQD1pAJSgufx2Dk-ZGplBdsyLb50k4ekdG4-84qbpcsswVOZaucC4tKrGPWoOpU8xMW4rIIXoFIo25DFYvHAcfzAas5RupeqDdKDCrOGECupdpED3xsJB5Gqi4WKKXdlJgTte28TSjPC7oC0QvDqx8bkAaxEY_uR4868pgkCvko6WyjnHH7DRms8bvBH-bF_HrsKsn7jc-DWXHHOysKhOv4HTwAJGxXJElHX_EKDWesBwEg2jV7s7oLlN"/>
+<div class="absolute -top-2 -left-2 bg-outline text-white rounded-full w-6 h-6 flex items-center justify-center text-[10px] font-bold shadow-md">2</div>
+</div>
+<div class="flex-1 overflow-hidden">
+<div class="font-label-bold text-label-bold truncate">SoccerWhale88</div>
+<div class="text-[10px] text-on-surface-variant uppercase tracking-wider">Diamond Collector</div>
+</div>
+<div class="text-right">
+<div class="font-bold">11,820</div>
+<div class="text-[10px] font-bold text-pitch-green">PTS</div>
+</div>
+</div>
+<!-- 3rd Player -->
+<div class="sticker-card p-4 rounded-xl flex items-center gap-4 hover:bg-surface-container-low cursor-default">
+<div class="relative">
+<img alt="Player Avatar" class="w-12 h-12 rounded-full border-2 border-secondary-fixed bg-white" src="https://lh3.googleusercontent.com/aida-public/AB6AXuC8r0Chb6fSSYQY1swDviv7S-t2DAdxjRERg4qMkHdp8QcafvZUn7X088aLLKLW-jcWVKep8COcKGKyQ-8aQwhnlXQYEHizKuldxZpsCVIJe7K_-xlrn1UMMDY5LTQ55iZZvYuY7-96vgIqXxVTH2-nn7wBcpgq_8w34f2g1-RRUYC8gjEK85Ln53_44I8qfIpN90FbUuoVSiIjuGoriZ29eYjtMNam-HdmZES3yoD8WQ2smGTQVO4_VKJxVnW-ZippZqpaNzzylT5F"/>
+<div class="absolute -top-2 -left-2 bg-on-secondary-fixed-variant text-white rounded-full w-6 h-6 flex items-center justify-center text-[10px] font-bold shadow-md">3</div>
+</div>
+<div class="flex-1 overflow-hidden">
+<div class="font-label-bold text-label-bold truncate">GoalDigger_NFT</div>
+<div class="text-[10px] text-on-surface-variant uppercase tracking-wider">Gold Predictor</div>
+</div>
+<div class="text-right">
+<div class="font-bold">10,950</div>
+<div class="text-[10px] font-bold text-pitch-green">PTS</div>
+</div>
+</div>
+<!-- Others List -->
+<div class="pt-4 border-t border-outline-variant space-y-3">
+<div class="flex items-center justify-between px-2">
+<div class="flex items-center gap-3">
+<span class="font-label-bold text-outline w-4 text-center">4</span>
+<span class="font-label-bold text-label-bold">MetaKick_26</span>
+</div>
+<span class="font-label-bold text-sm">9,420 <span class="text-[10px] text-on-surface-variant">PTS</span></span>
+</div>
+<div class="flex items-center justify-between px-2 bg-primary/5 py-2 rounded-lg border-l-4 border-primary">
+<div class="flex items-center gap-3">
+<span class="font-label-bold text-primary w-4 text-center">24</span>
+<span class="font-label-bold text-label-bold text-primary">You (Collector)</span>
+</div>
+<span class="font-label-bold text-primary text-sm">3,450 <span class="text-[10px]">PTS</span></span>
+</div>
+</div>
+<button class="w-full mt-4 bg-surface-container-high hover:bg-surface-container-highest text-primary font-label-bold text-label-bold py-3 rounded-lg transition-colors flex items-center justify-center gap-2">
+                            View Full Rankings
+                            <span class="material-symbols-outlined text-[18px]">arrow_forward</span>
+</button>
+</div>
+</div>
+<!-- Ad/Teaser Sticker -->
+<div class="sticker-card bg-secondary-container p-6 rounded-xl sticker-tilt-2 overflow-hidden relative">
+<div class="absolute -right-4 -bottom-4 opacity-10">
+<span class="material-symbols-outlined text-8xl">rewarded_ads</span>
+</div>
+<h3 class="font-headline-lg text-[20px] text-on-secondary-container mb-2 relative z-10">Join the "Shiny" Pool!</h3>
+<p class="font-label-sm text-label-sm text-on-secondary-container/80 mb-4 relative z-10">Predict Group A winners to earn a Holographic Badge.</p>
+<button class="glossy-btn bg-white text-secondary px-6 py-2 rounded-full font-label-bold text-label-bold hover:scale-105 transition-transform relative z-10">Enter Now</button>
+</div>
+</div>
+</aside>
+</div>
+</main>
+<!-- Footer -->
+<footer class="bg-surface-container border-t border-outline-variant flex flex-col md:flex-row justify-between items-center w-full px-section-padding py-8 gap-sticker-gap mt-12">
+<div class="flex flex-col gap-2">
+<div class="font-headline-lg text-headline-lg text-on-surface">Sticker Arena</div>
+<p class="font-label-sm text-label-sm text-on-surface-variant opacity-60">© 2026 Sticker Arena. All Rights Reserved. Not affiliated with FIFA.</p>
+</div>
+<div class="flex flex-wrap justify-center gap-8">
+<a class="font-label-sm text-label-sm text-on-surface-variant hover:text-primary underline" href="#">Terms of Service</a>
+<a class="font-label-sm text-label-sm text-on-surface-variant hover:text-primary underline" href="#">Privacy Policy</a>
+<a class="font-label-sm text-label-sm text-on-surface-variant hover:text-primary underline" href="#">Help Center</a>
+</div>
+<div class="flex gap-4">
+<button class="p-2 bg-white rounded-full shadow-sm hover:scale-110 transition-transform"><span class="material-symbols-outlined text-primary">public</span></button>
+<button class="p-2 bg-white rounded-full shadow-sm hover:scale-110 transition-transform"><span class="material-symbols-outlined text-primary">hub</span></button>
+</div>
+</footer>
+<script>
+    // Micro-interaction for stickers: slight random shake on load to mimic 'thrown' effect
+    document.querySelectorAll('.sticker-card').forEach((card, index) => {
+        const currentRotation = card.classList.contains('sticker-tilt-1') ? -1.2 : 
+                                card.classList.contains('sticker-tilt-2') ? 0.8 : -0.5;
+        
+        card.style.opacity = '0';
+        card.style.transform = `translateY(20px) rotate(${currentRotation + (Math.random() * 2 - 1)}deg)`;
+        
+        setTimeout(() => {
+            card.style.transition = 'all 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275)';
+            card.style.opacity = '1';
+            card.style.transform = `translateY(0) rotate(${currentRotation}deg)`;
+        }, index * 40);
+    });
+
+    // Interactive "Holographic" tilt effect
+    const holographicCard = document.querySelector('.holographic');
+    if (holographicCard) {
+        holographicCard.addEventListener('mousemove', (e) => {
+            const card = e.currentTarget;
+            const rect = card.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+            
+            const centerX = rect.width / 2;
+            const centerY = rect.height / 2;
+            
+            const rotateX = (y - centerY) / 10;
+            const rotateY = (centerX - x) / 10;
+            
+            card.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale(1.05)`;
+        });
+
+        holographicCard.addEventListener('mouseleave', (e) => {
+            const card = e.currentTarget;
+            card.style.transform = `perspective(1000px) rotateX(0deg) rotateY(0deg) scale(1)`;
+        });
+    }
+</script>
+</body></html>

@@ -11,10 +11,10 @@ interface TeamStickerProps {
 }
 
 const SIZE_MAP = {
-  sm: { w: 40,  h: 48  },
-  md: { w: 60,  h: 72  },
-  lg: { w: 80,  h: 96  },
-  xl: { w: 100, h: 120 },
+  sm: { w: 52,  h: 64  },
+  md: { w: 80,  h: 96  },
+  lg: { w: 110, h: 132 },
+  xl: { w: 130, h: 156 },
 };
 
 export function TeamSticker({ teamId, size = 'md', className = '', showName, tilt }: TeamStickerProps) {

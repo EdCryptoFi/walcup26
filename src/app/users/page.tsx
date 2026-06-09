@@ -5,6 +5,8 @@ import Link from 'next/link';
 import { User, MemWalQueryResponse } from '@/types';
 import { TeamSticker } from '@/components/team-sticker';
 
+const CARD_TILTS = ['sticker-tilt-1', 'sticker-tilt-2', 'sticker-tilt-3'];
+
 export default function UsersPage() {
   const [users, setUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState(true);
@@ -39,32 +41,32 @@ export default function UsersPage() {
     <div className="space-y-8">
       <div className="flex items-center justify-between flex-wrap gap-3">
         <div>
-          <h1 className="text-3xl font-black text-slate-900">All Players</h1>
-          <p className="text-slate-500 text-sm">{users.length} participants in the prediction pool</p>
+          <h1 className="text-3xl font-black text-on-surface">All Players</h1>
+          <p className="text-on-surface-variant text-sm">{users.length} participants in the prediction pool</p>
         </div>
-        <Link href="/predict" className="rounded-lg bg-blue-700 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-800 transition-colors">
+        <Link href="/predict" className="bg-primary text-white rounded-full px-4 py-2 text-sm font-bold hover:scale-105 transition-all">
           + Join the pool
         </Link>
       </div>
 
       {/* MemWal Query Panel */}
-      <div className="card p-5 bg-gradient-to-br from-blue-50 to-purple-50 border-blue-200">
-        <h2 className="font-bold text-slate-900 mb-1 flex items-center gap-2">
+      <div className="sticker-card sticker-tilt-1 peel-corner rounded-2xl p-5">
+        <h2 className="font-bold text-on-surface mb-1 flex items-center gap-2">
           <span>🦭</span> Query Any Player's Walrus Memory
         </h2>
-        <p className="text-xs text-slate-500 mb-4">
+        <p className="text-xs text-on-surface-variant mb-4">
           All predictions are stored encrypted on Walrus. Run semantic search against any player's history.
         </p>
         <div className="flex flex-col sm:flex-row gap-2">
           <select
             value={queryUserId}
             onChange={(e) => setQueryUserId(e.target.value)}
-            className="bg-white border border-slate-200 rounded-lg px-3 py-2 text-sm text-slate-900 focus:outline-none focus:border-blue-400 sm:w-52"
+            className="bg-white border border-outline-variant rounded-lg px-3 py-2 text-sm text-on-surface focus:outline-none focus:border-primary sm:w-52"
           >
             <option value="">Select player…</option>
             {users.map((u) => (
               <option key={u.id} value={u.id}>
-                {u.avatar} {u.username}{u.isReal ? ' ⚡' : ''}
+                {u.avatar} {u.username}{u.isReal ? ' ⚡' : ' 🤖'}
               </option>
             ))}
           </select>
@@ -72,13 +74,13 @@ export default function UsersPage() {
             value={queryText}
             onChange={(e) => setQueryText(e.target.value)}
             placeholder='e.g. "Brazil predictions", "high confidence", "Group C"'
-            className="flex-1 bg-white border border-slate-200 rounded-lg px-3 py-2 text-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:border-blue-400"
+            className="flex-1 bg-white border border-outline-variant rounded-lg px-3 py-2 text-sm text-on-surface placeholder-on-surface-variant focus:outline-none focus:border-primary"
             onKeyDown={(e) => e.key === 'Enter' && handleQuery()}
           />
           <button
             onClick={handleQuery}
             disabled={querying || !queryUserId || !queryText}
-            className="rounded-lg bg-blue-700 px-5 py-2 text-sm font-semibold text-white hover:bg-blue-800 disabled:opacity-40 transition-colors"
+            className="bg-primary text-white rounded-full px-5 py-2 text-sm font-bold hover:scale-105 transition-all disabled:opacity-40"
           >
             {querying ? '…' : 'Recall'}
           </button>
@@ -86,16 +88,16 @@ export default function UsersPage() {
 
         {queryResult && (
           <div className="mt-4 space-y-2">
-            <p className="text-xs text-slate-500">
-              {queryResult.total} memories · <strong className="text-slate-900">{queryResult.username}</strong> · "{queryResult.query}"
+            <p className="text-xs text-on-surface-variant">
+              {queryResult.total} memories · <strong className="text-on-surface">{queryResult.username}</strong> · "{queryResult.query}"
             </p>
             {queryResult.results.length === 0 ? (
-              <p className="text-sm text-slate-400 italic py-2">No matching memories found.</p>
+              <p className="text-sm text-on-surface-variant italic py-2">No matching memories found.</p>
             ) : (
               queryResult.results.map((r, i) => (
-                <div key={i} className="rounded-xl bg-white border border-slate-200 p-3 text-sm text-slate-700 shadow-sm">
+                <div key={i} className="rounded-xl bg-white border border-outline-variant p-3 text-sm text-on-surface shadow-sm">
                   <p className="leading-relaxed">{r.text}</p>
-                  <div className="flex items-center gap-4 mt-1.5 text-xs text-slate-400">
+                  <div className="flex items-center gap-4 mt-1.5 text-xs text-on-surface-variant">
                     <span>Relevance {((1 - r.distance) * 100).toFixed(0)}%</span>
                     <span className="font-mono truncate">blob: {r.blobId.slice(0, 20)}…</span>
                   </div>
@@ -112,22 +114,22 @@ export default function UsersPage() {
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           placeholder="Search player…"
-          className="bg-white border border-slate-200 rounded-lg px-3 py-2 text-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:border-blue-400 w-44"
+          className="bg-white border border-outline-variant rounded-lg px-3 py-2 text-sm text-on-surface placeholder-on-surface-variant focus:outline-none focus:border-primary w-44"
         />
         <div className="flex gap-1">
           {(['all', 'real', 'seeded'] as const).map((f) => (
             <button
               key={f}
               onClick={() => setFilter(f)}
-              className={`rounded-full px-3 py-1.5 text-xs font-semibold transition-colors capitalize ${
-                filter === f ? 'bg-blue-700 text-white' : 'bg-white border border-slate-200 text-slate-500 hover:text-slate-900 hover:border-blue-300'
+              className={`rounded-full px-3 py-1.5 text-xs font-semibold transition-all capitalize ${
+                filter === f ? 'bg-primary text-white scale-105' : 'bg-white border border-outline-variant text-on-surface-variant hover:text-on-surface hover:border-primary'
               }`}
             >
-              {f === 'real' ? '⚡ Live' : f === 'seeded' ? '🤖 Simulated' : 'All'}
+              {f === 'real' ? '⚡ Live' : f === 'seeded' ? '🤖 Test Bots' : 'All'}
             </button>
           ))}
         </div>
-        <p className="ml-auto text-xs text-slate-400">{filtered.length} shown</p>
+        <p className="ml-auto text-xs text-on-surface-variant">{filtered.length} shown</p>
       </div>
 
       {/* Grid */}
@@ -137,39 +139,44 @@ export default function UsersPage() {
         </div>
       ) : (
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
-          {filtered.map((user) => (
-            <Link
-              key={user.id}
-              href={`/users/${user.id}`}
-              className="card p-4 hover:border-blue-300 hover:shadow-sm transition-all group"
-            >
-              <div className="flex items-start gap-3">
-                {user.favoriteTeam ? (
-                  <TeamSticker teamId={user.favoriteTeam} size="md" tilt />
-                ) : (
-                  <span className="text-3xl">{user.avatar}</span>
-                )}
+          {filtered.map((user, idx) => {
+            const tilt = CARD_TILTS[idx % CARD_TILTS.length];
+            return (
+              <Link
+                key={user.id}
+                href={`/users/${user.id}`}
+                className={`sticker-card ${tilt} peel-corner rounded-xl p-4 hover:shadow-md transition-all group`}
+              >
+                <div className="flex items-start gap-3">
+                  {user.favoriteTeam ? (
+                    <TeamSticker teamId={user.favoriteTeam} size="md" tilt />
+                  ) : (
+                    <span className="text-3xl">{user.avatar}</span>
+                  )}
 
-                <div className="min-w-0 flex-1">
-                  <div className="flex items-center gap-2 flex-wrap">
-                    <p className="font-bold text-slate-900 truncate group-hover:text-blue-700 transition-colors">
-                      {user.username}
-                    </p>
-                    {user.isReal && (
-                      <span className="pill bg-green-100 text-green-700 border border-green-200 text-[10px]">LIVE</span>
+                  <div className="min-w-0 flex-1">
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <p className="font-bold text-on-surface truncate group-hover:text-primary transition-colors">
+                        {user.username}
+                      </p>
+                      {user.isReal ? (
+                        <span className="pill bg-tertiary text-on-tertiary text-[10px]">LIVE</span>
+                      ) : (
+                        <span className="pill bg-surface-container text-on-surface-variant text-[10px]">Test Bot</span>
+                      )}
+                    </div>
+                    <div className="flex items-center gap-3 mt-1.5">
+                      <span className="text-lg font-black text-primary">{user.stats.points} pts</span>
+                      <span className="text-xs text-on-surface-variant">{user.stats.correctWinners}/{user.stats.totalPredictions} correct</span>
+                    </div>
+                    {user.detectedBiases && user.detectedBiases.length > 0 && (
+                      <p className="text-xs text-secondary mt-1 truncate">⚠ {user.detectedBiases[0]}</p>
                     )}
                   </div>
-                  <div className="flex items-center gap-3 mt-1.5">
-                    <span className="text-lg font-black text-wc-gold">{user.stats.points} pts</span>
-                    <span className="text-xs text-slate-500">{user.stats.correctWinners}/{user.stats.totalPredictions} correct</span>
-                  </div>
-                  {user.detectedBiases && user.detectedBiases.length > 0 && (
-                    <p className="text-xs text-amber-600 mt-1 truncate">⚠ {user.detectedBiases[0]}</p>
-                  )}
                 </div>
-              </div>
-            </Link>
-          ))}
+              </Link>
+            );
+          })}
         </div>
       )}
     </div>

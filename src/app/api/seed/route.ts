@@ -3,9 +3,13 @@ import { SEED_USERS } from '@/lib/seed-data';
 import { getMemWal, isMemWalConfigured, formatPredictionMemory } from '@/lib/memwal';
 import { MATCH_MAP, TEAM_MAP } from '@/lib/world-cup-data';
 
-// POST /api/seed — writes a summary memory to MemWal for each seed user.
+// POST /api/seed — writes a summary memory to MemWal for each seed user (admin only).
 // Lightweight: 1 memory per user (not all 72 predictions), suitable for demo.
-export async function POST() {
+export async function POST(req: Request) {
+  const secret = req.headers.get('x-admin-secret');
+  if (!process.env.ADMIN_SECRET || secret !== process.env.ADMIN_SECRET) {
+    return NextResponse.json({ error: 'Unauthorized — admin secret required' }, { status: 401 });
+  }
   if (!isMemWalConfigured()) {
     return NextResponse.json({
       message: 'MemWal not configured — seed users exist in-memory only.',

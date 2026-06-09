@@ -48,8 +48,13 @@ export function GET() {
   return NextResponse.json({ results });
 }
 
-// POST /api/results — add a match result and score all user predictions
+// POST /api/results — add a match result and score all user predictions (admin only)
 export async function POST(req: NextRequest) {
+  const secret = req.headers.get('x-admin-secret');
+  if (!process.env.ADMIN_SECRET || secret !== process.env.ADMIN_SECRET) {
+    return NextResponse.json({ error: 'Unauthorized — admin secret required' }, { status: 401 });
+  }
+
   const body = await req.json().catch(() => null);
   const parsed = ResultSchema.safeParse(body);
   if (!parsed.success) {

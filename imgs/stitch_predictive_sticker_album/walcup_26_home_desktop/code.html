@@ -1,0 +1,476 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>WalCup 26 - Sticker Arena</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@100..900&amp;display=swap" rel="stylesheet"/>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        
+        .paper-texture {
+            background-color: #f7f9fb;
+            background-image: url("https://www.transparenttextures.com/patterns/paper-fibers.png");
+        }
+
+        .sticker-card {
+            background: #ffffff;
+            border: 2px solid #ffffff;
+            box-shadow: 0px 4px 12px rgba(10, 15, 30, 0.1);
+            transition: all 0.2s ease-in-out;
+        }
+
+        .sticker-card:hover {
+            transform: scale(1.05) rotate(0deg) !important;
+            box-shadow: 0px 12px 24px rgba(10, 15, 30, 0.15);
+            z-index: 10;
+        }
+
+        .peel-corner {
+            clip-path: polygon(0 0, 100% 0, 100% 85%, 85% 100%, 0 100%);
+            position: relative;
+        }
+
+        .peel-corner::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            right: 0;
+            width: 20px;
+            height: 20px;
+            background: linear-gradient(135deg, transparent 50%, rgba(0,0,0,0.05) 50%, rgba(0,0,0,0.1) 100%);
+            border-bottom-right-radius: 4px;
+        }
+
+        .shiny-foil {
+            background: linear-gradient(135deg, rgba(255,255,255,0) 0%, rgba(255,255,255,0.8) 50%, rgba(255,255,255,0) 100%);
+            background-size: 200% 200%;
+            animation: shine 3s infinite linear;
+        }
+
+        @keyframes shine {
+            0% { background-position: -200% -200%; }
+            100% { background-position: 200% 200%; }
+        }
+
+        .jagged-edge {
+            mask-image: radial-gradient(circle at 10px, transparent 10px, white 11px);
+            mask-size: 20px 100%;
+        }
+    </style>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "on-error-container": "#93000a",
+                      "on-secondary-fixed-variant": "#5c4300",
+                      "tertiary": "#006229",
+                      "secondary-fixed": "#ffdf9f",
+                      "surface-container-low": "#f2f4f6",
+                      "paper-shadow": "#0A0F1E1A",
+                      "on-primary-container": "#eeefff",
+                      "inverse-primary": "#b4c5ff",
+                      "tertiary-container": "#007e37",
+                      "on-primary-fixed": "#00174b",
+                      "secondary": "#795900",
+                      "background": "#f7f9fb",
+                      "error-container": "#ffdad6",
+                      "surface-dim": "#d8dadc",
+                      "surface-bright": "#f7f9fb",
+                      "on-surface": "#191c1e",
+                      "on-surface-variant": "#434655",
+                      "surface-container": "#eceef0",
+                      "inverse-surface": "#2d3133",
+                      "secondary-container": "#ffc329",
+                      "primary-fixed-dim": "#b4c5ff",
+                      "tertiary-fixed-dim": "#4ae176",
+                      "on-tertiary-container": "#c1ffc5",
+                      "on-background": "#191c1e",
+                      "surface-container-high": "#e6e8ea",
+                      "outline": "#737686",
+                      "surface-container-lowest": "#ffffff",
+                      "inverse-on-surface": "#eff1f3",
+                      "on-secondary-fixed": "#261a00",
+                      "surface": "#f7f9fb",
+                      "tertiary-fixed": "#6bff8f",
+                      "on-error": "#ffffff",
+                      "secondary-fixed-dim": "#f9bd22",
+                      "pitch-green": "#16A34A",
+                      "error": "#ba1a1a",
+                      "outline-variant": "#c3c6d7",
+                      "on-primary": "#ffffff",
+                      "primary-fixed": "#dbe1ff",
+                      "primary": "#004ac6",
+                      "primary-container": "#2563eb",
+                      "sky-blue": "#60A5FA",
+                      "surface-container-highest": "#e0e3e5",
+                      "on-secondary": "#ffffff",
+                      "on-tertiary": "#ffffff",
+                      "on-tertiary-fixed": "#002109",
+                      "surface-tint": "#0053db",
+                      "on-tertiary-fixed-variant": "#005321",
+                      "on-primary-fixed-variant": "#003ea8",
+                      "sticker-white": "#FFFFFF",
+                      "on-secondary-container": "#6f5100"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.25rem",
+                      "lg": "0.5rem",
+                      "xl": "0.75rem",
+                      "full": "9999px"
+              },
+              "spacing": {
+                      "base": "8px",
+                      "section-padding": "48px",
+                      "sticker-gap": "16px",
+                      "page-margin": "24px"
+              },
+              "fontFamily": {
+                      "headline-lg": ["Plus Jakarta Sans"],
+                      "body-md": ["Plus Jakarta Sans"],
+                      "headline-xl-mobile": ["Plus Jakarta Sans"],
+                      "headline-xl": ["Plus Jakarta Sans"],
+                      "body-lg": ["Plus Jakarta Sans"],
+                      "label-sm": ["Plus Jakarta Sans"],
+                      "label-bold": ["Plus Jakarta Sans"]
+              },
+              "fontSize": {
+                      "headline-lg": ["24px", {"lineHeight": "32px", "fontWeight": "700"}],
+                      "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                      "headline-xl-mobile": ["32px", {"lineHeight": "38px", "letterSpacing": "-0.02em", "fontWeight": "800"}],
+                      "headline-xl": ["40px", {"lineHeight": "48px", "letterSpacing": "-0.02em", "fontWeight": "800"}],
+                      "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "500"}],
+                      "label-sm": ["12px", {"lineHeight": "16px", "fontWeight": "600"}],
+                      "label-bold": ["14px", {"lineHeight": "20px", "fontWeight": "700"}]
+              }
+            },
+          },
+        }
+    </script>
+</head>
+<body class="paper-texture min-h-screen font-body-md text-on-surface">
+<!-- TopNavBar -->
+<nav class="flex justify-between items-center w-full px-page-margin py-4 max-w-full mx-auto z-50 sticky top-0 bg-surface-container-low dark:bg-surface-container-highest shadow-[0px_4px_12px_rgba(10,15,30,0.1)]">
+<div class="flex items-center gap-8">
+<span class="font-headline-xl text-headline-xl text-primary dark:text-primary-fixed tracking-tight">Sticker Arena 2026</span>
+<div class="hidden md:flex gap-6">
+<a class="font-label-bold text-label-bold text-primary dark:text-inverse-primary border-b-4 border-primary dark:border-inverse-primary pb-2 font-bold" href="#">Home</a>
+<a class="font-label-bold text-label-bold text-on-surface-variant dark:text-outline-variant hover:text-primary dark:hover:text-primary-fixed transition-colors" href="#">Groups</a>
+<a class="font-label-bold text-label-bold text-on-surface-variant dark:text-outline-variant hover:text-primary dark:hover:text-primary-fixed transition-colors" href="#">Predict</a>
+<a class="font-label-bold text-label-bold text-on-surface-variant dark:text-outline-variant hover:text-primary dark:hover:text-primary-fixed transition-colors" href="#">Leaderboard</a>
+</div>
+</div>
+<div class="flex items-center gap-4">
+<button class="bg-primary-container text-on-primary-container px-6 py-2 rounded-full font-label-bold text-label-bold hover:scale-105 transition-all duration-200 active:-rotate-1 active:scale-95 shadow-md">
+                Connect Wallet
+            </button>
+<div class="w-10 h-10 rounded-full border-2 border-white shadow-sm overflow-hidden bg-surface-container-high">
+<img alt="User Collector Avatar" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAzbfge2ifDpFG5Y3DfSIFwQh40suulo6PQQIdqeLUXPeVy7veY_v8g2hcaT_wv3Kf6Uxhui0NUjo96IzOb9d38lJGiyb3N0HzS7Dl8Naiq0TVVveCmloTkOI-mb0CR596E3WT6P7-vv5i46yaUnU1SgOJq2oVmN8ycV6KhwrYbVj_5HdCnkqAyitG2ewe6ezEZO02os7WY8Xz4ouH-bcq5DyeXWoGOemnRMIMnK2M8nb_fjUvEbi_8EcNpLHgrgs1oilnW3lfV35jU"/>
+</div>
+</div>
+</nav>
+<main class="max-w-[1440px] mx-auto px-page-margin py-12 space-y-24">
+<!-- Hero Section -->
+<section class="grid grid-cols-1 md:grid-cols-12 gap-sticker-gap items-center min-h-[600px]">
+<div class="md:col-span-7 space-y-8">
+<div class="inline-block px-4 py-2 bg-secondary-container text-on-secondary-container rounded-full font-label-bold text-label-bold rotate-[-2deg] shadow-sm">
+                    LIVE ON SUI TESTNET
+                </div>
+<h1 class="font-headline-xl text-[64px] leading-[72px] tracking-tight text-on-surface max-w-2xl">
+                    Predict. Collect. <span class="text-primary underline decoration-sky-blue decoration-8">Win.</span>
+</h1>
+<p class="font-body-lg text-body-lg text-on-surface-variant max-w-xl">
+                    Experience the thrill of the World Cup 2026 like never before. Trade prediction stickers, complete your digital album, and earn rewards on the fastest blockchain on earth.
+                </p>
+<div class="flex gap-4">
+<button class="bg-primary text-on-primary px-8 py-4 rounded-xl font-headline-lg text-headline-lg hover:scale-105 transition-all shadow-lg rotate-1 active:-rotate-1">
+                        Start Collecting
+                    </button>
+<button class="bg-white text-primary border-2 border-primary px-8 py-4 rounded-xl font-headline-lg text-headline-lg hover:bg-surface-container transition-all shadow-md rotate-[-1deg] active:rotate-1">
+                        View Marketplace
+                    </button>
+</div>
+</div>
+<div class="md:col-span-5 relative">
+<!-- Mascot Sticker Hero -->
+<div class="sticker-card p-4 rounded-2xl rotate-2 hover:rotate-0 transition-transform duration-500">
+<div class="bg-sky-blue/10 rounded-xl overflow-hidden border-4 border-sticker-white">
+<img alt="Hero Mascot" class="w-full h-auto" src="https://lh3.googleusercontent.com/aida/AP1WRLv4xUlGemw6AgJz6LfURmHNorXNbsv8UjUJXkjfyWJWScdN87xkUuzWeF06i0AyoXbPDk6IYDQo0XJHdDogKnIjM2lG3EYg63y7DyqKo3o1CELknua6__4vgMiTzK0yj9QUgeySJ0RPpiFF79LosRRBSvChheGetRvj0WW7CM9OVbIRG799SJpOyTClu71wxIWnz8BBGV-LgMJL5bxJYKXdVcMHtJ5ovT4xv2Z7HMpzabXcUVcUGn5xN2bh"/>
+</div>
+</div>
+<!-- Decorative mini stickers -->
+<div class="absolute -top-10 -right-10 w-24 h-24 sticker-card rounded-full p-1 -rotate-12">
+<div class="w-full h-full rounded-full bg-secondary-container flex items-center justify-center">
+<span class="material-symbols-outlined text-4xl text-on-secondary-container">stars</span>
+</div>
+</div>
+<div class="absolute -bottom-6 -left-6 w-32 h-32 sticker-card p-2 rotate-12">
+<div class="w-full h-full bg-pitch-green rounded-lg flex flex-col items-center justify-center text-white">
+<span class="font-label-bold">WINNER</span>
+<span class="text-4xl">🏆</span>
+</div>
+</div>
+</div>
+</section>
+<!-- Stats Bento Grid -->
+<section class="space-y-8">
+<div class="flex justify-between items-end">
+<h2 class="font-headline-xl text-headline-xl">Arena Live Stats</h2>
+<button class="text-primary font-label-bold flex items-center gap-2 hover:underline">
+                    View Leaderboard <span class="material-symbols-outlined">arrow_forward</span>
+</button>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-4 gap-sticker-gap">
+<!-- Stat Card 1 -->
+<div class="sticker-card p-6 rounded-2xl rotate-1 bg-white">
+<div class="flex justify-between items-start mb-4">
+<span class="material-symbols-outlined text-primary text-3xl">collections</span>
+<span class="text-pitch-green font-label-bold">+12%</span>
+</div>
+<div class="space-y-1">
+<p class="font-label-sm text-on-surface-variant uppercase tracking-wider">Total Stickers Minted</p>
+<p class="font-headline-lg text-headline-lg">1,240,582</p>
+</div>
+</div>
+<!-- Stat Card 2 -->
+<div class="sticker-card p-6 rounded-2xl -rotate-1 bg-white">
+<div class="flex justify-between items-start mb-4">
+<span class="material-symbols-outlined text-secondary text-3xl">payments</span>
+<span class="text-pitch-green font-label-bold">+5.2k</span>
+</div>
+<div class="space-y-1">
+<p class="font-label-sm text-on-surface-variant uppercase tracking-wider">Total Volume (SUI)</p>
+<p class="font-headline-lg text-headline-lg">452,890</p>
+</div>
+</div>
+<!-- Stat Card 3 -->
+<div class="sticker-card p-6 rounded-2xl rotate-2 bg-white">
+<div class="flex justify-between items-start mb-4">
+<span class="material-symbols-outlined text-tertiary text-3xl">groups</span>
+<span class="text-on-surface-variant font-label-bold">Live</span>
+</div>
+<div class="space-y-1">
+<p class="font-label-sm text-on-surface-variant uppercase tracking-wider">Active Collectors</p>
+<p class="font-headline-lg text-headline-lg">89,431</p>
+</div>
+</div>
+<!-- Stat Card 4 (Album Progress Visual) -->
+<div class="sticker-card p-6 rounded-2xl bg-primary-container text-white -rotate-2 relative overflow-hidden">
+<div class="relative z-10 space-y-4">
+<p class="font-label-bold">Global Progress</p>
+<div class="flex items-end gap-2">
+<span class="text-4xl font-extrabold">64%</span>
+<span class="pb-1 opacity-80">Album Completed</span>
+</div>
+<div class="w-full bg-white/20 h-3 rounded-full overflow-hidden">
+<div class="bg-white h-full" style="width: 64%"></div>
+</div>
+</div>
+<div class="absolute -right-4 -bottom-4 opacity-20 rotate-12">
+<span class="material-symbols-outlined text-8xl" style="font-variation-settings: 'FILL' 1">auto_stories</span>
+</div>
+</div>
+</div>
+</section>
+<!-- How It Works Section -->
+<section class="bg-surface-container rounded-3xl p-12 relative overflow-hidden">
+<div class="grid grid-cols-1 md:grid-cols-2 gap-16 items-center">
+<div class="space-y-12">
+<h2 class="font-headline-xl text-headline-xl">How to Play?</h2>
+<div class="space-y-8">
+<div class="flex gap-6 items-start group">
+<div class="w-12 h-12 rounded-full bg-primary text-white flex items-center justify-center shrink-0 font-headline-lg shadow-md group-hover:scale-110 transition-transform">1</div>
+<div class="space-y-2">
+<h3 class="font-headline-lg text-headline-lg">Pack Opening</h3>
+<p class="font-body-md text-on-surface-variant">Mint packs on Sui to reveal unique football stickers. Each sticker is a real on-chain asset you own.</p>
+</div>
+</div>
+<div class="flex gap-6 items-start group">
+<div class="w-12 h-12 rounded-full bg-secondary text-white flex items-center justify-center shrink-0 font-headline-lg shadow-md group-hover:scale-110 transition-transform">2</div>
+<div class="space-y-2">
+<h3 class="font-headline-lg text-headline-lg">Place Predictions</h3>
+<p class="font-body-md text-on-surface-variant">Apply your stickers to match slots. Predict winners, scores, and scorers to power up your stickers' value.</p>
+</div>
+</div>
+<div class="flex gap-6 items-start group">
+<div class="w-12 h-12 rounded-full bg-tertiary text-white flex items-center justify-center shrink-0 font-headline-lg shadow-md group-hover:scale-110 transition-transform">3</div>
+<div class="space-y-2">
+<h3 class="font-headline-lg text-headline-lg">Complete &amp; Trade</h3>
+<p class="font-body-md text-on-surface-variant">Fill your group pages to unlock "Shiny" rewards. Trade duplicates with other collectors in the arena.</p>
+</div>
+</div>
+</div>
+</div>
+<div class="relative flex justify-center items-center">
+<!-- Mascot Instruction Sticker -->
+<div class="sticker-card p-6 rounded-3xl rotate-[-3deg] z-20 relative bg-white max-w-sm">
+<div class="rounded-xl overflow-hidden border-2 border-surface-container-high mb-4">
+<img alt="How it works mascot" class="w-full h-auto" src="https://lh3.googleusercontent.com/aida/AP1WRLvoEc0UvYUWoXMLsZ4snDLhScHO_Ws4Kgr-7ZVmI5QElTKuhWOrOeu7TX0L1Whw0LadX6h9s5AG8N3gfGnirjVhhFnsDQ2PqMKIQ6oD_7SqI-wAf1mujWj1F5w1p8UREmL33qarzw-k84KOLrJYGIpCki0MzNl3y-OOeNe38iiWodyQry2tWJC0kno8QyARTVBxV6CHF1zpNF4d7svutLXLkwcGABDJF5G5m1i709C1s42fowADUyvY3tlK"/>
+</div>
+<div class="text-center space-y-2">
+<p class="font-headline-lg text-primary">Master Collector Wal</p>
+<p class="text-on-surface-variant text-sm italic">"Don't forget to stake your rares for bonus yield!"</p>
+</div>
+</div>
+<!-- Floating Background Elements -->
+<div class="absolute top-0 right-0 w-40 h-40 bg-sky-blue/20 rounded-full blur-3xl"></div>
+<div class="absolute bottom-0 left-0 w-40 h-40 bg-secondary/20 rounded-full blur-3xl"></div>
+</div>
+</div>
+</section>
+<!-- Featured Match (Sticker Focus) -->
+<section class="space-y-8">
+<h2 class="font-headline-xl text-headline-xl text-center">Next Big Matchups</h2>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-sticker-gap">
+<!-- Match Sticker 1 -->
+<div class="sticker-card p-8 rounded-2xl rotate-[-1.5deg] flex flex-col items-center gap-6 group cursor-pointer peel-corner">
+<div class="flex items-center gap-4">
+<div class="w-16 h-16 rounded-full shadow-md border-2 border-white overflow-hidden">
+<img alt="USA Flag" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDQnu9dPK_f7lvYuAVk0K3cZJeRKqeqijdmDUSz1QnP_H6of-U3fI5hNkFNAhmkbqNK_YfdAwCrTF3FPlIwviOPgUUyPX1DkTpgOy3-J6F59AJTLukURkE7GeivSKckWxhtakN5hsK4Gwe_c2-KdC-Uiuwl_X4Axjq8h2nlTys_138YGH_e69S2etHJcr_rrgx9oH69VQ9OgBsiaudF6I7B0J-OF4NRpDA3AI0Xn6Tol4oAUO1EczZp0gPYbWWPOU6jOkiKFzU0nzXu"/>
+</div>
+<span class="font-headline-lg">VS</span>
+<div class="w-16 h-16 rounded-full shadow-md border-2 border-white overflow-hidden">
+<img alt="Brazil Flag" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAFuDF1YF_BMzHi0Lp92h6vbAyNM5Uwem_ZwWEH8neviXWC-cp_RlZf7_xC7ad63JM6WynA0w-rvlYAFfkdL-10W63ldW_McT-NB3yd31NDDmi3pkFdw8C_1KUVCPwUA80koN-c0dvUxB04KJMyafjnrhQIjjlQRCWglj-5eUHb1ye17ACqJj4gUZ6wCLG-Ws1SCWm_iy75I9HAXJmEAvO4o2nV8i766ZG2N1X9ycBLe0fhTbXLxHuJnX4Q78oGfbulr-9VOFniK-wc"/>
+</div>
+</div>
+<div class="text-center space-y-2">
+<p class="font-label-bold text-on-surface-variant">GROUP A • JUN 12</p>
+<p class="font-headline-lg">USA vs BRAZIL</p>
+</div>
+<div class="w-full h-1 bg-surface-container rounded-full relative">
+<div class="absolute inset-0 bg-primary w-[65%] rounded-full"></div>
+</div>
+<div class="flex justify-between w-full text-sm font-label-bold">
+<span>Win Prob: 65%</span>
+<span class="text-on-surface-variant">Prizes: 5k SUI</span>
+</div>
+</div>
+<!-- Match Sticker 2 (Shiny Variant) -->
+<div class="sticker-card p-8 rounded-2xl rotate-[1.2deg] flex flex-col items-center gap-6 group cursor-pointer peel-corner shiny-foil">
+<div class="absolute top-2 right-4 bg-yellow-400 text-[10px] px-2 py-1 rounded font-bold">RARE</div>
+<div class="flex items-center gap-4">
+<div class="w-16 h-16 rounded-full shadow-md border-2 border-white overflow-hidden">
+<img alt="France Flag" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAGJxxdVeCOO0UdTTy0SlvuSFkDiAwQtKkUSiGpXzVsFtAzmw-_FH5YAU8fHjqnoWcaUYp1HRv4bChy5y5dOjG0ojySaa_E2Ercjd1Yq2FVikApkgs0k2eZqSHoFfrab1TbMoePM9trP5UxzIG_1OWeQbvfB5VSGdMmgFE8l8olIoA6c-mWC7rMVZGNCrXhONZS4FOCkAoBtCOhvT-Gb2RELfnMuuhvY6ht0_XywJI28TEMHeF2520qCCkbcLTifUx8c1laDrnYytRC"/>
+</div>
+<span class="font-headline-lg">VS</span>
+<div class="w-16 h-16 rounded-full shadow-md border-2 border-white overflow-hidden">
+<img alt="Germany Flag" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBzA90GYqhfsbMao4OtgWBwzhDMdisO7Xbc0hUxU4h2jEUc9e18xs1mRwqNn0h0hyX6RvKun6jtVZJklv6cIp8Mjn2iWQG3q8lKck5egiknI3HEXJ6Y_3onPnLBEVIrOBXcUO_1aMiR0pdHDLm0t3QFNLgI58UUBiEUEr6HgMt42BUHXMKDuUEwqMJuhktmtLHH3QXuZoBXWQcLAOFMcQ3fZAAtV29GtEnSHsLgA4V-gZtHb9MNit5zDk06oUc2pmZ-prYIPifibB5k"/>
+</div>
+</div>
+<div class="text-center space-y-2">
+<p class="font-label-bold text-on-surface-variant">GROUP B • JUN 13</p>
+<p class="font-headline-lg">FRANCE vs GERMANY</p>
+</div>
+<div class="w-full h-1 bg-surface-container rounded-full relative">
+<div class="absolute inset-0 bg-secondary w-[48%] rounded-full"></div>
+</div>
+<div class="flex justify-between w-full text-sm font-label-bold">
+<span>Win Prob: 48%</span>
+<span class="text-on-surface-variant">Prizes: 12k SUI</span>
+</div>
+</div>
+<!-- Match Sticker 3 -->
+<div class="sticker-card p-8 rounded-2xl rotate-[-0.8deg] flex flex-col items-center gap-6 group cursor-pointer peel-corner">
+<div class="flex items-center gap-4">
+<div class="w-16 h-16 rounded-full shadow-md border-2 border-white overflow-hidden">
+<img alt="Argentina Flag" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBoiTZrlxQGb6O--MRNlwj4GfvaTvdf1Bk8KVcjnFGG46SAv-82NisUuQirAeXLn3rMg7xRaxBr-cdtQQNhoLwjNkKIO2qMkR6T-4X4DGotnUAlCYnREBFrr8IZeIWjU1aqgzVsMhvYPUGfcSZ_Nqnyc_HlDo1TlWsmTI4WChEgH8_u-lPtn8W9pT53bVta4IpRXUNm3Aqh1X54dPJszbFKXqKJnwEgTpYwjy38oPfCsuTLYyGWenDx5pne_WjCLxMyDnruWNYi8lYQ"/>
+</div>
+<span class="font-headline-lg">VS</span>
+<div class="w-16 h-16 rounded-full shadow-md border-2 border-white overflow-hidden">
+<img alt="Spain Flag" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBmXjXYpsf4PaASjmAlLrX0yzIbbsPz5atVSy-I3Nj9o9uv8D3QE46OHkhv-dHaYuTSoZZfhMUJYds-RDCHKQsBijQ7wHSOnkzy-b4htaPskt6BWXYKIRkyqnZNTz4DmHHgtZsBAhagP1YoPylS1GhUj2adxWRs4Hl4L8Iz1bwMTcgWUtPxLihbiUzoJHv1ENH3RvwyEnPlYbRF6V4ALw4vDrw9G666eZG9ZBHQFjm9uvr0YLBaU5fxYui98HEN5GMkhD1IZIZvx-9q"/>
+</div>
+</div>
+<div class="text-center space-y-2">
+<p class="font-label-bold text-on-surface-variant">GROUP C • JUN 14</p>
+<p class="font-headline-lg">ARG vs SPAIN</p>
+</div>
+<div class="w-full h-1 bg-surface-container rounded-full relative">
+<div class="absolute inset-0 bg-pitch-green w-[55%] rounded-full"></div>
+</div>
+<div class="flex justify-between w-full text-sm font-label-bold">
+<span>Win Prob: 55%</span>
+<span class="text-on-surface-variant">Prizes: 8k SUI</span>
+</div>
+</div>
+</div>
+</section>
+<!-- CTA Section -->
+<section class="text-center space-y-8 py-20">
+<h2 class="font-headline-xl text-[56px] leading-tight">Ready to start your album?</h2>
+<p class="font-body-lg text-body-lg text-on-surface-variant max-w-2xl mx-auto">
+                Join thousands of collectors already trading on Sui. Limited edition Testnet Genesis packs are still available!
+            </p>
+<div class="flex justify-center gap-6">
+<button class="bg-primary text-white px-12 py-5 rounded-2xl font-headline-lg text-headline-lg shadow-xl hover:scale-110 transition-all rotate-2 active:scale-95">
+                    Mint First Pack
+                </button>
+</div>
+</section>
+</main>
+<!-- Footer -->
+<footer class="bg-surface-container dark:bg-surface-container-lowest border-t border-outline-variant dark:border-outline px-section-padding py-12">
+<div class="max-w-[1440px] mx-auto flex flex-col md:flex-row justify-between items-start gap-sticker-gap">
+<div class="space-y-4 max-w-sm">
+<span class="font-headline-lg text-headline-lg text-on-surface">Sticker Arena</span>
+<p class="font-label-sm text-on-surface-variant">WalCup 26 is a community-driven prediction market built for the 2026 World Cup. All stickers are NFTs on the Sui Network.</p>
+</div>
+<div class="grid grid-cols-2 md:grid-cols-4 gap-12">
+<div class="space-y-4">
+<p class="font-label-bold text-primary">Game</p>
+<div class="flex flex-col gap-2">
+<a class="font-label-sm text-on-surface-variant hover:text-primary transition-colors" href="#">How to Play</a>
+<a class="font-label-sm text-on-surface-variant hover:text-primary transition-colors" href="#">Rarity Guide</a>
+<a class="font-label-sm text-on-surface-variant hover:text-primary transition-colors" href="#">Staking</a>
+</div>
+</div>
+<div class="space-y-4">
+<p class="font-label-bold text-primary">Links</p>
+<div class="flex flex-col gap-2">
+<a class="font-label-sm text-on-surface-variant hover:text-primary transition-colors" href="#">Terms of Service</a>
+<a class="font-label-sm text-on-surface-variant hover:text-primary transition-colors" href="#">Privacy Policy</a>
+<a class="font-label-sm text-on-surface-variant hover:text-primary transition-colors" href="#">Help Center</a>
+<a class="font-label-sm text-on-surface-variant hover:text-primary transition-colors" href="#">Partner Program</a>
+</div>
+</div>
+<div class="space-y-4">
+<p class="font-label-bold text-primary">Social</p>
+<div class="flex flex-col gap-2">
+<a class="font-label-sm text-on-surface-variant hover:text-primary transition-colors" href="#">X / Twitter</a>
+<a class="font-label-sm text-on-surface-variant hover:text-primary transition-colors" href="#">Discord</a>
+<a class="font-label-sm text-on-surface-variant hover:text-primary transition-colors" href="#">Telegram</a>
+</div>
+</div>
+</div>
+</div>
+<div class="max-w-[1440px] mx-auto mt-12 pt-8 border-t border-outline-variant flex flex-col md:flex-row justify-between items-center gap-4">
+<p class="font-label-sm text-on-surface-variant opacity-70">© 2026 Sticker Arena. All Rights Reserved. Not affiliated with FIFA.</p>
+<div class="flex gap-4">
+<div class="w-8 h-8 rounded bg-surface-container-high flex items-center justify-center grayscale hover:grayscale-0 cursor-pointer">
+<img alt="Sui Network Logo" class="w-5 h-5" src="https://lh3.googleusercontent.com/aida-public/AB6AXuD3jlYPSN7rYCEgCx6ChJg7ej4ncFwezMBJ0ssF3VusQpuB5k9B9YteV-gxCPT5kBftF0oFPbaO97ciA2PoaK4_9S7Ouj6MuFQaStjBT8diy1_3JPIrd-Vb657PXBxPv_04wpj6IpTV_mKE6dafMkpTyGCIzBhVGcjnundsTM__Rmvu4d-FVny_aOGAVE7LBOLF7o7q2MScd_yqO7VDWTseurSOpUvdyAyOFusVbvkpEPeKEboeK-d80TJ8rSBTxOJj_uTZUUTChyeA"/>
+</div>
+</div>
+</div>
+</footer>
+<script>
+        // Simple Micro-interactions
+        document.querySelectorAll('.sticker-card').forEach(card => {
+            card.addEventListener('mouseenter', () => {
+                // Potential for adding audio cues like "sticker peel" sound
+            });
+        });
+
+        // Add random slight rotations to sticker-looking elements that don't have them
+        const randomRotations = [-1.5, -1, -0.5, 0.5, 1, 1.5];
+        document.querySelectorAll('.dynamic-tilt').forEach(el => {
+            const rot = randomRotations[Math.floor(Math.random() * randomRotations.length)];
+            el.style.transform = `rotate(${rot}deg)`;
+        });
+    </script>
+</body></html>

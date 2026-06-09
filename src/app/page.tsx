@@ -34,75 +34,74 @@ export default async function HomePage() {
     <div className="space-y-16">
 
       {/* ── HERO ────────────────────────────────────────────────── */}
-      <section className="relative hero-bg rounded-3xl overflow-hidden border border-blue-100">
-        <div className="absolute inset-0 pointer-events-none">
-          <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[600px] bg-blue-400/10 rounded-full blur-3xl" />
-        </div>
-
+      <section className="relative bg-surface-container-low rounded-3xl overflow-hidden border border-outline-variant">
         <div className="relative grid lg:grid-cols-2 items-center gap-0 min-h-[480px]">
           {/* Text side */}
           <div className="px-8 py-12 lg:px-14 space-y-6 z-10">
             <div className="flex items-center gap-2">
-              <span className="pill bg-blue-100 text-blue-700 border border-blue-200">
-                🦭 Walrus Memory
+              <span className="pill bg-secondary-container text-on-secondary-container border border-secondary-container rotate-[-2deg] font-bold text-xs px-4 py-1.5">
+                🔴 LIVE
               </span>
-              <span className="pill bg-green-100 text-green-700 border border-green-200">
+              <span className="pill bg-surface-container text-on-surface-variant border border-outline-variant">
                 Sui Testnet
               </span>
             </div>
 
             <div>
-              <h1 className="text-5xl lg:text-6xl font-black leading-none tracking-tight text-slate-900">
+              <h1 className="text-5xl lg:text-6xl font-black leading-none tracking-tight text-on-surface">
                 Predict.<br />
-                <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-amber-600">
-                  Remember.
+                <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-sky-blue">
+                  Collect.
                 </span><br />
                 Get Roasted.
+                <span className="block text-base font-semibold text-on-surface-variant mt-1 tracking-normal">
+                  powered by Walrus Memory
+                </span>
               </h1>
-              <p className="mt-4 text-slate-600 text-lg leading-relaxed max-w-md">
-                Your FIFA World Cup 2026 predictions stored permanently on the <strong className="text-slate-900">Walrus</strong> decentralized network. The AI agent never forgets.
+              <p className="mt-4 text-on-surface-variant text-lg leading-relaxed max-w-md">
+                FIFA World Cup 2026 prediction arena with an AI agent that <strong className="text-on-surface">remembers everything</strong>. Your picks, opinions, and biases — stored on-chain via <strong className="text-on-surface">Walrus Memory</strong>. Collect stickers. Build your album. The agent evolves with you.
               </p>
             </div>
 
             <div className="flex gap-3 flex-wrap">
               <Link
                 href="/predict"
-                className="inline-flex items-center gap-2 rounded-xl bg-blue-700 px-6 py-3 text-white font-bold hover:bg-blue-800 transition-all hover:scale-105 active:scale-95"
+                className="inline-flex items-center gap-2 bg-primary text-white rounded-xl px-8 py-4 font-bold hover:scale-105 shadow-lg rotate-1 transition-all active:scale-95"
               >
                 ⚽ Make Predictions
               </Link>
               <Link
                 href="/groups"
-                className="inline-flex items-center gap-2 rounded-xl bg-white border border-slate-200 px-6 py-3 text-slate-700 font-semibold hover:border-blue-400 hover:text-blue-700 transition-colors shadow-sm"
+                className="inline-flex items-center gap-2 bg-cyan-500 text-white border-2 border-cyan-500 rounded-xl px-8 py-4 font-bold hover:bg-cyan-600 hover:border-cyan-600 rotate-[-1deg] transition-all shadow-md"
               >
                 View Groups →
               </Link>
             </div>
 
             {/* Mini stats */}
-            <div className="flex gap-6 pt-2">
+            <div className="flex gap-4 pt-2 flex-wrap">
               {[
-                { n: leaderboard.length, label: 'Players' },
+                { n: leaderboard.length, label: 'Players', primary: true },
                 { n: 48, label: 'Teams' },
                 { n: playedCount, label: 'Played' },
                 { n: MATCHES.length, label: 'Matches' },
-              ].map(({ n, label }) => (
-                <div key={label}>
-                  <p className="text-2xl font-black text-wc-gold">{n}</p>
-                  <p className="text-xs text-slate-500">{label}</p>
+              ].map(({ n, label, primary }) => (
+                <div key={label} className="sticker-card sticker-tilt-1 peel-corner rounded-2xl p-6 text-center min-w-[80px]">
+                  <p className={`text-2xl font-black ${primary ? 'text-primary' : 'text-on-surface-variant'}`}>{n}</p>
+                  <p className="text-xs text-on-surface-variant">{label}</p>
                 </div>
               ))}
             </div>
           </div>
 
-          {/* Walrus mascots */}
-          <div className="relative flex items-end justify-center lg:justify-end px-4 pb-0 lg:pb-0 overflow-hidden">
+          {/* WalCup logo */}
+          <div className="relative flex items-center justify-center lg:justify-end px-4 py-8 lg:py-0 overflow-hidden">
             <Image
-              src="/imgs/Hero1.png"
-              alt="WalCup mascots"
-              width={560}
-              height={420}
-              className="float object-contain select-none"
+              src="/imgs/walcup-wal-logo.png"
+              alt="WalCup 26"
+              width={600}
+              height={480}
+              className="float object-contain select-none drop-shadow-2xl"
               priority
             />
           </div>
@@ -110,34 +109,40 @@ export default async function HomePage() {
       </section>
 
       {/* ── HOW IT WORKS ─────────────────────────────────────────── */}
-      <section className="space-y-6">
-        <h2 className="text-2xl font-black text-slate-900 text-center">How WalCup 26 Works</h2>
+      <section className="bg-surface-container rounded-3xl p-12 space-y-6">
+        <h2 className="text-2xl font-black text-on-surface text-center">How It Works</h2>
         <div className="grid sm:grid-cols-3 gap-4">
           {[
             {
-              step: '01',
+              step: 1,
               icon: '🔗',
-              title: 'Connect Wallet',
-              desc: 'Connect your Sui testnet wallet to create your persistent prediction identity on-chain.',
+              title: 'Connect & Collect',
+              desc: 'Link your Sui wallet. Every prediction earns you team stickers for your on-chain album — like Panini, but permanent.',
+              tilt: 'sticker-tilt-1',
+              stepBg: 'bg-primary text-white',
             },
             {
-              step: '02',
+              step: 2,
               icon: '⚽',
-              title: 'Make Predictions',
-              desc: 'Pick winners, predict scores, and share your hot takes. Every opinion is stored encrypted on Walrus.',
+              title: 'Predict & Store',
+              desc: 'Pick winners, predict scores, share hot takes. Each prediction is saved to Walrus Memory — on-chain, forever.',
+              tilt: 'sticker-tilt-2',
+              stepBg: 'bg-secondary-container text-on-secondary-container',
             },
             {
-              step: '03',
+              step: 3,
               icon: '🦭',
-              title: 'Agent Remembers',
-              desc: 'The AI agent recalls your past predictions across sessions — and roasts you based on your patterns.',
+              title: 'Agent Evolves',
+              desc: 'The AI recalls your history across sessions, detects your biases, and roasts your patterns. Day 1 ≠ Day 5.',
+              tilt: 'sticker-tilt-3',
+              stepBg: 'bg-tertiary text-white',
             },
-          ].map(({ step, icon, title, desc }) => (
-            <div key={step} className="card p-6 space-y-3 relative overflow-hidden group hover:shadow-md hover:border-blue-200 transition-all">
-              <div className="absolute top-3 right-4 text-5xl font-black text-slate-100">{step}</div>
+          ].map(({ step, icon, title, desc, tilt, stepBg }) => (
+            <div key={step} className={`sticker-card ${tilt} peel-corner rounded-2xl p-6 space-y-3 relative overflow-hidden group`}>
+              <div className={`inline-flex h-8 w-8 items-center justify-center rounded-full text-sm font-black ${stepBg}`}>{step}</div>
               <div className="text-3xl">{icon}</div>
-              <h3 className="text-lg font-bold text-slate-900">{title}</h3>
-              <p className="text-slate-500 text-sm leading-relaxed">{desc}</p>
+              <h3 className="text-lg font-bold text-on-surface">{title}</h3>
+              <p className="text-on-surface-variant text-sm leading-relaxed">{desc}</p>
             </div>
           ))}
         </div>
@@ -149,14 +154,14 @@ export default async function HomePage() {
         {/* Leaderboard */}
         <div className="lg:col-span-2 space-y-4">
           <div className="flex items-center justify-between">
-            <h2 className="text-2xl font-black text-slate-900">🏆 Leaderboard</h2>
-            <Link href="/users" className="text-sm text-blue-600 hover:underline">
+            <h2 className="text-2xl font-black text-on-surface">🏆 Leaderboard</h2>
+            <Link href="/users" className="text-sm text-primary hover:underline">
               All {leaderboard.length} players →
             </Link>
           </div>
 
           <div className="card overflow-hidden">
-            <div className="grid grid-cols-[44px_1fr_72px_64px_64px] gap-2 px-4 py-2.5 text-[11px] font-bold uppercase tracking-widest text-slate-400 border-b border-slate-100">
+            <div className="grid grid-cols-[44px_1fr_72px_64px_64px] gap-2 px-4 py-2.5 text-[11px] font-bold uppercase tracking-widest text-on-surface-variant border-b border-outline-variant">
               <span>#</span><span>Player</span>
               <span className="text-right">Pts</span>
               <span className="text-right">Correct</span>
@@ -169,7 +174,7 @@ export default async function HomePage() {
                 <Link
                   key={entry.userId}
                   href={`/users/${entry.userId}`}
-                  className="grid grid-cols-[44px_1fr_72px_64px_64px] gap-2 items-center px-4 py-3 border-b border-slate-100 hover:bg-slate-50 transition-colors"
+                  className="grid grid-cols-[44px_1fr_72px_64px_64px] gap-2 items-center px-4 py-3 border-b border-outline-variant hover:bg-surface-container-low transition-colors"
                 >
                   <RankBadge rank={entry.rank} />
 
@@ -180,21 +185,21 @@ export default async function HomePage() {
                         alt={fav}
                         width={22}
                         height={27}
-                        className="rounded-sm border border-slate-200 object-cover flex-shrink-0"
+                        className="rounded-sm border border-outline-variant object-cover flex-shrink-0"
                         onError={() => {}}
                       />
                     ) : (
                       <span className="text-lg w-6 text-center">{entry.avatar}</span>
                     )}
                     <div className="min-w-0">
-                      <p className="font-semibold text-slate-900 text-sm truncate">{entry.username}</p>
-                      {entry.isReal && <span className="text-[10px] text-green-600 font-bold">LIVE</span>}
+                      <p className="font-semibold text-on-surface text-sm truncate">{entry.username}</p>
+                      {entry.isReal && <span className="text-[10px] text-tertiary font-bold">LIVE</span>}
                     </div>
                   </div>
 
-                  <p className="text-right font-black text-wc-gold text-sm">{entry.points}</p>
-                  <p className="text-right text-slate-600 text-sm">{entry.correctWinners}</p>
-                  <p className="text-right text-slate-600 text-sm">{entry.accuracy}%</p>
+                  <p className="text-right font-black text-primary text-sm">{entry.points}</p>
+                  <p className="text-right text-on-surface-variant text-sm">{entry.correctWinners}</p>
+                  <p className="text-right text-on-surface-variant text-sm">{entry.accuracy}%</p>
                 </Link>
               );
             })}
@@ -204,7 +209,7 @@ export default async function HomePage() {
         {/* Right sidebar */}
         <div className="space-y-6">
           {/* Trophy mascot */}
-          <div className="card overflow-hidden border-blue-100 p-0">
+          <div className="sticker-card sticker-tilt-2 rounded-2xl overflow-hidden p-0">
             <Image
               src="/imgs/image2.png"
               alt="WalCup mascots with trophy"
@@ -216,18 +221,18 @@ export default async function HomePage() {
 
           {/* Recent results */}
           <div>
-            <h3 className="text-lg font-bold text-slate-900 mb-3">📋 Latest Results</h3>
+            <h3 className="text-lg font-bold text-on-surface mb-3">📋 Latest Results</h3>
             <div className="space-y-1.5">
               {Object.entries(DEMO_RESULTS).slice(0, 6).map(([id, res]) => {
                 const m = MATCHES.find((x) => x.id === id)!;
                 const home = TEAM_MAP.get(m.homeTeamId);
                 const away = TEAM_MAP.get(m.awayTeamId);
                 return (
-                  <div key={id} className="card flex items-center gap-2 px-3 py-2">
+                  <div key={id} className="sticker-card sticker-tilt-3 rounded-lg flex items-center gap-2 px-3 py-2">
                     <span className="text-sm">{home?.flag}</span>
-                    <span className="text-xs text-slate-500 flex-1 truncate">{home?.code}</span>
-                    <span className="font-black text-slate-900 text-sm tabular-nums">{res.homeScore}–{res.awayScore}</span>
-                    <span className="text-xs text-slate-500 flex-1 text-right truncate">{away?.code}</span>
+                    <span className="text-xs text-on-surface-variant flex-1 truncate">{home?.code}</span>
+                    <span className="font-black text-on-surface text-sm tabular-nums">{res.homeScore}–{res.awayScore}</span>
+                    <span className="text-xs text-on-surface-variant flex-1 text-right truncate">{away?.code}</span>
                     <span className="text-sm">{away?.flag}</span>
                   </div>
                 );
@@ -236,12 +241,12 @@ export default async function HomePage() {
           </div>
 
           {/* Walrus CTA */}
-          <div className="card p-4 bg-purple-50 border-purple-200">
-            <p className="font-bold text-slate-900 text-sm mb-1">🦭 Walrus Memory</p>
-            <p className="text-xs text-slate-500 leading-relaxed">
-              Every prediction is encrypted and stored on the Walrus decentralized network. Query any user's history with semantic search.
+          <div className="sticker-card sticker-tilt-1 rounded-xl p-4" style={{ background: 'rgba(0,74,198,0.05)' }}>
+            <p className="font-bold text-on-surface text-sm mb-1">🦭 Walrus Memory Integration</p>
+            <p className="text-xs text-on-surface-variant leading-relaxed">
+              Predictions stored on Walrus Mainnet. The agent uses semantic search to recall past sessions — your picks shape how it responds over time.
             </p>
-            <Link href="/users" className="mt-3 inline-block text-xs text-blue-600 hover:underline font-semibold">
+            <Link href="/users" className="mt-3 inline-block text-xs text-primary hover:underline font-semibold">
               Query memories →
             </Link>
           </div>
@@ -251,19 +256,20 @@ export default async function HomePage() {
       {/* ── GROUPS PREVIEW ───────────────────────────────────────── */}
       <section className="space-y-6">
         <div className="flex items-center justify-between">
-          <h2 className="text-2xl font-black text-slate-900">Group Stage — 48 Teams</h2>
-          <Link href="/groups" className="text-sm text-blue-600 hover:underline">View all groups →</Link>
+          <h2 className="text-2xl font-black text-on-surface">Group Stage — 48 Teams</h2>
+          <Link href="/groups" className="text-sm text-primary hover:underline">View all groups →</Link>
         </div>
 
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
-          {ALL_GROUPS.slice(0, 6).map((g) => {
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4">
+          {ALL_GROUPS.slice(0, 6).map((g, idx) => {
             const teams = getGroupTeams(g);
+            const tilts = ['sticker-tilt-1', 'sticker-tilt-2', 'sticker-tilt-3', 'sticker-tilt-4', 'sticker-tilt-1', 'sticker-tilt-2'];
             return (
-              <Link key={g} href="/groups" className="card p-3 hover:shadow-md hover:border-blue-200 transition-all group">
-                <p className="text-xs font-black text-wc-gold mb-2">Group {g}</p>
-                <div className="grid grid-cols-2 gap-1.5">
+              <Link key={g} href="/groups" className={`album-page-bg ${tilts[idx % tilts.length]} p-4 hover:scale-105 transition-all group`}>
+                <p className="text-xs font-black text-secondary mb-3 text-center">Group {g}</p>
+                <div className="grid grid-cols-2 gap-2 justify-items-center">
                   {teams.map((t) => (
-                    <TeamSticker key={t.id} teamId={t.id} size="sm" tilt />
+                    <TeamSticker key={t.id} teamId={t.id} size="md" tilt />
                   ))}
                 </div>
               </Link>
@@ -272,7 +278,7 @@ export default async function HomePage() {
         </div>
 
         <div className="flex justify-center">
-          <Link href="/groups" className="card px-6 py-3 text-sm font-semibold text-slate-600 hover:text-slate-900 hover:border-blue-300 hover:shadow-sm transition-all">
+          <Link href="/groups" className="sticker-card rounded-xl px-6 py-3 text-sm font-semibold text-on-surface-variant hover:text-on-surface hover:shadow-md transition-all">
             See all 12 groups with standings →
           </Link>
         </div>
@@ -282,11 +288,11 @@ export default async function HomePage() {
       <section className="relative rounded-2xl overflow-hidden bg-gradient-to-r from-blue-700 to-blue-900 border border-blue-600">
         <div className="grid lg:grid-cols-2 items-center">
           <div className="px-8 py-10 space-y-4">
-            <h2 className="text-3xl font-black text-white">Your memory, on‑chain. Forever.</h2>
+            <h2 className="text-3xl font-black text-white">Persistent memory. On‑chain. Forever.</h2>
             <p className="text-blue-100 leading-relaxed">
-              Connect your Sui wallet and join the prediction arena. The agent tracks every pick you make and builds a profile of your biases — then roasts you accordingly.
+              Every prediction stored on Walrus. The agent builds a genuine profile of your football brain across sessions — your biases, your streaks, your worst takes. Come back tomorrow and it remembers.
             </p>
-            <Link href="/predict" className="inline-flex items-center gap-2 rounded-xl bg-wc-gold text-white px-6 py-3 font-bold hover:opacity-90 transition-opacity">
+            <Link href="/predict" className="inline-flex items-center gap-2 rounded-xl bg-secondary-container text-on-secondary-container px-6 py-3 font-bold hover:opacity-90 transition-opacity">
               Start Predicting →
             </Link>
           </div>

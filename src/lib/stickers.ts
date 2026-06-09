@@ -38,6 +38,16 @@ export const STICKER_MAP: Record<string, string> = {
   UZB: '043_UZBEKISTAN.jpg',
   ALG: '045_ALGERIA.jpg',
   COL: '046_COLOMBIA.jpg',
+  BIH: '049_BOSNIA_AND_HERZEGOVINA.jpg',
+  CIV: '050_IVORY_COAST.jpg',
+  COD: '051_DR_CONGO.jpg',
+  CPV: '052_CAPE_VERDE.jpg',
+  CUW: '053_CURACAO.jpg',
+  HAI: '054_HAITI.jpg',
+  IRQ: '055_IRAQ.jpg',
+  JOR: '056_JORDAN.jpg',
+  QAT: '057_QATAR.jpg',
+  SCO: '058_SCOTLAND.jpg',
 };
 
 export function getStickerPath(teamId: string): string | null {
