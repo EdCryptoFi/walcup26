@@ -6,24 +6,25 @@
 @import '@mysten/dapp-kit/dist/index.css';
 
 :root {
-  --wc-dark:   #080D1A;
-  --wc-card:   #0F1929;
-  --wc-border: #1A2C42;
-  --wc-gold:   #C9A84C;
-  --wc-blue:   #1A56DB;
+  --wc-dark:   #FFFFFF;
+  --wc-card:   #FFFFFF;
+  --wc-border: #E2E8F0;
+  --wc-gold:   #B45309;
+  --wc-blue:   #1D4ED8;
 }
 
 body {
-  background-color: var(--wc-dark);
-  color: #F9FAFB;
+  background-color: #F1F5F9;
+  color: #0F172A;
   font-family: 'Inter', system-ui, sans-serif;
 }
 
 /* ── Utilities ────────────────────────────────────── */
 .card {
-  background: var(--wc-card);
-  border: 1px solid var(--wc-border);
+  background: #FFFFFF;
+  border: 1px solid #E2E8F0;
   border-radius: 0.75rem;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.06);
 }
 
 .pill {
@@ -40,7 +41,7 @@ body {
 .sticker {
   border-radius: 0.5rem;
   border: 3px solid white;
-  box-shadow: 0 3px 12px rgba(0,0,0,0.5);
+  box-shadow: 0 3px 12px rgba(0,0,0,0.25);
   object-fit: cover;
   background: #fff;
 }
@@ -51,31 +52,31 @@ body {
 .sticker-xl  { width: 100px; height: 120px; }
 
 /* ── Chat bubbles ────────────────────────────────── */
-.bubble-user  { background: #1A56DB; border-radius: 1rem 1rem 0 1rem; }
-.bubble-agent { background: #1A2C42; border-radius: 1rem 1rem 1rem 0; border: 1px solid var(--wc-border); }
+.bubble-user  { background: #1D4ED8; border-radius: 1rem 1rem 0 1rem; color: white; }
+.bubble-agent { background: #F1F5F9; border-radius: 1rem 1rem 1rem 0; border: 1px solid #E2E8F0; color: #0F172A; }
 
 /* ── Rank badges ─────────────────────────────────── */
 .rank-1 { background: linear-gradient(135deg, #FFD700, #FFA500); }
 .rank-2 { background: linear-gradient(135deg, #C0C0C0, #A0A0A0); }
 .rank-3 { background: linear-gradient(135deg, #CD7F32, #9A5F24); }
-.rank-n { background: #1A2C42; }
+.rank-n { background: #94A3B8; }
 
 /* ── Hero gradient ───────────────────────────────── */
 .hero-bg {
-  background: radial-gradient(ellipse at 60% 40%, rgba(26,86,219,0.25) 0%, transparent 65%),
-              radial-gradient(ellipse at 20% 80%, rgba(201,168,76,0.15) 0%, transparent 55%),
-              var(--wc-dark);
+  background: radial-gradient(ellipse at 60% 40%, rgba(59,130,246,0.12) 0%, transparent 65%),
+              radial-gradient(ellipse at 20% 80%, rgba(180,83,9,0.08) 0%, transparent 55%),
+              #EFF6FF;
 }
 
 /* ── Scrollbar ───────────────────────────────────── */
 ::-webkit-scrollbar { width: 4px; }
-::-webkit-scrollbar-track { background: var(--wc-dark); }
-::-webkit-scrollbar-thumb { background: var(--wc-border); border-radius: 2px; }
+::-webkit-scrollbar-track { background: #F1F5F9; }
+::-webkit-scrollbar-thumb { background: #CBD5E1; border-radius: 2px; }
 
 /* ── Dapp-kit connect button override ────────────── */
 .wc-connect-btn button,
 [data-dapp-kit] button {
-  background: #1A56DB !important;
+  background: #1D4ED8 !important;
   color: white !important;
   border: none !important;
   border-radius: 0.5rem !important;
@@ -85,7 +86,7 @@ body {
   cursor: pointer !important;
   transition: background 0.2s !important;
 }
-[data-dapp-kit] button:hover { background: #1648c0 !important; }
+[data-dapp-kit] button:hover { background: #1e40af !important; }
 
 /* ── Animations ──────────────────────────────────── */
 @keyframes float {
@@ -100,7 +101,7 @@ body {
   100% { background-position:  200% 0; }
 }
 .shimmer {
-  background: linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.06) 50%, transparent 100%);
+  background: linear-gradient(90deg, transparent 0%, rgba(0,0,0,0.05) 50%, transparent 100%);
   background-size: 200% 100%;
   animation: shimmer 2s infinite;
 }

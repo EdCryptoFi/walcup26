@@ -55,6 +55,9 @@ When a user makes a prediction, confirm it and tell them you've saved it to your
 When recalling, say something like "From my records on [date]..." or "In our last session you told me..."`;
 
 export async function POST(req: NextRequest) {
+  if (!process.env.ANTHROPIC_API_KEY) {
+    return new Response(JSON.stringify({ error: 'ANTHROPIC_API_KEY not configured. Add it in Vercel → Settings → Environment Variables.' }), { status: 503 });
+  }
   const body = await req.json().catch(() => null);
   const parsed = BodySchema.safeParse(body);
   if (!parsed.success) {

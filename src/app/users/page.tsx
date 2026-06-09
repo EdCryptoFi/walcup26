@@ -39,27 +39,27 @@ export default function UsersPage() {
     <div className="space-y-8">
       <div className="flex items-center justify-between flex-wrap gap-3">
         <div>
-          <h1 className="text-3xl font-black text-white">All Players</h1>
-          <p className="text-gray-500 text-sm">{users.length} participants in the prediction pool</p>
+          <h1 className="text-3xl font-black text-slate-900">All Players</h1>
+          <p className="text-slate-500 text-sm">{users.length} participants in the prediction pool</p>
         </div>
-        <Link href="/predict" className="rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-500 transition-colors">
+        <Link href="/predict" className="rounded-lg bg-blue-700 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-800 transition-colors">
           + Join the pool
         </Link>
       </div>
 
       {/* MemWal Query Panel */}
-      <div className="card p-5 bg-gradient-to-br from-blue-950/30 to-purple-950/20 border-blue-800/30">
-        <h2 className="font-bold text-white mb-1 flex items-center gap-2">
+      <div className="card p-5 bg-gradient-to-br from-blue-50 to-purple-50 border-blue-200">
+        <h2 className="font-bold text-slate-900 mb-1 flex items-center gap-2">
           <span>🦭</span> Query Any Player's Walrus Memory
         </h2>
-        <p className="text-xs text-gray-500 mb-4">
+        <p className="text-xs text-slate-500 mb-4">
           All predictions are stored encrypted on Walrus. Run semantic search against any player's history.
         </p>
         <div className="flex flex-col sm:flex-row gap-2">
           <select
             value={queryUserId}
             onChange={(e) => setQueryUserId(e.target.value)}
-            className="bg-wc-dark border border-wc-border rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-blue-500 sm:w-52"
+            className="bg-white border border-slate-200 rounded-lg px-3 py-2 text-sm text-slate-900 focus:outline-none focus:border-blue-400 sm:w-52"
           >
             <option value="">Select player…</option>
             {users.map((u) => (
@@ -72,13 +72,13 @@ export default function UsersPage() {
             value={queryText}
             onChange={(e) => setQueryText(e.target.value)}
             placeholder='e.g. "Brazil predictions", "high confidence", "Group C"'
-            className="flex-1 bg-wc-dark border border-wc-border rounded-lg px-3 py-2 text-sm text-white placeholder-gray-700 focus:outline-none focus:border-blue-500"
+            className="flex-1 bg-white border border-slate-200 rounded-lg px-3 py-2 text-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:border-blue-400"
             onKeyDown={(e) => e.key === 'Enter' && handleQuery()}
           />
           <button
             onClick={handleQuery}
             disabled={querying || !queryUserId || !queryText}
-            className="rounded-lg bg-blue-600 px-5 py-2 text-sm font-semibold text-white hover:bg-blue-500 disabled:opacity-40 transition-colors"
+            className="rounded-lg bg-blue-700 px-5 py-2 text-sm font-semibold text-white hover:bg-blue-800 disabled:opacity-40 transition-colors"
           >
             {querying ? '…' : 'Recall'}
           </button>
@@ -86,16 +86,16 @@ export default function UsersPage() {
 
         {queryResult && (
           <div className="mt-4 space-y-2">
-            <p className="text-xs text-gray-600">
-              {queryResult.total} memories · <strong className="text-white">{queryResult.username}</strong> · "{queryResult.query}"
+            <p className="text-xs text-slate-500">
+              {queryResult.total} memories · <strong className="text-slate-900">{queryResult.username}</strong> · "{queryResult.query}"
             </p>
             {queryResult.results.length === 0 ? (
-              <p className="text-sm text-gray-600 italic py-2">No matching memories found.</p>
+              <p className="text-sm text-slate-400 italic py-2">No matching memories found.</p>
             ) : (
               queryResult.results.map((r, i) => (
-                <div key={i} className="rounded-xl bg-wc-dark border border-wc-border/50 p-3 text-sm text-gray-300">
+                <div key={i} className="rounded-xl bg-white border border-slate-200 p-3 text-sm text-slate-700 shadow-sm">
                   <p className="leading-relaxed">{r.text}</p>
-                  <div className="flex items-center gap-4 mt-1.5 text-xs text-gray-600">
+                  <div className="flex items-center gap-4 mt-1.5 text-xs text-slate-400">
                     <span>Relevance {((1 - r.distance) * 100).toFixed(0)}%</span>
                     <span className="font-mono truncate">blob: {r.blobId.slice(0, 20)}…</span>
                   </div>
@@ -112,7 +112,7 @@ export default function UsersPage() {
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           placeholder="Search player…"
-          className="bg-wc-card border border-wc-border rounded-lg px-3 py-2 text-sm text-white placeholder-gray-600 focus:outline-none focus:border-blue-500 w-44"
+          className="bg-white border border-slate-200 rounded-lg px-3 py-2 text-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:border-blue-400 w-44"
         />
         <div className="flex gap-1">
           {(['all', 'real', 'seeded'] as const).map((f) => (
@@ -120,14 +120,14 @@ export default function UsersPage() {
               key={f}
               onClick={() => setFilter(f)}
               className={`rounded-full px-3 py-1.5 text-xs font-semibold transition-colors capitalize ${
-                filter === f ? 'bg-blue-600 text-white' : 'bg-wc-card border border-wc-border text-gray-400 hover:text-white'
+                filter === f ? 'bg-blue-700 text-white' : 'bg-white border border-slate-200 text-slate-500 hover:text-slate-900 hover:border-blue-300'
               }`}
             >
               {f === 'real' ? '⚡ Live' : f === 'seeded' ? '🤖 Simulated' : 'All'}
             </button>
           ))}
         </div>
-        <p className="ml-auto text-xs text-gray-600">{filtered.length} shown</p>
+        <p className="ml-auto text-xs text-slate-400">{filtered.length} shown</p>
       </div>
 
       {/* Grid */}
@@ -141,7 +141,7 @@ export default function UsersPage() {
             <Link
               key={user.id}
               href={`/users/${user.id}`}
-              className="card p-4 hover:border-blue-700/50 transition-all group hover:scale-[1.01]"
+              className="card p-4 hover:border-blue-300 hover:shadow-sm transition-all group"
             >
               <div className="flex items-start gap-3">
                 {user.favoriteTeam ? (
@@ -152,19 +152,19 @@ export default function UsersPage() {
 
                 <div className="min-w-0 flex-1">
                   <div className="flex items-center gap-2 flex-wrap">
-                    <p className="font-bold text-white truncate group-hover:text-blue-400 transition-colors">
+                    <p className="font-bold text-slate-900 truncate group-hover:text-blue-700 transition-colors">
                       {user.username}
                     </p>
                     {user.isReal && (
-                      <span className="pill bg-green-900/50 text-green-400 border border-green-700/30 text-[10px]">LIVE</span>
+                      <span className="pill bg-green-100 text-green-700 border border-green-200 text-[10px]">LIVE</span>
                     )}
                   </div>
                   <div className="flex items-center gap-3 mt-1.5">
                     <span className="text-lg font-black text-wc-gold">{user.stats.points} pts</span>
-                    <span className="text-xs text-gray-600">{user.stats.correctWinners}/{user.stats.totalPredictions} correct</span>
+                    <span className="text-xs text-slate-500">{user.stats.correctWinners}/{user.stats.totalPredictions} correct</span>
                   </div>
                   {user.detectedBiases && user.detectedBiases.length > 0 && (
-                    <p className="text-xs text-amber-500/60 mt-1 truncate">⚠ {user.detectedBiases[0]}</p>
+                    <p className="text-xs text-amber-600 mt-1 truncate">⚠ {user.detectedBiases[0]}</p>
                   )}
                 </div>
               </div>

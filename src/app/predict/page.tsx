@@ -33,7 +33,6 @@ function PredictContent() {
   const searchParams = useSearchParams();
   const account = useCurrentAccount();
 
-  // Identity: wallet takes priority, then ?userId param, then manual entry
   const walletUserId = account ? `sui-${account.address.slice(2, 10)}` : null;
   const walletUsername = account ? `${account.address.slice(0, 6)}…${account.address.slice(-4)}` : null;
 
@@ -53,11 +52,17 @@ function PredictContent() {
   const [saving, setSaving] = useState(false);
   const [savedCount, setSavedCount] = useState(0);
   const [lastSaved, setLastSaved] = useState('');
+  const [agentError, setAgentError] = useState('');
   const bottomRef = useRef<HTMLDivElement>(null);
 
   const { messages, input, handleInputChange, handleSubmit, isLoading } = useChat({
     api: '/api/agent',
     body: { userId, username },
+    onError: (err) => {
+      setAgentError(err.message.includes('503') || err.message.includes('ANTHROPIC')
+        ? 'Agent offline — ANTHROPIC_API_KEY not configured in Vercel env vars.'
+        : `Agent error: ${err.message}`);
+    },
   });
 
   useEffect(() => {
@@ -112,8 +117,8 @@ function PredictContent() {
       <div className="max-w-md mx-auto mt-16 space-y-6">
         <div className="text-center space-y-4">
           <Image src="/imgs/Hero1.png" alt="WalCup" width={340} height={260} className="mx-auto" />
-          <h1 className="text-3xl font-black text-white">Enter the Arena</h1>
-          <p className="text-gray-400">Connect your Sui wallet or choose a username to start predicting.</p>
+          <h1 className="text-3xl font-black text-slate-900">Enter the Arena</h1>
+          <p className="text-slate-500">Connect your Sui wallet or choose a username to start predicting.</p>
         </div>
 
         <div className="card p-6 space-y-4">
@@ -121,9 +126,9 @@ function PredictContent() {
             <ConnectButton connectText="Connect Sui Wallet (Recommended)" />
           </div>
           <div className="flex items-center gap-3">
-            <div className="flex-1 h-px bg-wc-border" />
-            <span className="text-xs text-gray-600">or</span>
-            <div className="flex-1 h-px bg-wc-border" />
+            <div className="flex-1 h-px bg-slate-200" />
+            <span className="text-xs text-slate-400">or</span>
+            <div className="flex-1 h-px bg-slate-200" />
           </div>
           <form onSubmit={handleManualLogin} className="flex gap-2">
             <input
@@ -131,14 +136,14 @@ function PredictContent() {
               onChange={(e) => setManualUsername(e.target.value)}
               placeholder="Choose a username"
               maxLength={30}
-              className="flex-1 bg-wc-dark border border-wc-border rounded-lg px-3 py-2 text-white text-sm placeholder-gray-600 focus:outline-none focus:border-blue-500"
+              className="flex-1 bg-white border border-slate-200 rounded-lg px-3 py-2 text-slate-900 text-sm placeholder-slate-400 focus:outline-none focus:border-blue-400"
             />
-            <button type="submit" className="rounded-lg bg-wc-card border border-wc-border px-4 py-2 text-sm font-semibold text-white hover:border-blue-500 transition-colors">
+            <button type="submit" className="rounded-lg bg-white border border-slate-200 px-4 py-2 text-sm font-semibold text-slate-700 hover:border-blue-400 hover:text-blue-700 transition-colors">
               Go
             </button>
           </form>
         </div>
-        <p className="text-xs text-gray-600 text-center">Sui Testnet · No real funds needed</p>
+        <p className="text-xs text-slate-400 text-center">Sui Testnet · No real funds needed</p>
       </div>
     );
   }
@@ -150,16 +155,16 @@ function PredictContent() {
       <div className="lg:col-span-2 space-y-4">
         <div className="card p-5">
           <div className="flex items-center justify-between mb-4">
-            <h2 className="font-bold text-white">Make a Prediction</h2>
+            <h2 className="font-bold text-slate-900">Make a Prediction</h2>
             {savedCount > 0 && (
-              <span className="pill bg-green-900/50 text-green-400 border border-green-700/30">
+              <span className="pill bg-green-100 text-green-700 border border-green-200">
                 {savedCount} saved 🦭
               </span>
             )}
           </div>
 
           {/* Match selector */}
-          <label className="block text-xs text-gray-500 mb-1.5">Select match</label>
+          <label className="block text-xs text-slate-500 mb-1.5">Select match</label>
           <select
             value={selectedMatch.id}
             onChange={(e) => {
@@ -167,7 +172,7 @@ function PredictContent() {
               setSelectedMatch(m);
               setWinner('');
             }}
-            className="w-full bg-wc-dark border border-wc-border rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-blue-500 mb-5"
+            className="w-full bg-white border border-slate-200 rounded-lg px-3 py-2 text-sm text-slate-900 focus:outline-none focus:border-blue-400 mb-5"
           >
             {MATCHES.map((m) => (
               <option key={m.id} value={m.id}>
@@ -177,7 +182,7 @@ function PredictContent() {
           </select>
 
           {/* Team sticker picker */}
-          <label className="block text-xs text-gray-500 mb-3">Who wins?</label>
+          <label className="block text-xs text-slate-500 mb-3">Who wins?</label>
           <div className="grid grid-cols-3 gap-3 mb-5">
             {/* Home team */}
             <button
@@ -185,12 +190,12 @@ function PredictContent() {
               onClick={() => setWinner(selectedMatch.home)}
               className={`flex flex-col items-center gap-2 rounded-xl p-3 transition-all border-2 ${
                 winner === selectedMatch.home
-                  ? 'border-blue-500 bg-blue-900/30 scale-105'
-                  : 'border-wc-border hover:border-blue-600/50 bg-wc-dark'
+                  ? 'border-blue-500 bg-blue-50 scale-105 shadow-md'
+                  : 'border-slate-200 hover:border-blue-300 bg-slate-50 hover:bg-white'
               }`}
             >
               <TeamSticker teamId={selectedMatch.home} size="md" tilt />
-              <span className="text-xs font-semibold text-gray-200 truncate w-full text-center">
+              <span className="text-xs font-semibold text-slate-700 truncate w-full text-center">
                 {selectedMatch.homeName}
               </span>
             </button>
@@ -201,12 +206,12 @@ function PredictContent() {
               onClick={() => setWinner('draw')}
               className={`flex flex-col items-center justify-center gap-2 rounded-xl p-3 transition-all border-2 ${
                 winner === 'draw'
-                  ? 'border-blue-500 bg-blue-900/30 scale-105'
-                  : 'border-wc-border hover:border-blue-600/50 bg-wc-dark'
+                  ? 'border-blue-500 bg-blue-50 scale-105 shadow-md'
+                  : 'border-slate-200 hover:border-blue-300 bg-slate-50 hover:bg-white'
               }`}
             >
               <span className="text-3xl">🤝</span>
-              <span className="text-xs font-semibold text-gray-200">Draw</span>
+              <span className="text-xs font-semibold text-slate-700">Draw</span>
             </button>
 
             {/* Away team */}
@@ -215,12 +220,12 @@ function PredictContent() {
               onClick={() => setWinner(selectedMatch.away)}
               className={`flex flex-col items-center gap-2 rounded-xl p-3 transition-all border-2 ${
                 winner === selectedMatch.away
-                  ? 'border-blue-500 bg-blue-900/30 scale-105'
-                  : 'border-wc-border hover:border-blue-600/50 bg-wc-dark'
+                  ? 'border-blue-500 bg-blue-50 scale-105 shadow-md'
+                  : 'border-slate-200 hover:border-blue-300 bg-slate-50 hover:bg-white'
               }`}
             >
               <TeamSticker teamId={selectedMatch.away} size="md" tilt />
-              <span className="text-xs font-semibold text-gray-200 truncate w-full text-center">
+              <span className="text-xs font-semibold text-slate-700 truncate w-full text-center">
                 {selectedMatch.awayName}
               </span>
             </button>
@@ -229,40 +234,40 @@ function PredictContent() {
           <form onSubmit={handleSavePrediction} className="space-y-4">
             {/* Score */}
             <div>
-              <label className="block text-xs text-gray-500 mb-1.5">Score prediction <span className="text-wc-gold">+2 pts bonus</span></label>
+              <label className="block text-xs text-slate-500 mb-1.5">Score prediction <span className="text-wc-gold font-bold">+2 pts bonus</span></label>
               <div className="flex items-center gap-2">
                 <input
                   type="number" min="0" max="20" value={homeScore}
                   onChange={(e) => setHomeScore(e.target.value)}
                   placeholder="0"
-                  className="w-14 bg-wc-dark border border-wc-border rounded-lg px-2 py-2 text-center text-white focus:outline-none focus:border-blue-500"
+                  className="w-14 bg-white border border-slate-200 rounded-lg px-2 py-2 text-center text-slate-900 focus:outline-none focus:border-blue-400"
                 />
-                <span className="text-gray-500 font-bold text-lg">–</span>
+                <span className="text-slate-400 font-bold text-lg">–</span>
                 <input
                   type="number" min="0" max="20" value={awayScore}
                   onChange={(e) => setAwayScore(e.target.value)}
                   placeholder="0"
-                  className="w-14 bg-wc-dark border border-wc-border rounded-lg px-2 py-2 text-center text-white focus:outline-none focus:border-blue-500"
+                  className="w-14 bg-white border border-slate-200 rounded-lg px-2 py-2 text-center text-slate-900 focus:outline-none focus:border-blue-400"
                 />
               </div>
             </div>
 
             {/* Confidence */}
             <div>
-              <label className="block text-xs text-gray-500 mb-1.5">
-                Confidence: <span className="text-white font-bold">{['', '😐', '🤔', '🙂', '😎', '🔥'][confidence]}</span> {confidence}/5
+              <label className="block text-xs text-slate-500 mb-1.5">
+                Confidence: <span className="text-slate-900 font-bold">{['', '😐', '🤔', '🙂', '😎', '🔥'][confidence]}</span> {confidence}/5
               </label>
               <input
                 type="range" min="1" max="5" value={confidence}
                 onChange={(e) => setConfidence(Number(e.target.value))}
-                className="w-full accent-blue-500"
+                className="w-full accent-blue-600"
               />
             </div>
 
             {/* Opinion */}
             <div>
-              <label className="block text-xs text-gray-500 mb-1.5">
-                Your take <span className="text-gray-600">(stored on Walrus forever)</span>
+              <label className="block text-xs text-slate-500 mb-1.5">
+                Your take <span className="text-slate-400">(stored on Walrus forever)</span>
               </label>
               <textarea
                 value={opinion}
@@ -270,27 +275,27 @@ function PredictContent() {
                 placeholder="Why? The agent will remember your reasoning across sessions..."
                 rows={2}
                 maxLength={300}
-                className="w-full bg-wc-dark border border-wc-border rounded-lg px-3 py-2 text-sm text-white placeholder-gray-700 focus:outline-none focus:border-blue-500 resize-none"
+                className="w-full bg-white border border-slate-200 rounded-lg px-3 py-2 text-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:border-blue-400 resize-none"
               />
             </div>
 
             <button
               type="submit"
               disabled={!winner || saving}
-              className="w-full rounded-xl bg-blue-600 px-4 py-3 font-bold text-white hover:bg-blue-500 disabled:opacity-40 disabled:cursor-not-allowed transition-all active:scale-98"
+              className="w-full rounded-xl bg-blue-700 px-4 py-3 font-bold text-white hover:bg-blue-800 disabled:opacity-40 disabled:cursor-not-allowed transition-all active:scale-98"
             >
               {saving ? '🦭 Saving to Walrus...' : '🦭 Save to Walrus Memory'}
             </button>
 
             {lastSaved && (
-              <p className="text-xs text-green-400 text-center font-mono">{lastSaved}</p>
+              <p className="text-xs text-green-600 text-center font-mono">{lastSaved}</p>
             )}
           </form>
         </div>
 
         {/* Points guide */}
-        <div className="card p-4 text-xs space-y-2">
-          <p className="font-bold text-gray-200 mb-1">🏆 Points System</p>
+        <div className="card p-4 text-xs space-y-2 bg-amber-50 border-amber-200">
+          <p className="font-bold text-slate-900 mb-1">🏆 Points System</p>
           {[
             ['Correct winner (group)', '3 pts'],
             ['Exact score bonus', '+2 pts'],
@@ -298,7 +303,7 @@ function PredictContent() {
             ['Tournament champion', '10 pts'],
           ].map(([label, pts]) => (
             <div key={label} className="flex justify-between">
-              <span className="text-gray-500">{label}</span>
+              <span className="text-slate-500">{label}</span>
               <span className="text-wc-gold font-bold">{pts}</span>
             </div>
           ))}
@@ -307,25 +312,31 @@ function PredictContent() {
 
       {/* RIGHT: AI Agent Chat */}
       <div className="lg:col-span-3 card flex flex-col" style={{ height: 640 }}>
-        <div className="px-4 py-3 border-b border-wc-border flex items-center gap-3 flex-shrink-0">
+        <div className="px-4 py-3 border-b border-slate-100 flex items-center gap-3 flex-shrink-0 bg-slate-50 rounded-t-xl">
           <span className="text-2xl">🦭</span>
           <div className="flex-1">
-            <p className="font-bold text-white text-sm">WalCup Agent</p>
-            <p className="text-xs text-gray-500">
+            <p className="font-bold text-slate-900 text-sm">WalCup Agent</p>
+            <p className="text-xs text-slate-500">
               Remembers across sessions · Walrus Memory
             </p>
           </div>
-          <span className="pill bg-blue-900/50 text-blue-300 border border-blue-700/30 font-mono text-[10px]">
+          <span className="pill bg-blue-100 text-blue-700 border border-blue-200 font-mono text-[10px]">
             {username}
           </span>
         </div>
+
+        {agentError && (
+          <div className="mx-4 mt-3 p-3 rounded-lg bg-red-50 border border-red-200 text-xs text-red-600">
+            ⚠ {agentError}
+          </div>
+        )}
 
         <div className="flex-1 overflow-y-auto p-4 space-y-4 min-h-0">
           {messages.length === 0 && (
             <div className="flex flex-col items-center text-center py-8 space-y-4">
               <Image src="/imgs/image1.png" alt="walrus" width={220} height={160} className="opacity-80" />
-              <p className="text-gray-400 text-sm max-w-xs">
-                Hey <strong className="text-white">{username}</strong>! I'm your WalCup agent.
+              <p className="text-slate-500 text-sm max-w-xs">
+                Hey <strong className="text-slate-900">{username}</strong>! I'm your WalCup agent.
                 I remember <em>everything</em> — across sessions, on Walrus.
               </p>
               <div className="flex flex-wrap gap-2 justify-center">
@@ -341,7 +352,7 @@ function PredictContent() {
                       const ev = { target: { value: s } } as React.ChangeEvent<HTMLInputElement>;
                       handleInputChange(ev);
                     }}
-                    className="rounded-full bg-wc-card border border-wc-border px-3 py-1.5 text-xs text-gray-400 hover:text-white hover:border-blue-600 transition-colors"
+                    className="rounded-full bg-white border border-slate-200 px-3 py-1.5 text-xs text-slate-600 hover:text-blue-700 hover:border-blue-300 transition-colors shadow-sm"
                   >
                     {s}
                   </button>
@@ -353,7 +364,7 @@ function PredictContent() {
           {messages.map((m) => (
             <div key={m.id} className={`flex ${m.role === 'user' ? 'justify-end' : 'justify-start'}`}>
               {m.role === 'assistant' && <span className="text-lg mr-2 flex-shrink-0 self-end">🦭</span>}
-              <div className={`max-w-[85%] px-4 py-3 text-sm leading-relaxed ${m.role === 'user' ? 'bubble-user text-white' : 'bubble-agent text-gray-200'}`}>
+              <div className={`max-w-[85%] px-4 py-3 text-sm leading-relaxed ${m.role === 'user' ? 'bubble-user' : 'bubble-agent'}`}>
                 <p className="whitespace-pre-wrap">{m.content}</p>
               </div>
             </div>
@@ -362,7 +373,7 @@ function PredictContent() {
           {isLoading && (
             <div className="flex justify-start gap-2">
               <span className="text-lg">🦭</span>
-              <div className="bubble-agent px-4 py-3 text-sm text-gray-500">
+              <div className="bubble-agent px-4 py-3 text-sm text-slate-400">
                 <span className="animate-pulse">thinking…</span>
               </div>
             </div>
@@ -370,17 +381,17 @@ function PredictContent() {
           <div ref={bottomRef} />
         </div>
 
-        <form onSubmit={handleSubmit} className="px-4 py-3 border-t border-wc-border flex gap-2 flex-shrink-0">
+        <form onSubmit={handleSubmit} className="px-4 py-3 border-t border-slate-100 flex gap-2 flex-shrink-0">
           <input
             value={input}
             onChange={handleInputChange}
             placeholder="Ask about picks, results, biases, roasts…"
-            className="flex-1 bg-wc-dark border border-wc-border rounded-lg px-3 py-2 text-sm text-white placeholder-gray-600 focus:outline-none focus:border-blue-500"
+            className="flex-1 bg-white border border-slate-200 rounded-lg px-3 py-2 text-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:border-blue-400"
           />
           <button
             type="submit"
             disabled={isLoading || !input.trim()}
-            className="rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-500 disabled:opacity-40 transition-colors"
+            className="rounded-lg bg-blue-700 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-800 disabled:opacity-40 transition-colors"
           >
             Send
           </button>
@@ -392,7 +403,7 @@ function PredictContent() {
 
 export default function PredictPage() {
   return (
-    <Suspense fallback={<div className="text-gray-500 text-center py-20">Loading…</div>}>
+    <Suspense fallback={<div className="text-slate-400 text-center py-20">Loading…</div>}>
       <PredictContent />
     </Suspense>
   );

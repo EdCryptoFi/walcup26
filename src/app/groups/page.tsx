@@ -32,22 +32,22 @@ function GroupCard({ group }: { group: Group }) {
   const playedMatches = matches.filter((m) => DEMO_RESULTS[m.id]);
 
   return (
-    <div className="card overflow-hidden hover:border-blue-800/40 transition-colors">
-      <div className="px-4 py-3 bg-gradient-to-r from-blue-950/50 to-transparent border-b border-wc-border flex items-center justify-between">
-        <h3 className="font-black text-wc-gold text-lg">Group {group}</h3>
-        <span className="text-xs text-gray-600">{playedMatches.length}/{matches.length}</span>
+    <div className="card overflow-hidden hover:shadow-md transition-shadow">
+      <div className="px-5 py-4 bg-gradient-to-r from-blue-50 to-transparent border-b border-slate-100 flex items-center justify-between">
+        <h3 className="font-black text-wc-gold text-xl">Group {group}</h3>
+        <span className="text-xs text-slate-400">{playedMatches.length}/{matches.length} played</span>
       </div>
 
-      {/* Sticker row */}
-      <div className="flex items-center justify-around px-3 pt-3 pb-1">
+      {/* Sticker row — larger with 2-col layout */}
+      <div className="flex items-end justify-around px-4 pt-5 pb-3 gap-2">
         {teams.map((t) => (
-          <TeamSticker key={t.id} teamId={t.id} size="md" tilt showName />
+          <TeamSticker key={t.id} teamId={t.id} size="lg" tilt showName />
         ))}
       </div>
 
       {/* Standings */}
-      <div className="px-3 py-2">
-        <div className="grid grid-cols-[1fr_20px_20px_20px_20px_28px] gap-1 text-[10px] text-gray-600 px-1 mb-1 font-bold uppercase">
+      <div className="px-4 py-3">
+        <div className="grid grid-cols-[1fr_24px_24px_24px_24px_32px] gap-1 text-[11px] text-slate-400 px-1 mb-1.5 font-bold uppercase">
           <span>Team</span>
           <span className="text-center">P</span>
           <span className="text-center">W</span>
@@ -61,18 +61,18 @@ function GroupCard({ group }: { group: Group }) {
           return (
             <div
               key={s.teamId}
-              className={`grid grid-cols-[1fr_20px_20px_20px_20px_28px] gap-1 items-center text-xs px-1 py-1.5 rounded ${advancing ? 'bg-green-950/30' : ''}`}
+              className={`grid grid-cols-[1fr_24px_24px_24px_24px_32px] gap-1 items-center text-sm px-1 py-2 rounded-lg ${advancing ? 'bg-green-50' : ''}`}
             >
-              <div className="flex items-center gap-1.5 min-w-0">
-                {advancing && <span className="w-0.5 h-3.5 bg-green-500 rounded-full flex-shrink-0" />}
-                <span className="text-sm">{team?.flag}</span>
-                <span className={`truncate font-medium ${advancing ? 'text-white' : 'text-gray-400'}`}>{team?.code}</span>
+              <div className="flex items-center gap-2 min-w-0">
+                {advancing && <span className="w-1 h-4 bg-green-500 rounded-full flex-shrink-0" />}
+                <span className="text-base">{team?.flag}</span>
+                <span className={`truncate font-semibold ${advancing ? 'text-slate-900' : 'text-slate-500'}`}>{team?.code}</span>
               </div>
-              <span className="text-center text-gray-500">{s.played}</span>
-              <span className="text-center text-gray-300">{s.won}</span>
-              <span className="text-center text-gray-400">{s.drawn}</span>
-              <span className="text-center text-gray-400">{s.lost}</span>
-              <span className="text-center font-black text-wc-gold">{s.pts}</span>
+              <span className="text-center text-slate-400">{s.played}</span>
+              <span className="text-center text-slate-700">{s.won}</span>
+              <span className="text-center text-slate-500">{s.drawn}</span>
+              <span className="text-center text-slate-500">{s.lost}</span>
+              <span className="text-center font-black text-wc-gold text-base">{s.pts}</span>
             </div>
           );
         })}
@@ -80,16 +80,16 @@ function GroupCard({ group }: { group: Group }) {
 
       {/* Results */}
       {playedMatches.length > 0 && (
-        <div className="border-t border-wc-border px-3 py-2 space-y-1">
+        <div className="border-t border-slate-100 px-4 py-3 space-y-1.5">
           {playedMatches.map((m) => {
             const home = TEAM_MAP.get(m.homeTeamId);
             const away = TEAM_MAP.get(m.awayTeamId);
             const res = DEMO_RESULTS[m.id];
             return (
-              <div key={m.id} className="flex items-center text-xs gap-1">
-                <span className="flex-1 text-gray-500 truncate">{home?.flag} {home?.code}</span>
-                <span className="font-black text-white tabular-nums px-1">{res.homeScore}–{res.awayScore}</span>
-                <span className="flex-1 text-right text-gray-500 truncate">{away?.code} {away?.flag}</span>
+              <div key={m.id} className="flex items-center text-sm gap-2 bg-slate-50 rounded-lg px-2 py-1.5">
+                <span className="flex-1 text-slate-500 truncate">{home?.flag} {home?.code}</span>
+                <span className="font-black text-slate-900 tabular-nums px-2">{res.homeScore}–{res.awayScore}</span>
+                <span className="flex-1 text-right text-slate-500 truncate">{away?.code} {away?.flag}</span>
               </div>
             );
           })}
@@ -104,26 +104,26 @@ export default function GroupsPage() {
     <div className="space-y-6">
       <div className="flex items-center justify-between flex-wrap gap-3">
         <div>
-          <h1 className="text-3xl font-black text-white">Group Stage</h1>
-          <p className="text-gray-500 text-sm mt-0.5">48 teams · 12 groups · June 11–27, 2026</p>
+          <h1 className="text-3xl font-black text-slate-900">Group Stage</h1>
+          <p className="text-slate-500 text-sm mt-0.5">48 teams · 12 groups · June 11–27, 2026</p>
         </div>
-        <div className="flex gap-3 text-xs text-gray-500 items-center">
+        <div className="flex gap-3 text-xs text-slate-500 items-center">
           <span className="flex items-center gap-1.5">
             <span className="w-2 h-2 bg-green-500 rounded-full" />
             Advances to Round of 32
           </span>
-          <Link href="/predict" className="rounded-lg bg-blue-600 px-4 py-2 text-white font-semibold text-xs hover:bg-blue-500 transition-colors">
+          <Link href="/predict" className="rounded-lg bg-blue-700 px-4 py-2 text-white font-semibold text-xs hover:bg-blue-800 transition-colors">
             Make Predictions →
           </Link>
         </div>
       </div>
 
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+      <div className="grid gap-6 sm:grid-cols-2">
         {ALL_GROUPS.map((g) => <GroupCard key={g} group={g} />)}
       </div>
 
-      <div className="card p-4 text-sm text-gray-400 bg-blue-950/10 border-blue-800/20">
-        <strong className="text-white">Format:</strong> Top 2 from each group + 8 best 3rd-place teams → Round of 32 (40 teams total). 72 group stage matches across USA, Canada, and Mexico.
+      <div className="card p-4 text-sm text-slate-500 bg-blue-50 border-blue-200">
+        <strong className="text-slate-900">Format:</strong> Top 2 from each group + 8 best 3rd-place teams → Round of 32 (40 teams total). 72 group stage matches across USA, Canada, and Mexico.
       </div>
     </div>
   );

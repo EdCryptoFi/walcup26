@@ -20,8 +20,8 @@ function StatCard({ label, value, sub }: { label: string; value: string | number
   return (
     <div className="card px-4 py-3 text-center">
       <p className="text-2xl font-black text-wc-gold">{value}</p>
-      <p className="text-xs text-gray-400 mt-0.5">{label}</p>
-      {sub && <p className="text-xs text-gray-600 mt-0.5">{sub}</p>}
+      <p className="text-xs text-slate-500 mt-0.5">{label}</p>
+      {sub && <p className="text-xs text-slate-400 mt-0.5">{sub}</p>}
     </div>
   );
 }
@@ -62,33 +62,33 @@ export default async function UserProfilePage({ params }: { params: Promise<{ id
           <span className="text-6xl">{user.avatar}</span>
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-3 flex-wrap">
-              <h1 className="text-3xl font-black text-white">{user.username}</h1>
+              <h1 className="text-3xl font-black text-slate-900">{user.username}</h1>
               {user.isReal ? (
-                <span className="pill bg-green-900/50 text-green-400">LIVE — Walrus Memory</span>
+                <span className="pill bg-green-100 text-green-700 border border-green-200">LIVE — Walrus Memory</span>
               ) : (
-                <span className="pill bg-gray-800 text-gray-400">Simulated</span>
+                <span className="pill bg-slate-100 text-slate-500 border border-slate-200">Simulated</span>
               )}
             </div>
             {user.favoriteTeam && (
-              <p className="text-gray-400 mt-1">
+              <p className="text-slate-500 mt-1">
                 {TEAM_MAP.get(user.favoriteTeam)?.flag} Supports {TEAM_MAP.get(user.favoriteTeam)?.name ?? user.favoriteTeam}
               </p>
             )}
-            <p className="text-xs text-gray-600 mt-1">
+            <p className="text-xs text-slate-400 mt-1">
               Joined {new Date(user.joinedAt).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}
-              {' · '}Namespace: <code className="text-gray-500">{user.memwalNamespace}</code>
+              {' · '}Namespace: <code className="text-blue-600">{user.memwalNamespace}</code>
             </p>
             {user.detectedBiases && user.detectedBiases.length > 0 && (
               <div className="mt-3 flex flex-wrap gap-2">
                 {user.detectedBiases.map((b) => (
-                  <span key={b} className="pill bg-amber-950/50 text-amber-400">⚠ {b}</span>
+                  <span key={b} className="pill bg-amber-100 text-amber-700 border border-amber-200">⚠ {b}</span>
                 ))}
               </div>
             )}
           </div>
           <Link
             href={`/predict?userId=${user.id}&username=${encodeURIComponent(user.username)}`}
-            className="rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-500 transition-colors"
+            className="rounded-lg bg-blue-700 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-800 transition-colors"
           >
             Chat with agent
           </Link>
@@ -104,65 +104,65 @@ export default async function UserProfilePage({ params }: { params: Promise<{ id
       </div>
 
       {/* MemWal Query Box */}
-      <div className="card p-4 border-blue-800/30 bg-blue-950/10">
-        <h3 className="font-bold text-white mb-2 flex items-center gap-2">
+      <div className="card p-4 border-blue-200 bg-blue-50">
+        <h3 className="font-bold text-slate-900 mb-2 flex items-center gap-2">
           <span>🦭</span> Query {user.username}'s Walrus Memory
         </h3>
-        <p className="text-xs text-gray-500 mb-3">
+        <p className="text-xs text-slate-500 mb-3">
           All predictions and opinions are stored encrypted on Walrus. Use the{' '}
-          <Link href="/users" className="text-blue-400 hover:underline">Users page</Link> to run semantic queries against this profile.
+          <Link href="/users" className="text-blue-600 hover:underline">Users page</Link> to run semantic queries against this profile.
         </p>
-        <div className="grid grid-cols-2 gap-2 text-xs text-gray-400">
-          <div className="rounded bg-wc-dark/60 px-3 py-2">
-            <p className="font-semibold text-gray-300 mb-1">Namespace</p>
-            <code className="text-blue-300">{user.memwalNamespace}</code>
+        <div className="grid grid-cols-2 gap-2 text-xs">
+          <div className="rounded-lg bg-white border border-slate-200 px-3 py-2">
+            <p className="font-semibold text-slate-700 mb-1">Namespace</p>
+            <code className="text-blue-600">{user.memwalNamespace}</code>
           </div>
-          <div className="rounded bg-wc-dark/60 px-3 py-2">
-            <p className="font-semibold text-gray-300 mb-1">Memories</p>
-            <code className="text-blue-300">{user.stats.totalPredictions} predictions stored</code>
+          <div className="rounded-lg bg-white border border-slate-200 px-3 py-2">
+            <p className="font-semibold text-slate-700 mb-1">Memories</p>
+            <code className="text-blue-600">{user.stats.totalPredictions} predictions stored</code>
           </div>
         </div>
       </div>
 
       {/* Predictions list */}
       <div className="space-y-3">
-        <h2 className="text-xl font-bold text-white">
-          Predictions <span className="text-gray-500 font-normal text-base">({user.predictions.length})</span>
+        <h2 className="text-xl font-bold text-slate-900">
+          Predictions <span className="text-slate-400 font-normal text-base">({user.predictions.length})</span>
         </h2>
 
         {/* Played matches */}
         {played.length > 0 && (
           <div className="space-y-2">
-            <p className="text-xs font-semibold uppercase tracking-wider text-gray-600">Results in</p>
+            <p className="text-xs font-semibold uppercase tracking-wider text-slate-400">Results in</p>
             {played.map((item) => {
-              const { p, match, home, away, result, actualWinner, correct } = item!;
+              const { p, match, home, away, result, correct } = item!;
               const predictedTeam = p.predictedWinner === 'draw' ? null : TEAM_MAP.get(p.predictedWinner);
               return (
                 <div
                   key={p.id}
-                  className={`card flex items-center gap-3 px-4 py-3 border-l-4 ${correct === true ? 'border-l-green-500' : correct === false ? 'border-l-red-500' : 'border-l-gray-700'}`}
+                  className={`card flex items-center gap-3 px-4 py-3 border-l-4 ${correct === true ? 'border-l-green-500' : correct === false ? 'border-l-red-400' : 'border-l-slate-200'}`}
                 >
                   <div className="flex-1 min-w-0">
-                    <p className="text-sm font-semibold text-gray-300">
+                    <p className="text-sm font-semibold text-slate-700">
                       {home?.flag} {home?.name} vs {away?.name} {away?.flag}
-                      <span className="ml-2 text-xs text-gray-600">Group {match.group} MD{match.matchday}</span>
+                      <span className="ml-2 text-xs text-slate-400">Group {match.group} MD{match.matchday}</span>
                     </p>
                     <div className="flex items-center gap-3 mt-1 text-xs flex-wrap">
-                      <span className="text-gray-400">
-                        Predicted: <strong className="text-white">
+                      <span className="text-slate-500">
+                        Predicted: <strong className="text-slate-800">
                           {p.predictedWinner === 'draw' ? '🤝 Draw' : `${predictedTeam?.flag} ${predictedTeam?.name ?? p.predictedWinner}`}
                         </strong>
                         {p.predictedHomeScore !== undefined && ` (${p.predictedHomeScore}–${p.predictedAwayScore})`}
                       </span>
-                      <span className="text-gray-500">Conf: {p.confidence}/5</span>
+                      <span className="text-slate-400">Conf: {p.confidence}/5</span>
                     </div>
-                    {p.opinion && <p className="text-xs text-gray-600 mt-1 italic">"{p.opinion}"</p>}
+                    {p.opinion && <p className="text-xs text-slate-400 mt-1 italic">"{p.opinion}"</p>}
                   </div>
                   <div className="text-right flex-shrink-0">
                     {result && (
-                      <p className="font-black text-white text-sm">{result.homeScore}–{result.awayScore}</p>
+                      <p className="font-black text-slate-900 text-sm">{result.homeScore}–{result.awayScore}</p>
                     )}
-                    <p className={`text-xs mt-0.5 font-semibold ${correct ? 'text-green-400' : 'text-red-400'}`}>
+                    <p className={`text-xs mt-0.5 font-semibold ${correct ? 'text-green-600' : 'text-red-500'}`}>
                       {correct ? `+${p.pointsEarned ?? 3} pts ✓` : '✗'}
                     </p>
                   </div>
@@ -175,33 +175,33 @@ export default async function UserProfilePage({ params }: { params: Promise<{ id
         {/* Upcoming predictions */}
         {notYetPlayed.length > 0 && (
           <div className="space-y-2 mt-4">
-            <p className="text-xs font-semibold uppercase tracking-wider text-gray-600">Upcoming</p>
+            <p className="text-xs font-semibold uppercase tracking-wider text-slate-400">Upcoming</p>
             {notYetPlayed.slice(0, 12).map((item) => {
               const { p, match, home, away } = item!;
               const predictedTeam = p.predictedWinner === 'draw' ? null : TEAM_MAP.get(p.predictedWinner);
               return (
                 <div key={p.id} className="card flex items-center gap-3 px-4 py-3 opacity-70">
                   <div className="flex-1 min-w-0">
-                    <p className="text-sm text-gray-300">
+                    <p className="text-sm text-slate-600">
                       {home?.flag} {home?.name} vs {away?.name} {away?.flag}
-                      <span className="ml-2 text-xs text-gray-600">
+                      <span className="ml-2 text-xs text-slate-400">
                         {new Date(match.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })} · Group {match.group}
                       </span>
                     </p>
-                    <p className="text-xs text-gray-500 mt-1">
-                      Pick: <strong className="text-gray-300">
+                    <p className="text-xs text-slate-500 mt-1">
+                      Pick: <strong className="text-slate-700">
                         {p.predictedWinner === 'draw' ? '🤝 Draw' : `${predictedTeam?.flag} ${predictedTeam?.name ?? p.predictedWinner}`}
                       </strong>
                       {p.predictedHomeScore !== undefined && ` (${p.predictedHomeScore}–${p.predictedAwayScore})`}
                       {' · '}Conf: {p.confidence}/5
                     </p>
                   </div>
-                  <span className="text-xs text-gray-600">Pending</span>
+                  <span className="text-xs text-slate-300">Pending</span>
                 </div>
               );
             })}
             {notYetPlayed.length > 12 && (
-              <p className="text-xs text-gray-600 text-center py-2">
+              <p className="text-xs text-slate-400 text-center py-2">
                 + {notYetPlayed.length - 12} more upcoming predictions
               </p>
             )}

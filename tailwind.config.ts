@@ -6,12 +6,12 @@ const config: Config = {
     extend: {
       colors: {
         wc: {
-          gold: '#C9A84C',
-          green: '#006233',
+          gold: '#B45309',
+          green: '#065F46',
           red: '#C8102E',
-          dark: '#0A0F1E',
-          card: '#111827',
-          border: '#1F2D3D',
+          dark: '#FFFFFF',
+          card: '#FFFFFF',
+          border: '#E2E8F0',
         },
       },
       fontFamily: {
