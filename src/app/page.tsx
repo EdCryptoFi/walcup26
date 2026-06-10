@@ -3,6 +3,7 @@ import Link from 'next/link';
 import { LeaderboardEntry } from '@/types';
 import { MATCHES, DEMO_RESULTS, TEAM_MAP, ALL_GROUPS, getGroupTeams } from '@/lib/world-cup-data';
 import { TeamSticker } from '@/components/team-sticker';
+import { PlayerCount } from '@/components/player-count';
 
 async function getLeaderboard(): Promise<LeaderboardEntry[]> {
   try {
@@ -84,14 +85,17 @@ export default async function HomePage() {
 
             {/* Mini stats — evenly distributed */}
             <div className="grid grid-cols-4 gap-3 pt-2">
+              <div className="sticker-card sticker-tilt-1 peel-corner rounded-2xl p-4 text-center">
+                <p className="text-2xl font-black text-primary"><PlayerCount /></p>
+                <p className="text-xs text-on-surface-variant">Players</p>
+              </div>
               {[
-                { n: leaderboard.length, label: 'Players', primary: true },
                 { n: 48, label: 'Teams' },
                 { n: playedCount, label: 'Played' },
                 { n: MATCHES.length, label: 'Matches' },
-              ].map(({ n, label, primary }) => (
+              ].map(({ n, label }) => (
                 <div key={label} className="sticker-card sticker-tilt-1 peel-corner rounded-2xl p-4 text-center">
-                  <p className={`text-2xl font-black ${primary ? 'text-primary' : 'text-on-surface-variant'}`}>{n}</p>
+                  <p className="text-2xl font-black text-on-surface-variant">{n}</p>
                   <p className="text-xs text-on-surface-variant">{label}</p>
                 </div>
               ))}

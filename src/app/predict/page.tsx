@@ -418,7 +418,17 @@ function PredictContent() {
                   </div>
                   <div className="flex flex-col items-end gap-0.5 flex-shrink-0">
                     {p.signed && <span className="text-tertiary font-bold text-[9px]">✓ signed</span>}
-                    {p.walrusId && <span className="font-mono text-[9px] text-on-surface-variant">{p.walrusId.slice(0, 8)}…</span>}
+                    {p.walrusId && (
+                      <a
+                        href={`https://aggregator.walrus-mainnet.walrus.space/v1/${p.walrusId}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="font-mono text-[9px] text-primary hover:underline"
+                        title="View on Walrus"
+                      >
+                        {p.walrusId.slice(0, 8)}… ↗
+                      </a>
+                    )}
                   </div>
                 </div>
               ))}

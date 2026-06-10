@@ -109,22 +109,30 @@ export async function POST(req: NextRequest) {
 
   const systemWithContext = `${SYSTEM_PROMPT}\n${userContext}\n\nResults so far (June 11-15): ${playedMatches}`;
 
-  // Use withMemWal middleware when MemWal is configured (real users)
-  const useRealMemWal = isMemWalConfigured() && !!realUser;
+  // Use withMemWal for any real Sui wallet user (not seed users)
+  // NOTE: do NOT gate on realUser from /tmp — that file is ephemeral on Vercel
+  const useRealMemWal = isMemWalConfigured() && userId.startsWith('sui-');
 
   const gemini = google('gemini-1.5-flash');
 
-  const model = useRealMemWal
-    ? withMemWal(gemini, {
-        key: process.env.MEMWAL_PRIVATE_KEY!,
-        accountId: process.env.MEMWAL_ACCOUNT_ID!,
-        serverUrl: process.env.MEMWAL_SERVER_URL ?? 'https://relayer.memory.walrus.xyz',
-        namespace: `wc2026-${userId}`,
-        maxMemories: 10,
-        autoSave: true,
-        minRelevance: 0.3,
-      })
-    : gemini;
+  let model;
+  try {
+    model = useRealMemWal
+      ? withMemWal(gemini, {
+          key: process.env.MEMWAL_PRIVATE_KEY!,
+          accountId: process.env.MEMWAL_ACCOUNT_ID!,
+          serverUrl: process.env.MEMWAL_SERVER_URL ?? 'https://relayer.memory.walrus.xyz',
+          namespace: `wc2026-${userId}`,
+          maxMemories: 10,
+          autoSave: true,
+          minRelevance: 0.3,
+        })
+      : gemini;
+  } catch (err) {
+    const errMsg = err instanceof Error ? err.message : String(err);
+    console.error('MemWal init error:', errMsg);
+    model = gemini; // fallback to plain gemini
+  }
 
   try {
     const result = await streamText({
@@ -133,10 +141,16 @@ export async function POST(req: NextRequest) {
       messages,
       maxTokens: 1024,
     });
-    return result.toDataStreamResponse();
+    return result.toDataStreamResponse({
+      getErrorMessage: (error) => {
+        const msg = error instanceof Error ? error.message : String(error);
+        console.error('Stream error:', msg);
+        return `Agent error: ${msg}`;
+      },
+    });
   } catch (err) {
     const errMsg = err instanceof Error ? err.message : 'Unknown error';
-    console.error('Agent error:', errMsg);
+    console.error('Agent fatal error:', errMsg);
     return new Response(JSON.stringify({ error: `Agent temporarily unavailable: ${errMsg}` }), {
       status: 503,
       headers: { 'Content-Type': 'application/json' },
