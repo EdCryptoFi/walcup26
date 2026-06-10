@@ -1,5 +1,5 @@
 import { streamText } from 'ai';
-import { google } from '@ai-sdk/google';
+import { groq } from '@ai-sdk/groq';
 import { withMemWal } from '@mysten-incubation/memwal/ai';
 import { NextRequest } from 'next/server';
 import { z } from 'zod';
@@ -75,8 +75,8 @@ You speak like a legendary sports radio commentator: dramatic, passionate, full 
 - Always end with a question or provocation that encourages more predictions`;
 
 export async function POST(req: NextRequest) {
-  if (!process.env.GOOGLE_GENERATIVE_AI_API_KEY) {
-    return new Response(JSON.stringify({ error: 'GOOGLE_GENERATIVE_AI_API_KEY not configured. Add it in Vercel → Settings → Environment Variables.' }), { status: 503 });
+  if (!process.env.GROQ_API_KEY) {
+    return new Response(JSON.stringify({ error: 'GROQ_API_KEY not configured. Add it in Vercel → Settings → Environment Variables.' }), { status: 503 });
   }
   const body = await req.json().catch(() => null);
   const parsed = BodySchema.safeParse(body);
@@ -113,12 +113,12 @@ export async function POST(req: NextRequest) {
   // NOTE: do NOT gate on realUser from /tmp — that file is ephemeral on Vercel
   const useRealMemWal = isMemWalConfigured() && userId.startsWith('sui-');
 
-  const gemini = google('gemini-2.0-flash');
+  const baseModel = groq('llama-3.3-70b-versatile');
 
   let model;
   try {
     model = useRealMemWal
-      ? withMemWal(gemini, {
+      ? withMemWal(baseModel, {
           key: process.env.MEMWAL_PRIVATE_KEY!,
           accountId: process.env.MEMWAL_ACCOUNT_ID!,
           serverUrl: process.env.MEMWAL_SERVER_URL ?? 'https://relayer.memory.walrus.xyz',
@@ -127,11 +127,11 @@ export async function POST(req: NextRequest) {
           autoSave: true,
           minRelevance: 0.3,
         })
-      : gemini;
+      : baseModel;
   } catch (err) {
     const errMsg = err instanceof Error ? err.message : String(err);
     console.error('MemWal init error:', errMsg);
-    model = gemini; // fallback to plain gemini
+    model = baseModel; // fallback to plain model
   }
 
   try {

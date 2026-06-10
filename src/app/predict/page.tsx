@@ -69,8 +69,8 @@ function PredictContent() {
     api: '/api/agent',
     body: { userId, username },
     onError: (err) => {
-      setAgentError(err.message.includes('503') || err.message.includes('GOOGLE')
-        ? 'Agent offline — GOOGLE_GENERATIVE_AI_API_KEY not configured in Vercel env vars.'
+      setAgentError(err.message.includes('503') || err.message.includes('GROQ')
+        ? 'Agent offline — GROQ_API_KEY not configured in Vercel env vars.'
         : `Agent error: ${err.message}`);
     },
     onResponse: () => {
