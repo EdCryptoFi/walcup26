@@ -61,6 +61,7 @@ function PredictContent() {
     matchLabel: string; homeFlag: string; awayFlag: string;
     winnerLabel: string; score: string; walrusId?: string; signed: boolean;
   }>>([]);
+  const [walrusBadge, setWalrusBadge] = useState<{ blobId: string; matchLabel: string } | null>(null);
 
   const { mutateAsync: signMessage } = useSignPersonalMessage();
   const bottomRef = useRef<HTMLDivElement>(null);
@@ -158,6 +159,10 @@ function PredictContent() {
             ? '✓ Signed & saved'
             : '✓ Prediction saved'
       );
+
+      if (data.memwalBlobId) {
+        setWalrusBadge({ blobId: data.memwalBlobId, matchLabel: `${selectedMatch.homeName} vs ${selectedMatch.awayName}` });
+      }
 
       setSavedPredictions((prev) => [{
         matchLabel: `${selectedMatch.homeName} vs ${selectedMatch.awayName}`,
@@ -384,6 +389,32 @@ function PredictContent() {
           </form>
         </div>
 
+        {/* Walrus stored badge — appears after first prediction, stays permanently */}
+        {walrusBadge && (
+          <div className="sticker-card sticker-tilt-2 peel-corner rounded-2xl overflow-hidden animate-[float_0.4s_ease-out]">
+            <div className="bg-gradient-to-r from-primary to-sky-500 px-4 pt-3 pb-2">
+              <div className="flex items-center gap-2">
+                <span className="text-2xl">🦭</span>
+                <div>
+                  <p className="text-white font-black text-sm">Stored on Walrus</p>
+                  <p className="text-white/70 text-[10px]">{walrusBadge.matchLabel}</p>
+                </div>
+              </div>
+            </div>
+            <div className="bg-white px-4 py-2.5 flex items-center justify-between gap-2">
+              <span className="font-mono text-[10px] text-on-surface-variant truncate">{walrusBadge.blobId.slice(0, 20)}…</span>
+              <a
+                href={`https://aggregator.walrus-mainnet.walrus.space/v1/${walrusBadge.blobId}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex-shrink-0 bg-primary text-white text-[10px] font-bold px-2.5 py-1 rounded-full hover:bg-primary/90 transition-colors"
+              >
+                Ver blob ↗
+              </a>
+            </div>
+          </div>
+        )}
+
         {/* Points guide */}
         <div className="sticker-card sticker-tilt-2 rounded-xl p-4 text-xs space-y-2" style={{ background: 'rgba(255,195,41,0.1)' }}>
           <p className="font-bold text-on-surface mb-1">Points System</p>
@@ -444,7 +475,7 @@ function PredictContent() {
           <div className="flex-1">
             <p className="font-bold text-on-surface text-sm">THE COMMENTATOR — WalCup 26 Agent</p>
             <p className="text-xs text-on-surface-variant">
-              Remembers across sessions · Walrus Memory · Gemini 2.0
+              Remembers across sessions · Walrus Memory · Groq Llama 3.3
             </p>
           </div>
           <span className="pill bg-primary text-on-primary font-mono text-[10px]">
@@ -459,44 +490,76 @@ function PredictContent() {
         )}
 
         {/* Persistent Commentator image — always visible */}
-        <div className="flex flex-col items-center pt-4 pb-2 border-b border-outline-variant/30 flex-shrink-0">
-          <Image src="/imgs/judge.png" alt="The Commentator" width={150} height={110} className="object-contain" />
-          {messages.length === 0 && (
-            <p className="text-on-surface-variant text-xs text-center max-w-xs mt-2 px-4">
-              Welcome, <strong className="text-on-surface">{username}</strong>! I&apos;m <strong className="text-primary">THE COMMENTATOR</strong> — I remember EVERYTHING via Walrus. Ask me anything!
-            </p>
-          )}
+        <div className="flex items-center justify-center pt-3 pb-2 border-b border-outline-variant/30 flex-shrink-0">
+          <Image src="/imgs/judge.png" alt="The Commentator" width={110} height={80} className="object-contain" />
         </div>
 
         <div className="flex-1 overflow-y-auto p-4 space-y-4 min-h-0">
           {messages.length === 0 && (
-            <div className="flex flex-wrap gap-2 justify-center pt-2">
-              {[
-                'Roast my predictions!',
-                'Who will win Group C?',
-                'What are my biases?',
-                'How am I doing vs the leaderboard?',
-              ].map((s) => (
-                <button
-                  key={s}
-                  onClick={() => {
-                    const ev = { target: { value: s } } as React.ChangeEvent<HTMLInputElement>;
-                    handleInputChange(ev);
-                  }}
-                  className="bg-white border border-outline-variant rounded-full px-3 py-1.5 text-xs text-on-surface-variant hover:text-primary hover:border-primary transition-colors shadow-sm"
-                >
-                  {s}
-                </button>
-              ))}
+            <div className="pt-2 space-y-3">
+              <p className="text-on-surface-variant text-xs text-center max-w-xs mx-auto">
+                Pergunte ao <strong className="text-primary">COMENTARISTA</strong> — ele lembra de tudo via Walrus!
+              </p>
+              <div className="flex flex-wrap gap-1.5 justify-center">
+                {[
+                  'Roast minhas previsões!',
+                  'Quem vence o Grupo C?',
+                  'Quais são meus vieses?',
+                  'Como estou no ranking?',
+                  'Quem será artilheiro?',
+                  'Me dê uma dica de aposta',
+                  'Dark horses do torneio?',
+                  'Avalie minha última previsão',
+                ].map((s) => (
+                  <button
+                    key={s}
+                    onClick={() => {
+                      const ev = { target: { value: s } } as React.ChangeEvent<HTMLInputElement>;
+                      handleInputChange(ev);
+                    }}
+                    className="bg-white border border-outline-variant rounded-full px-3 py-1.5 text-xs text-on-surface-variant hover:text-primary hover:border-primary transition-colors shadow-sm"
+                  >
+                    {s}
+                  </button>
+                ))}
+              </div>
             </div>
           )}
 
-          {messages.map((m) => (
-            <div key={m.id} className={`flex ${m.role === 'user' ? 'justify-end' : 'justify-start'}`}>
-              {m.role === 'assistant' && <span className="text-lg mr-2 flex-shrink-0 self-end">🦭</span>}
-              <div className={`max-w-[85%] px-4 py-3 text-sm leading-relaxed ${m.role === 'user' ? 'bubble-user' : 'bubble-agent'}`}>
-                <p className="whitespace-pre-wrap">{m.content}</p>
+          {messages.map((m, idx) => (
+            <div key={m.id}>
+              <div className={`flex ${m.role === 'user' ? 'justify-end' : 'justify-start'}`}>
+                {m.role === 'assistant' && <span className="text-lg mr-2 flex-shrink-0 self-end">🦭</span>}
+                <div className={`max-w-[85%] px-4 py-3 text-sm leading-relaxed ${m.role === 'user' ? 'bubble-user' : 'bubble-agent'}`}>
+                  <p className="whitespace-pre-wrap">{m.content}</p>
+                </div>
               </div>
+              {/* Suggestions reappear after each assistant reply */}
+              {m.role === 'assistant' && idx === messages.length - 1 && !isLoading && (
+                <div className="flex flex-wrap gap-1.5 mt-3 ml-8">
+                  {[
+                    'Roast minhas previsões!',
+                    'Quem vence o Grupo C?',
+                    'Quais são meus vieses?',
+                    'Como estou no ranking?',
+                    'Quem será artilheiro?',
+                    'Me dê uma dica de aposta',
+                    'Dark horses do torneio?',
+                    'Avalie minha última previsão',
+                  ].slice(0, 5).map((s) => (
+                    <button
+                      key={s}
+                      onClick={() => {
+                        const ev = { target: { value: s } } as React.ChangeEvent<HTMLInputElement>;
+                        handleInputChange(ev);
+                      }}
+                      className="bg-white border border-outline-variant rounded-full px-2.5 py-1 text-[11px] text-on-surface-variant hover:text-primary hover:border-primary transition-colors shadow-sm"
+                    >
+                      {s}
+                    </button>
+                  ))}
+                </div>
+              )}
             </div>
           ))}
 
