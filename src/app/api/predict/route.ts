@@ -2,41 +2,49 @@ import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
 import { getMemWal, isMemWalConfigured, formatPredictionMemory } from '@/lib/memwal';
 import { MATCH_MAP, TEAM_MAP } from '@/lib/world-cup-data';
-import { Prediction, User } from '@/types';
-import fs from 'fs';
-import path from 'path';
+import { Prediction } from '@/types';
+import { loadRealUsers, saveRealUsers } from '@/lib/users-data';
+import { logError } from '@/lib/error-logger';
 
-const REAL_USERS_FILE = process.env.VERCEL
-  ? '/tmp/wc-real-users.json'
-  : path.join(process.cwd(), 'data', 'real-users.json');
+// ── Rate limiting: per-IP (20/min) + per-userId (10/min) ───────────
+const rateLimitMap = new Map<string, { count: number; resetAt: number }>();
+const IP_RATE_LIMIT   = 20;
+const USER_RATE_LIMIT = 10;
+const RATE_WINDOW_MS  = 60_000;
+
+function checkRateLimit(key: string, limit: number): boolean {
+  const now = Date.now();
+  const entry = rateLimitMap.get(key);
+  if (!entry || now > entry.resetAt) {
+    rateLimitMap.set(key, { count: 1, resetAt: now + RATE_WINDOW_MS });
+    return true;
+  }
+  if (entry.count >= limit) return false;
+  entry.count++;
+  return true;
+}
+
+// sui-* userId must be exactly "sui-" + 8 lowercase hex chars
+const SUI_USER_ID_RE = /^sui-[a-f0-9]{8}$/;
 
 const PredictSchema = z.object({
   userId: z.string().min(1).max(40),
   username: z.string().min(1).max(40),
-  matchId: z.string(),
-  predictedWinner: z.string(),
+  matchId: z.string().max(10),
+  predictedWinner: z.string().max(10),
   predictedHomeScore: z.number().int().min(0).max(20).optional(),
   predictedAwayScore: z.number().int().min(0).max(20).optional(),
   confidence: z.number().int().min(1).max(5),
   opinion: z.string().max(500).optional(),
+  signature: z.string().max(256).optional(),
 });
 
-function loadRealUsers(): User[] {
-  try {
-    if (fs.existsSync(REAL_USERS_FILE)) {
-      return JSON.parse(fs.readFileSync(REAL_USERS_FILE, 'utf-8'));
-    }
-  } catch {}
-  return [];
-}
-
-function saveRealUsers(users: User[]) {
-  const dir = path.dirname(REAL_USERS_FILE);
-  if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
-  fs.writeFileSync(REAL_USERS_FILE, JSON.stringify(users, null, 2));
-}
-
 export async function POST(req: NextRequest) {
+  const ip = req.headers.get('x-forwarded-for')?.split(',')[0].trim() ?? 'unknown';
+  if (!checkRateLimit(`ip:${ip}`, IP_RATE_LIMIT)) {
+    return NextResponse.json({ error: 'Too many requests — slow down!' }, { status: 429 });
+  }
+
   const body = await req.json().catch(() => null);
   const parsed = PredictSchema.safeParse(body);
   if (!parsed.success) {
@@ -44,6 +52,23 @@ export async function POST(req: NextRequest) {
   }
 
   const data = parsed.data;
+  const { userId, signature } = data;
+
+  // Per-userId rate limit (10/min)
+  if (!checkRateLimit(`uid:${userId}`, USER_RATE_LIMIT)) {
+    return NextResponse.json({ error: 'Too many predictions for this user — wait a moment.' }, { status: 429 });
+  }
+
+  // Wallet users (sui-*) must provide a signature from their wallet
+  if (userId.startsWith('sui-')) {
+    if (!SUI_USER_ID_RE.test(userId)) {
+      return NextResponse.json({ error: 'Invalid wallet userId format.' }, { status: 400 });
+    }
+    if (!signature) {
+      return NextResponse.json({ error: 'Wallet users must sign their prediction.' }, { status: 403 });
+    }
+  }
+
   const match = MATCH_MAP.get(data.matchId);
   if (!match) {
     return NextResponse.json({ error: 'Match not found' }, { status: 404 });
@@ -73,7 +98,7 @@ export async function POST(req: NextRequest) {
 
   let memwalBlobId: string | undefined;
 
-  // Store to MemWal if configured
+  // Store to MemWal if configured — with 8s timeout to avoid Vercel function timeout
   if (isMemWalConfigured()) {
     try {
       const memwal = getMemWal(data.userId);
@@ -99,16 +124,17 @@ export async function POST(req: NextRequest) {
         timestamp: prediction.timestamp,
       });
 
-      const job = await memwal.rememberAndWait(memoryText);
+      const timeout = new Promise<null>((resolve) => setTimeout(() => resolve(null), 8000));
+      const job = await Promise.race([memwal.rememberAndWait(memoryText), timeout]);
       memwalBlobId = job?.blob_id;
       prediction.memwalBlobId = memwalBlobId;
     } catch (err) {
-      console.error('MemWal store failed:', err);
+      logError('predict:memwal', 'MemWal store failed', err instanceof Error ? err.message : String(err));
     }
   }
 
   // Update real users store
-  const users = loadRealUsers();
+  const users = await loadRealUsers();
   let user = users.find((u) => u.id === data.userId);
 
   if (!user) {
@@ -134,7 +160,7 @@ export async function POST(req: NextRequest) {
     user.stats.totalPredictions++;
   }
 
-  try { saveRealUsers(users); } catch (err) { console.error('saveRealUsers failed:', err); }
+  try { await saveRealUsers(users); } catch (err) { logError('predict:save', 'saveRealUsers failed', err instanceof Error ? err.message : String(err)); }
 
   return NextResponse.json({ prediction, memwalBlobId, stored: !!memwalBlobId });
 }

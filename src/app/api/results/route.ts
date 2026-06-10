@@ -3,31 +3,20 @@ import { z } from 'zod';
 import { MATCH_MAP, TEAM_MAP } from '@/lib/world-cup-data';
 import { getMemWal, isMemWalConfigured, formatResultMemory } from '@/lib/memwal';
 import { scorePrediction } from '@/lib/scoring';
-import { User } from '@/types';
+import { loadRealUsers, saveRealUsers } from '@/lib/users-data';
+import { logError } from '@/lib/error-logger';
 import fs from 'fs';
 import path from 'path';
 
-const REAL_USERS_FILE = path.join(process.cwd(), 'data', 'real-users.json');
-const RESULTS_FILE = path.join(process.cwd(), 'data', 'results.json');
+const RESULTS_FILE = process.env.VERCEL
+  ? '/tmp/wc-results.json'
+  : path.join(process.cwd(), 'data', 'results.json');
 
 const ResultSchema = z.object({
   matchId: z.string(),
   homeScore: z.number().int().min(0).max(20),
   awayScore: z.number().int().min(0).max(20),
 });
-
-function loadRealUsers(): User[] {
-  try {
-    if (fs.existsSync(REAL_USERS_FILE)) return JSON.parse(fs.readFileSync(REAL_USERS_FILE, 'utf-8'));
-  } catch {}
-  return [];
-}
-
-function saveRealUsers(users: User[]) {
-  const dir = path.dirname(REAL_USERS_FILE);
-  if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
-  fs.writeFileSync(REAL_USERS_FILE, JSON.stringify(users, null, 2));
-}
 
 function loadResults(): Record<string, { homeScore: number; awayScore: number }> {
   try {
@@ -76,7 +65,7 @@ export async function POST(req: NextRequest) {
     result: { homeScore, awayScore, status: 'finished' as const },
   };
 
-  const users = loadRealUsers();
+  const users = await loadRealUsers();
   const updated: string[] = [];
 
   for (const user of users) {
@@ -126,14 +115,16 @@ export async function POST(req: NextRequest) {
           cumulativePoints: user.stats.points,
         });
 
-        await memwal.rememberAndWait(text).catch(console.error);
+        const timeout = new Promise<null>((resolve) => setTimeout(() => resolve(null), 8000));
+        await Promise.race([memwal.rememberAndWait(text), timeout])
+          .catch((err) => logError('results:memwal', 'MemWal result store failed', err instanceof Error ? err.message : String(err)));
       } catch {}
     }
 
     updated.push(user.id);
   }
 
-  saveRealUsers(users);
+  await saveRealUsers(users);
 
   return NextResponse.json({
     matchId,
