@@ -6,20 +6,7 @@ import { z } from 'zod';
 import { isMemWalConfigured } from '@/lib/memwal';
 import { TEAMS, MATCHES, TEAM_MAP, DEMO_RESULTS } from '@/lib/world-cup-data';
 import { SEED_USERS } from '@/lib/seed-data';
-import { User } from '@/types';
-import fs from 'fs';
-import path from 'path';
-
-const REAL_USERS_FILE = process.env.VERCEL
-  ? '/tmp/wc-real-users.json'
-  : path.join(process.cwd(), 'data', 'real-users.json');
-
-function loadRealUsers(): User[] {
-  try {
-    if (fs.existsSync(REAL_USERS_FILE)) return JSON.parse(fs.readFileSync(REAL_USERS_FILE, 'utf-8'));
-  } catch {}
-  return [];
-}
+import { loadRealUsers } from '@/lib/users-data';
 
 const BodySchema = z.object({
   messages: z.array(z.object({ role: z.enum(['user', 'assistant']), content: z.string() })),
@@ -70,6 +57,7 @@ You speak like a legendary sports radio commentator: dramatic, passionate, full 
 6. Answer questions about any team, match or group with commentator enthusiasm
 
 ═══ GOLDEN RULES ═══
+- ALWAYS respond in English, regardless of what language the user writes in
 - When user makes a prediction: confirm with catchphrase + "THE BALL IS SAVED TO WALRUS MEMORY!"
 - When recalling: "From my eternal Walrus archives, on [date], you told me..."
 - Always end with a question or provocation that encourages more predictions`;
@@ -86,15 +74,31 @@ export async function POST(req: NextRequest) {
 
   const { messages, userId, username } = parsed.data;
 
-  const realUsers = loadRealUsers();
+  const realUsers = await loadRealUsers();
   const seedUser = SEED_USERS.find((u) => u.id === userId);
   const realUser = realUsers.find((u) => u.id === userId);
   const user = realUser ?? seedUser;
 
   // Build user context snippet
-  const userContext = user
-    ? `\nUser profile: ${username} | Points: ${user.stats.points} | Correct winners: ${user.stats.correctWinners}/${user.stats.totalPredictions} | Accuracy: ${(user.stats.winnerAccuracy * 100).toFixed(0)}% | Fav team: ${user.favoriteTeam ?? 'none'} | Biases: ${user.detectedBiases?.join(', ') || 'none detected yet'}`
-    : `\nNew user: ${username} — no predictions yet. Welcome them and help them get started.`;
+  let userContext: string;
+  if (user) {
+    const predSummaries = user.predictions.slice(-15).map((p) => {
+      const match = MATCHES.find((m) => m.id === p.matchId);
+      if (!match) return null;
+      const h = TEAM_MAP.get(match.homeTeamId);
+      const a = TEAM_MAP.get(match.awayTeamId);
+      const res = DEMO_RESULTS[p.matchId];
+      const winnerName = p.predictedWinner === 'draw' ? 'Draw' : (TEAM_MAP.get(p.predictedWinner)?.name ?? p.predictedWinner);
+      const scoreStr = p.predictedHomeScore !== undefined ? ` (${p.predictedHomeScore}-${p.predictedAwayScore})` : '';
+      const resultStr = res ? ` | RESULT: ${res.homeScore}-${res.awayScore}` : ' | Not played yet';
+      const blobStr = p.memwalBlobId ? ` | Walrus blob: ${p.memwalBlobId.slice(0, 12)}…` : '';
+      return `  - ${h?.name} vs ${a?.name}: Picked ${winnerName}${scoreStr}, Conf ${p.confidence}/5${p.opinion ? `, Opinion: "${p.opinion}"` : ''}${resultStr}${blobStr}`;
+    }).filter(Boolean).join('\n');
+
+    userContext = `\nUser profile: ${username} | Points: ${user.stats.points} | Correct winners: ${user.stats.correctWinners}/${user.stats.totalPredictions} | Accuracy: ${(user.stats.winnerAccuracy * 100).toFixed(0)}% | Fav team: ${user.favoriteTeam ?? 'none'} | Biases: ${user.detectedBiases?.join(', ') || 'none detected yet'}\n\nUser's predictions (most recent):\n${predSummaries || '  No predictions yet.'}`;
+  } else {
+    userContext = `\nNew user: ${username} — no predictions yet. Welcome them and help them get started.`;
+  }
 
   // Demo results context
   const playedMatches = Object.keys(DEMO_RESULTS)

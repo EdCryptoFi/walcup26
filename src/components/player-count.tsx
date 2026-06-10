@@ -6,9 +6,9 @@ export function PlayerCount() {
 
   useEffect(() => {
     function load() {
-      fetch('/api/leaderboard', { cache: 'no-store' })
+      fetch('/api/stats', { cache: 'no-store' })
         .then((r) => r.json())
-        .then((d) => setCount(d.total ?? d.leaderboard?.length ?? 0))
+        .then((d) => setCount(d.playerCount ?? 0))
         .catch(() => {});
     }
     load();

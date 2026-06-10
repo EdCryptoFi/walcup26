@@ -52,6 +52,8 @@ function PredictContent() {
   const [confidence, setConfidence] = useState(3);
   const [opinion, setOpinion] = useState('');
   const [saving, setSaving] = useState(false);
+  const [showSpinner, setShowSpinner] = useState(false);
+  const spinnerTimer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
   const [savedCount, setSavedCount] = useState(0);
   const [lastSaved, setLastSaved] = useState('');
   const [newStickers, setNewStickers] = useState<string[]>([]);
@@ -62,6 +64,17 @@ function PredictContent() {
     winnerLabel: string; score: string; walrusId?: string; signed: boolean;
   }>>([]);
   const [walrusBadge, setWalrusBadge] = useState<{ blobId: string; matchLabel: string } | null>(null);
+
+  // Keep spinner visible for at least 500ms so users see it even on fast responses
+  useEffect(() => {
+    clearTimeout(spinnerTimer.current);
+    if (saving) {
+      setShowSpinner(true);
+    } else {
+      spinnerTimer.current = setTimeout(() => setShowSpinner(false), 500);
+    }
+    return () => clearTimeout(spinnerTimer.current);
+  }, [saving]);
 
   const { mutateAsync: signMessage } = useSignPersonalMessage();
   const bottomRef = useRef<HTMLDivElement>(null);
@@ -358,18 +371,26 @@ function PredictContent() {
 
             <button
               type="submit"
-              disabled={!winner || saving}
-              className="w-full bg-white text-primary rounded-xl px-4 py-3 font-black hover:scale-105 hover:shadow-lg transition-all disabled:opacity-40 disabled:cursor-not-allowed"
+              disabled={!winner || saving || showSpinner}
+              className="relative w-full bg-white text-primary rounded-xl px-4 py-3 font-black hover:scale-105 hover:shadow-lg transition-all disabled:opacity-60 disabled:cursor-not-allowed overflow-hidden"
             >
-              {saving
-                ? (account ? 'Signing & Saving...' : 'Saving to Walrus...')
-                : (account ? 'Sign & Save to Walrus' : 'Save to Walrus Memory')
-              }
+              {showSpinner && (
+                <span className="absolute inset-0 flex items-center justify-center bg-white rounded-xl gap-2">
+                  <svg className="animate-spin h-5 w-5 text-primary" viewBox="0 0 24 24" fill="none">
+                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z" />
+                  </svg>
+                  <span className="text-primary text-sm font-bold">
+                    {account ? 'Signing & saving to Walrus…' : 'Saving to Walrus…'}
+                  </span>
+                </span>
+              )}
+              {account ? 'Sign & Save to Walrus' : 'Save to Walrus Memory'}
             </button>
 
             {!account && (
               <p className="text-[10px] text-white/50 text-center mt-1">
-                Connect a Sui Testnet wallet to store predictions on-chain
+                Connect a Sui wallet to store predictions on-chain
               </p>
             )}
 
@@ -404,7 +425,7 @@ function PredictContent() {
             <div className="bg-white px-4 py-2.5 flex items-center justify-between gap-2">
               <span className="font-mono text-[10px] text-on-surface-variant truncate">{walrusBadge.blobId.slice(0, 20)}…</span>
               <a
-                href={`https://aggregator.walrus-mainnet.walrus.space/v1/${walrusBadge.blobId}`}
+                href={`https://walruscan.com/blob/${walrusBadge.blobId}`}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="flex-shrink-0 bg-primary text-white text-[10px] font-bold px-2.5 py-1 rounded-full hover:bg-primary/90 transition-colors"
@@ -451,7 +472,7 @@ function PredictContent() {
                     {p.signed && <span className="text-tertiary font-bold text-[9px]">✓ signed</span>}
                     {p.walrusId && (
                       <a
-                        href={`https://aggregator.walrus-mainnet.walrus.space/v1/${p.walrusId}`}
+                        href={`https://walruscan.com/blob/${p.walrusId}`}
                         target="_blank"
                         rel="noopener noreferrer"
                         className="font-mono text-[9px] text-primary hover:underline"
@@ -498,18 +519,18 @@ function PredictContent() {
           {messages.length === 0 && (
             <div className="pt-2 space-y-3">
               <p className="text-on-surface-variant text-xs text-center max-w-xs mx-auto">
-                Pergunte ao <strong className="text-primary">COMENTARISTA</strong> — ele lembra de tudo via Walrus!
+                Ask <strong className="text-primary">THE COMMENTATOR</strong> — it remembers everything via Walrus!
               </p>
               <div className="flex flex-wrap gap-1.5 justify-center">
                 {[
-                  'Roast minhas previsões!',
-                  'Quem vence o Grupo C?',
-                  'Quais são meus vieses?',
-                  'Como estou no ranking?',
-                  'Quem será artilheiro?',
-                  'Me dê uma dica de aposta',
-                  'Dark horses do torneio?',
-                  'Avalie minha última previsão',
+                  'Roast my predictions!',
+                  'Who wins Group C?',
+                  'What are my biases?',
+                  'How am I ranked?',
+                  'Who will be top scorer?',
+                  'Give me a betting tip',
+                  'Dark horses of the tournament?',
+                  'Rate my last prediction',
                 ].map((s) => (
                   <button
                     key={s}
@@ -538,14 +559,14 @@ function PredictContent() {
               {m.role === 'assistant' && idx === messages.length - 1 && !isLoading && (
                 <div className="flex flex-wrap gap-1.5 mt-3 ml-8">
                   {[
-                    'Roast minhas previsões!',
-                    'Quem vence o Grupo C?',
-                    'Quais são meus vieses?',
-                    'Como estou no ranking?',
-                    'Quem será artilheiro?',
-                    'Me dê uma dica de aposta',
-                    'Dark horses do torneio?',
-                    'Avalie minha última previsão',
+                    'Roast my predictions!',
+                    'Who wins Group C?',
+                    'What are my biases?',
+                    'How am I ranked?',
+                    'Who will be top scorer?',
+                    'Give me a betting tip',
+                    'Dark horses of the tournament?',
+                    'Rate my last prediction',
                   ].slice(0, 5).map((s) => (
                     <button
                       key={s}

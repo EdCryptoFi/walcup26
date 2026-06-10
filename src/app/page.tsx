@@ -1,20 +1,11 @@
 import Image from 'next/image';
 import Link from 'next/link';
-import { LeaderboardEntry } from '@/types';
 import { MATCHES, DEMO_RESULTS, TEAM_MAP, ALL_GROUPS, getGroupTeams } from '@/lib/world-cup-data';
 import { TeamSticker } from '@/components/team-sticker';
 import { PlayerCount } from '@/components/player-count';
+import { getLeaderboard } from '@/lib/users-data';
 
-async function getLeaderboard(): Promise<LeaderboardEntry[]> {
-  try {
-    const base = process.env.NEXT_PUBLIC_APP_URL ?? 'http://localhost:3000';
-    const res = await fetch(`${base}/api/leaderboard`, { cache: 'no-store' });
-    const data = await res.json();
-    return data.leaderboard ?? [];
-  } catch {
-    return [];
-  }
-}
+export const dynamic = 'force-dynamic';
 
 function RankBadge({ rank }: { rank: number }) {
   const cls = rank === 1 ? 'rank-1' : rank === 2 ? 'rank-2' : rank === 3 ? 'rank-3' : 'rank-n';
@@ -178,14 +169,16 @@ export default async function HomePage() {
                         width={22}
                         height={27}
                         className="rounded-sm border border-outline-variant object-cover flex-shrink-0"
-                        onError={() => {}}
                       />
                     ) : (
                       <span className="text-lg w-6 text-center">{entry.avatar}</span>
                     )}
                     <div className="min-w-0">
                       <p className="font-semibold text-on-surface text-sm truncate">{entry.username}</p>
-                      {entry.isReal && <span className="text-[10px] text-tertiary font-bold">LIVE</span>}
+                      {entry.isReal
+                        ? <span className="text-[10px] text-tertiary font-bold">LIVE</span>
+                        : <span className="text-[10px] text-on-surface-variant font-bold bg-surface-container px-1.5 py-0.5 rounded-full">🤖 BOT</span>
+                      }
                     </div>
                   </div>
 

@@ -5,6 +5,7 @@ import { Plus_Jakarta_Sans } from 'next/font/google';
 import './globals.css';
 import { Providers } from '@/providers';
 import { WalletConnect } from '@/components/wallet-connect';
+import { MobileNav } from '@/components/mobile-nav';
 
 const plusJakartaSans = Plus_Jakarta_Sans({
   subsets: ['latin'],
@@ -53,11 +54,12 @@ function Header() {
           <div className="flex items-center gap-2">
             <Link
               href="/predict"
-              className="bg-primary text-white rounded-full px-5 py-2 font-bold text-sm hover:scale-105 transition-all shadow-sm"
+              className="hidden sm:inline-flex bg-primary text-white rounded-full px-5 py-2 font-bold text-sm hover:scale-105 transition-all shadow-sm"
             >
               Predict
             </Link>
             <WalletConnect />
+            <MobileNav />
           </div>
         </div>
       </div>

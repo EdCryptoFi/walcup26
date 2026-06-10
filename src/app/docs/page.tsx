@@ -33,7 +33,7 @@ export default function DocsPage() {
         <h2 className="text-2xl font-black text-on-surface">Making Predictions</h2>
         <div className="grid sm:grid-cols-3 gap-4">
           {[
-            { step: '1', title: 'Connect Wallet', desc: 'Connect your Sui testnet wallet. Your wallet address becomes your unique identity — no sign-up needed.', color: 'bg-primary text-white' },
+            { step: '1', title: 'Connect Wallet', desc: 'Connect your Sui wallet. Your wallet address becomes your unique identity — no sign-up needed.', color: 'bg-primary text-white' },
             { step: '2', title: 'Pick & Predict', desc: 'Choose any group stage match. Pick the winner, predict the score, set your confidence level, and add your reasoning.', color: 'bg-secondary-container text-on-secondary-container' },
             { step: '3', title: 'Saved on Walrus', desc: 'Every prediction is stored as an encrypted memory blob on the Walrus decentralized network — permanently.', color: 'bg-tertiary text-white' },
           ].map(({ step, title, desc, color }) => (

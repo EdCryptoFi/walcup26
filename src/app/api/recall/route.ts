@@ -1,19 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getMemWal, isMemWalConfigured } from '@/lib/memwal';
-import { SEED_USERS } from '@/lib/seed-data';
 import { MATCH_MAP, TEAM_MAP } from '@/lib/world-cup-data';
-import { MemWalQueryResponse, User } from '@/types';
-import fs from 'fs';
-import path from 'path';
-
-const REAL_USERS_FILE = path.join(process.cwd(), 'data', 'real-users.json');
-
-function loadRealUsers(): User[] {
-  try {
-    if (fs.existsSync(REAL_USERS_FILE)) return JSON.parse(fs.readFileSync(REAL_USERS_FILE, 'utf-8')) as User[];
-  } catch {}
-  return [];
-}
+import { MemWalQueryResponse } from '@/types';
+import { getUserById, loadRealUsers } from '@/lib/users-data';
 
 export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url);
@@ -25,10 +14,9 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ error: 'userId required' }, { status: 400 });
   }
 
-  const realUsers = loadRealUsers();
-  const seedUser = SEED_USERS.find((u) => u.id === userId);
+  const realUsers = await loadRealUsers();
   const realUser = realUsers.find((u) => u.id === userId);
-  const user = realUser ?? seedUser;
+  const user = await getUserById(userId);
 
   if (!user) {
     return NextResponse.json({ error: 'User not found' }, { status: 404 });

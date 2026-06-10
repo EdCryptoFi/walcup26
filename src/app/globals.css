@@ -38,8 +38,9 @@ main, header, footer {
   background: #ffffff;
   border: 2px solid #ffffff;
   box-shadow: 0px 4px 12px rgba(10, 15, 30, 0.1);
-  transition: all 0.2s ease-in-out;
+  transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
   position: relative;
+  will-change: transform;
 }
 .sticker-card:hover {
   transform: scale(1.03) rotate(0deg) !important;
@@ -70,14 +71,15 @@ main, header, footer {
 .holographic::before {
   content: '';
   position: absolute;
-  top: -150%; left: -150%;
-  width: 300%; height: 300%;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
   background: linear-gradient(45deg, rgba(255,255,255,0) 0%, rgba(255,255,255,0.2) 45%, rgba(255,255,255,0.8) 50%, rgba(255,255,255,0.2) 55%, rgba(255,255,255,0) 100%);
-  transform: rotate(45deg);
-  transition: all 0.5s;
+  transform: translateX(-200%) rotate(45deg);
+  transition: transform 0.5s ease;
   pointer-events: none;
+  will-change: transform;
 }
-.holographic:hover::before { left: 100%; top: 100%; }
+.holographic:hover::before { transform: translateX(200%) rotate(45deg); }
 
 /* ── Shiny sticker ───────────────────────────────── */
 .shiny-sticker { position: relative; overflow: hidden; }
@@ -90,6 +92,7 @@ main, header, footer {
   transform: rotate(30deg);
   animation: shine 4s infinite linear;
   pointer-events: none;
+  will-change: transform;
 }
 @keyframes shine {
   from { transform: translateX(-100%) rotate(30deg); }
@@ -113,7 +116,7 @@ main, header, footer {
   border: 2px solid #ffffff;
   border-radius: 0.5rem;
   box-shadow: 0px 4px 12px rgba(10, 15, 30, 0.1);
-  transition: all 0.2s ease-in-out;
+  transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
   position: relative;
 }
 
@@ -138,6 +141,7 @@ main, header, footer {
   object-fit: cover;
   background: #fff;
   transition: transform 0.25s cubic-bezier(.4,0,.2,1), box-shadow 0.25s ease;
+  will-change: transform;
 }
 .sticker:hover {
   transform: scale(1.12) rotate(0deg) !important;
@@ -221,6 +225,7 @@ main, header, footer {
   pointer-events: none;
   border-radius: inherit;
   z-index: 2;
+  will-change: transform;
 }
 @keyframes foil-shine {
   0%, 100% { transform: translateX(-120%); }
@@ -286,7 +291,7 @@ main, header, footer {
   font-size: 0.875rem !important;
   padding: 0.5rem 1.25rem !important;
   cursor: pointer !important;
-  transition: all 0.2s !important;
+  transition: background-color 0.2s, transform 0.2s !important;
 }
 [data-dapp-kit] button:hover,
 [data-dapp-kit] [role="button"]:hover {
@@ -322,8 +327,8 @@ main, header, footer {
   0%, 100% { transform: translateY(0px); }
   50%       { transform: translateY(-8px); }
 }
-.float { animation: float 4s ease-in-out infinite; }
-.float-delay { animation: float 4s ease-in-out 1.5s infinite; }
+.float { animation: float 4s ease-in-out infinite; will-change: transform; }
+.float-delay { animation: float 4s ease-in-out 1.5s infinite; will-change: transform; }
 
 @keyframes shimmer {
   0%   { background-position: -200% 0; }
@@ -333,4 +338,5 @@ main, header, footer {
   background: linear-gradient(90deg, transparent 0%, rgba(0,0,0,0.05) 50%, transparent 100%);
   background-size: 200% 100%;
   animation: shimmer 2s infinite;
+  will-change: background-position;
 }

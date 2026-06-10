@@ -37,7 +37,7 @@ function NotConnected() {
       <div className="wc-connect-btn">
         <ConnectButton connectText="Connect Sui Wallet" />
       </div>
-      <p className="text-xs text-on-surface-variant">Sui Testnet · No gas required to view</p>
+      <p className="text-xs text-on-surface-variant">Sui Mainnet · No gas required to view</p>
     </div>
   );
 }
@@ -52,10 +52,19 @@ export default function DashboardPage() {
   const [querying, setQuerying] = useState(false);
   const [pfpUrl, setPfpUrl] = useState<string | null>(null);
   const [collection, setCollection] = useState<string[]>([]);
+  const [liveMemoryCount, setLiveMemoryCount] = useState<number | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const userId = account ? `sui-${account.address.slice(2, 10)}` : null;
   const username = account ? `${account.address.slice(0, 6)}…${account.address.slice(-4)}` : null;
+
+  useEffect(() => {
+    if (!userId) { setLiveMemoryCount(null); return; }
+    fetch(`/api/recall?userId=${encodeURIComponent(userId)}&query=prediction result&limit=50`)
+      .then((r) => r.json())
+      .then((d) => setLiveMemoryCount(d.total ?? d.results?.length ?? 0))
+      .catch(() => setLiveMemoryCount(null));
+  }, [userId]);
 
   useEffect(() => {
     if (!userId) return;
@@ -99,9 +108,17 @@ export default function DashboardPage() {
   async function handleQuery() {
     if (!userId || !query) return;
     setQuerying(true);
-    const res = await fetch(`/api/recall?userId=${encodeURIComponent(userId)}&query=${encodeURIComponent(query)}&limit=5`);
-    const data = await res.json();
-    setQueryResult(data);
+    try {
+      const res = await fetch(`/api/recall?userId=${encodeURIComponent(userId)}&query=${encodeURIComponent(query)}&limit=5`);
+      const data = await res.json();
+      if (!res.ok || !data.results) {
+        setQueryResult({ userId: userId!, username: username ?? '', query, results: [], total: 0 });
+      } else {
+        setQueryResult(data);
+      }
+    } catch {
+      setQueryResult({ userId: userId!, username: username ?? '', query, results: [], total: 0 });
+    }
     setQuerying(false);
   }
 
@@ -158,7 +175,7 @@ export default function DashboardPage() {
             <div className="flex items-center gap-3 flex-wrap">
               <h1 className="text-2xl font-black text-on-surface font-mono">{username}</h1>
               <span className="pill bg-tertiary text-on-tertiary">Connected</span>
-              <span className="pill bg-primary text-on-primary">Sui Testnet</span>
+              <span className="pill bg-primary text-on-primary">Sui Mainnet</span>
             </div>
             <p className="text-xs text-on-surface-variant font-mono mt-1 break-all">{addr}</p>
             <p className="text-xs text-on-surface-variant mt-1">
@@ -198,12 +215,13 @@ export default function DashboardPage() {
           {[...Array(5)].map((_, i) => <div key={i} className="card h-20 shimmer" />)}
         </div>
       ) : (
-        <div className="grid grid-cols-2 sm:grid-cols-5 gap-3">
+        <div className="grid grid-cols-2 sm:grid-cols-6 gap-3">
           <StatCard label="Total Points" value={user?.stats.points ?? 0} color="gold" tiltIdx={0} />
           <StatCard label="Correct Picks" value={`${user?.stats.correctWinners ?? 0}/${playedPreds.length}`} color="green" tiltIdx={1} />
           <StatCard label="Exact Scores" value={user?.stats.exactScores ?? 0} color="blue" tiltIdx={2} />
           <StatCard label="Accuracy" value={`${((user?.stats.winnerAccuracy ?? 0) * 100).toFixed(0)}%`} sub={`${playedPreds.length} results in`} tiltIdx={3} />
           <StatCard label="Stickers" value={`${collection.length}/48`} sub={`${Math.round((collection.length / 48) * 100)}% album`} color="gold" tiltIdx={0} />
+          <StatCard label="🦭 On Walrus" value={liveMemoryCount ?? '…'} sub="memories stored" color="blue" tiltIdx={1} />
         </div>
       )}
 
@@ -217,7 +235,8 @@ export default function DashboardPage() {
           </div>
         </div>
         {(() => {
-          const memoryCount = predictions.length;
+          const walrusMemories = predictions.filter((p) => !!p.memwalBlobId);
+          const memoryCount = liveMemoryCount ?? walrusMemories.length;
           const level = memoryCount >= 15 ? 'Deep' : memoryCount >= 8 ? 'Growing' : memoryCount >= 3 ? 'Learning' : 'New';
           const pct = Math.min(100, Math.round((memoryCount / 15) * 100));
           const levelColor = level === 'Deep' ? 'from-tertiary to-primary' : level === 'Growing' ? 'from-primary to-sky-blue' : level === 'Learning' ? 'from-secondary-container to-primary' : 'from-outline-variant to-outline';
@@ -225,7 +244,7 @@ export default function DashboardPage() {
             <div className="space-y-2">
               <div className="flex items-center justify-between text-xs">
                 <span className="font-bold text-on-surface">{level}</span>
-                <span className="text-on-surface-variant">{memoryCount} memories on Walrus</span>
+                <span className="text-on-surface-variant">{liveMemoryCount ?? '…'} memories on Walrus{liveMemoryCount !== null ? ' (all sessions)' : ''}</span>
               </div>
               <div className="h-3 rounded-full bg-surface-container overflow-hidden">
                 <div className={`h-full rounded-full bg-gradient-to-r ${levelColor} transition-all duration-700`} style={{ width: `${pct}%` }} />
@@ -236,6 +255,29 @@ export default function DashboardPage() {
                  level === 'Learning' ? 'A few more predictions and the agent starts detecting patterns.' :
                  'Make predictions to help the agent learn your style.'}
               </p>
+              {walrusMemories.length > 0 && (
+                <div className="mt-2 space-y-1 max-h-32 overflow-y-auto">
+                  <p className="text-[10px] font-bold text-on-surface-variant uppercase tracking-wide">Walrus Blobs</p>
+                  {walrusMemories.slice(0, 10).map((p) => {
+                    const match = MATCH_MAP.get(p.matchId);
+                    const homeName = match ? TEAM_MAP.get(match.homeTeamId)?.code : '?';
+                    const awayName = match ? TEAM_MAP.get(match.awayTeamId)?.code : '?';
+                    return (
+                      <a
+                        key={p.id}
+                        href={`https://walruscan.com/blob/${p.memwalBlobId}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex items-center gap-2 px-2 py-1 rounded-lg bg-primary/5 hover:bg-primary/10 transition-colors"
+                      >
+                        <span className="text-[10px] text-on-surface-variant font-medium">{homeName} vs {awayName}</span>
+                        <span className="text-[10px] font-mono text-primary truncate flex-1">{p.memwalBlobId!.slice(0, 16)}…</span>
+                        <span className="text-[10px] text-primary font-bold">↗</span>
+                      </a>
+                    );
+                  })}
+                </div>
+              )}
             </div>
           );
         })()}
@@ -377,7 +419,7 @@ export default function DashboardPage() {
                             Pick: <strong className="text-on-surface">
                               {p.predictedWinner === 'draw' ? '🤝 Draw' : TEAM_MAP.get(p.predictedWinner)?.name ?? p.predictedWinner}
                             </strong>
-                            {p.predictedHomeScore !== undefined && ` (${p.predictedHomeScore}–${p.predictedAwayScore})`}
+                            {p.predictedHomeScore !== undefined && p.predictedAwayScore !== undefined && ` (${p.predictedHomeScore}–${p.predictedAwayScore})`}
                             {' · '}Conf: {p.confidence}/5
                           </p>
                           {p.opinion && <p className="text-on-surface-variant italic mt-0.5">"{p.opinion}"</p>}
@@ -387,6 +429,16 @@ export default function DashboardPage() {
                           <p className={correct ? 'text-tertiary font-bold' : 'text-error font-bold'}>
                             {correct ? `+${p.pointsEarned ?? 3} pts ✓` : '✗'}
                           </p>
+                          {p.memwalBlobId && (
+                            <a
+                              href={`https://walruscan.com/blob/${p.memwalBlobId}`}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="inline-flex items-center gap-1 mt-1 px-2 py-0.5 rounded-full bg-primary/10 text-[10px] font-semibold text-primary hover:bg-primary/20 transition-colors"
+                            >
+                              🦭 Walrus ↗
+                            </a>
+                          )}
                         </div>
                         <TeamSticker teamId={match.awayTeamId} size="sm" />
                       </div>
@@ -415,7 +467,20 @@ export default function DashboardPage() {
                             </strong>
                           </p>
                         </div>
-                        <span className="text-xs text-on-surface-variant flex-shrink-0">Pending</span>
+                        <div className="text-right flex-shrink-0">
+                          {p.memwalBlobId ? (
+                            <a
+                              href={`https://walruscan.com/blob/${p.memwalBlobId}`}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-primary/10 text-[10px] font-semibold text-primary hover:bg-primary/20 transition-colors"
+                            >
+                              🦭 Walrus ↗
+                            </a>
+                          ) : (
+                            <span className="text-xs text-on-surface-variant">Pending</span>
+                          )}
+                        </div>
                         <TeamSticker teamId={match.awayTeamId} size="sm" />
                       </div>
                     );
@@ -438,7 +503,7 @@ export default function DashboardPage() {
               </div>
               <div className="rounded-lg bg-white border border-outline-variant px-3 py-2">
                 <p className="text-on-surface-variant mb-0.5">Stored Memories</p>
-                <p className="text-primary font-mono">{predictions.length} on-chain</p>
+                <p className="text-primary font-mono">{liveMemoryCount ?? '…'} on-chain</p>
               </div>
             </div>
 
@@ -469,7 +534,14 @@ export default function DashboardPage() {
                   queryResult.results.map((r, i) => (
                     <div key={i} className="rounded-lg bg-white border border-outline-variant p-2.5 text-xs text-on-surface">
                       <p className="leading-relaxed">{r.text}</p>
-                      <p className="text-on-surface-variant mt-1 font-mono truncate">{r.blobId.slice(0, 24)}…</p>
+                      <a
+                        href={`https://walruscan.com/blob/${r.blobId}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center gap-1 mt-1.5 px-2 py-0.5 rounded-full bg-primary/10 text-[10px] font-semibold text-primary hover:bg-primary/20 transition-colors"
+                      >
+                        🦭 View on Walrus · {r.blobId.slice(0, 16)}… ↗
+                      </a>
                     </div>
                   ))
                 )}
@@ -509,6 +581,72 @@ export default function DashboardPage() {
           </div>
         </div>
       </div>
+
+      {/* ── Walrus Memory History — all on-chain prediction blobs ── */}
+      {predictions.filter((p) => !!p.memwalBlobId).length > 0 && (
+        <div className="sticker-card sticker-tilt-1 rounded-2xl p-6 space-y-4">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <span className="text-xl">🦭</span>
+              <div>
+                <h2 className="text-lg font-black text-on-surface">On-Chain Memory Trail</h2>
+                <p className="text-xs text-on-surface-variant">Every prediction permanently stored on Walrus — click to verify on WalrusScan</p>
+              </div>
+            </div>
+            <span className="pill bg-primary text-white text-xs font-bold">
+              {predictions.filter((p) => !!p.memwalBlobId).length} blobs
+            </span>
+          </div>
+
+          <div className="space-y-2">
+            {predictions
+              .filter((p) => !!p.memwalBlobId)
+              .map((p) => {
+                const match = MATCH_MAP.get(p.matchId);
+                if (!match) return null;
+                const home = TEAM_MAP.get(match.homeTeamId);
+                const away = TEAM_MAP.get(match.awayTeamId);
+                const predicted = p.predictedWinner === 'draw'
+                  ? '🤝 Draw'
+                  : `${TEAM_MAP.get(p.predictedWinner)?.flag} ${TEAM_MAP.get(p.predictedWinner)?.name ?? p.predictedWinner}`;
+                const hasResult = !!DEMO_RESULTS[p.matchId];
+                return (
+                  <div key={p.id} className="flex items-center gap-3 rounded-xl bg-surface-container px-4 py-3 text-xs group">
+                    <div className="flex-1 min-w-0">
+                      <span className="font-semibold text-on-surface">
+                        {home?.flag} {home?.name} vs {away?.name} {away?.flag}
+                      </span>
+                      <span className="ml-2 text-on-surface-variant">
+                        · Pick: <strong className="text-on-surface">{predicted}</strong>
+                        {p.predictedHomeScore !== undefined && p.predictedAwayScore !== undefined && ` (${p.predictedHomeScore}–${p.predictedAwayScore})`}
+                        {' · '}Conf {p.confidence}/5
+                      </span>
+                    </div>
+                    <div className="flex items-center gap-2 flex-shrink-0">
+                      <span className={`pill text-[10px] ${hasResult ? 'bg-surface-container-low text-on-surface-variant' : 'bg-secondary-container text-on-secondary-container'}`}>
+                        {hasResult ? 'Played' : 'Pending'}
+                      </span>
+                      <a
+                        href={`https://walruscan.com/blob/${p.memwalBlobId}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-primary text-white text-[10px] font-bold hover:bg-primary/80 transition-colors"
+                        title={p.memwalBlobId}
+                      >
+                        🦭 WalrusScan ↗
+                      </a>
+                    </div>
+                  </div>
+                );
+              })}
+          </div>
+
+          <p className="text-[10px] text-on-surface-variant text-center">
+            Namespace: <code className="text-primary">wc2026-{userId}</code>
+            {' · '}Stored permanently on Walrus decentralized storage
+          </p>
+        </div>
+      )}
     </div>
   );
 }

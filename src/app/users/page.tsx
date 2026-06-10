@@ -32,8 +32,17 @@ export default function UsersPage() {
   async function handleQuery() {
     if (!queryUserId || !queryText) return;
     setQuerying(true);
-    const res = await fetch(`/api/recall?userId=${encodeURIComponent(queryUserId)}&query=${encodeURIComponent(queryText)}&limit=5`);
-    setQueryResult(await res.json());
+    try {
+      const res = await fetch(`/api/recall?userId=${encodeURIComponent(queryUserId)}&query=${encodeURIComponent(queryText)}&limit=5`);
+      const data = await res.json();
+      if (!res.ok || !data.results) {
+        setQueryResult({ userId: queryUserId, username: '', query: queryText, results: [], total: 0 });
+      } else {
+        setQueryResult(data);
+      }
+    } catch {
+      setQueryResult({ userId: queryUserId, username: '', query: queryText, results: [], total: 0 });
+    }
     setQuerying(false);
   }
 
@@ -94,15 +103,29 @@ export default function UsersPage() {
             {queryResult.results.length === 0 ? (
               <p className="text-sm text-on-surface-variant italic py-2">No matching memories found.</p>
             ) : (
-              queryResult.results.map((r, i) => (
-                <div key={i} className="rounded-xl bg-white border border-outline-variant p-3 text-sm text-on-surface shadow-sm">
-                  <p className="leading-relaxed">{r.text}</p>
-                  <div className="flex items-center gap-4 mt-1.5 text-xs text-on-surface-variant">
-                    <span>Relevance {((1 - r.distance) * 100).toFixed(0)}%</span>
-                    <span className="font-mono truncate">blob: {r.blobId.slice(0, 20)}…</span>
+              queryResult.results.map((r, i) => {
+                const isRealBlob = !r.blobId.startsWith('synthetic-');
+                return (
+                  <div key={i} className="rounded-xl bg-white border border-outline-variant p-3 text-sm text-on-surface shadow-sm">
+                    <p className="leading-relaxed">{r.text}</p>
+                    <div className="flex items-center gap-4 mt-1.5 text-xs text-on-surface-variant">
+                      <span>Relevance {((1 - r.distance) * 100).toFixed(0)}%</span>
+                      {isRealBlob ? (
+                        <a
+                          href={`https://walruscan.com/blob/${r.blobId}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-primary/10 text-[10px] font-semibold text-primary hover:bg-primary/20 transition-colors font-mono"
+                        >
+                          🦭 {r.blobId.slice(0, 20)}… ↗
+                        </a>
+                      ) : (
+                        <span className="font-mono truncate">blob: {r.blobId.slice(0, 20)}…</span>
+                      )}
+                    </div>
                   </div>
-                </div>
-              ))
+                );
+              })
             )}
           </div>
         )}
@@ -162,7 +185,7 @@ export default function UsersPage() {
                       {user.isReal ? (
                         <span className="pill bg-tertiary text-on-tertiary text-[10px]">LIVE</span>
                       ) : (
-                        <span className="pill bg-surface-container text-on-surface-variant text-[10px]">Test Bot</span>
+                        <span className="pill bg-surface-container text-on-surface-variant text-[10px]">🤖 Bot · MemWal Test</span>
                       )}
                     </div>
                     <div className="flex items-center gap-3 mt-1.5">
