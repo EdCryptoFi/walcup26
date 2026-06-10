@@ -53,17 +53,22 @@ export default function DashboardPage() {
   const [pfpUrl, setPfpUrl] = useState<string | null>(null);
   const [collection, setCollection] = useState<string[]>([]);
   const [liveMemoryCount, setLiveMemoryCount] = useState<number | null>(null);
+  const [liveBlobs, setLiveBlobs] = useState<Array<{ blobId: string; text: string }>>([]);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const userId = account ? `sui-${account.address.slice(2, 10)}` : null;
   const username = account ? `${account.address.slice(0, 6)}…${account.address.slice(-4)}` : null;
 
   useEffect(() => {
-    if (!userId) { setLiveMemoryCount(null); return; }
-    fetch(`/api/recall?userId=${encodeURIComponent(userId)}&query=prediction result&limit=50`)
+    if (!userId) { setLiveMemoryCount(null); setLiveBlobs([]); return; }
+    fetch(`/api/recall?userId=${encodeURIComponent(userId)}&query=prediction result session&limit=50`)
       .then((r) => r.json())
-      .then((d) => setLiveMemoryCount(d.total ?? d.results?.length ?? 0))
-      .catch(() => setLiveMemoryCount(null));
+      .then((d) => {
+        setLiveMemoryCount(d.total ?? d.results?.length ?? 0);
+        const real = (d.results ?? []).filter((r: { blobId: string }) => !r.blobId.startsWith('synthetic-'));
+        setLiveBlobs(real);
+      })
+      .catch(() => { setLiveMemoryCount(null); setLiveBlobs([]); });
   }, [userId]);
 
   useEffect(() => {
@@ -582,71 +587,105 @@ export default function DashboardPage() {
         </div>
       </div>
 
-      {/* ── Walrus Memory History — all on-chain prediction blobs ── */}
-      {predictions.filter((p) => !!p.memwalBlobId).length > 0 && (
-        <div className="sticker-card sticker-tilt-1 rounded-2xl p-6 space-y-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <span className="text-xl">🦭</span>
-              <div>
-                <h2 className="text-lg font-black text-on-surface">On-Chain Memory Trail</h2>
-                <p className="text-xs text-on-surface-variant">Every prediction permanently stored on Walrus — click to verify on WalrusScan</p>
+      {/* ── Walrus Memory Trail — stored blobs + live recall fallback ── */}
+      {(() => {
+        const storedBlobs = predictions.filter((p) => !!p.memwalBlobId);
+        const hasAny = storedBlobs.length > 0 || liveBlobs.length > 0;
+        if (!hasAny) return null;
+
+        return (
+          <div className="sticker-card sticker-tilt-1 rounded-2xl p-6 space-y-4">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <span className="text-xl">🦭</span>
+                <div>
+                  <h2 className="text-lg font-black text-on-surface">On-Chain Memory Trail</h2>
+                  <p className="text-xs text-on-surface-variant">
+                    Predictions stored permanently on Walrus — click to verify on WalrusScan
+                  </p>
+                </div>
               </div>
+              <span className="pill bg-primary text-white text-xs font-bold">
+                {storedBlobs.length > 0 ? storedBlobs.length : liveBlobs.length} blobs
+              </span>
             </div>
-            <span className="pill bg-primary text-white text-xs font-bold">
-              {predictions.filter((p) => !!p.memwalBlobId).length} blobs
-            </span>
-          </div>
 
-          <div className="space-y-2">
-            {predictions
-              .filter((p) => !!p.memwalBlobId)
-              .map((p) => {
-                const match = MATCH_MAP.get(p.matchId);
-                if (!match) return null;
-                const home = TEAM_MAP.get(match.homeTeamId);
-                const away = TEAM_MAP.get(match.awayTeamId);
-                const predicted = p.predictedWinner === 'draw'
-                  ? '🤝 Draw'
-                  : `${TEAM_MAP.get(p.predictedWinner)?.flag} ${TEAM_MAP.get(p.predictedWinner)?.name ?? p.predictedWinner}`;
-                const hasResult = !!DEMO_RESULTS[p.matchId];
-                return (
-                  <div key={p.id} className="flex items-center gap-3 rounded-xl bg-surface-container px-4 py-3 text-xs group">
+            {/* Stored blobs — have full prediction context */}
+            {storedBlobs.length > 0 && (
+              <div className="space-y-2">
+                {storedBlobs.map((p) => {
+                  const match = MATCH_MAP.get(p.matchId);
+                  if (!match) return null;
+                  const home = TEAM_MAP.get(match.homeTeamId);
+                  const away = TEAM_MAP.get(match.awayTeamId);
+                  const predicted = p.predictedWinner === 'draw'
+                    ? '🤝 Draw'
+                    : `${TEAM_MAP.get(p.predictedWinner)?.flag} ${TEAM_MAP.get(p.predictedWinner)?.name ?? p.predictedWinner}`;
+                  const hasResult = !!DEMO_RESULTS[p.matchId];
+                  return (
+                    <div key={p.id} className="flex items-center gap-3 rounded-xl bg-surface-container px-4 py-3 text-xs group">
+                      <div className="flex-1 min-w-0">
+                        <span className="font-semibold text-on-surface">
+                          {home?.flag} {home?.name} vs {away?.name} {away?.flag}
+                        </span>
+                        <span className="ml-2 text-on-surface-variant">
+                          · Pick: <strong className="text-on-surface">{predicted}</strong>
+                          {p.predictedHomeScore !== undefined && p.predictedAwayScore !== undefined && ` (${p.predictedHomeScore}–${p.predictedAwayScore})`}
+                          {' · '}Conf {p.confidence}/5
+                        </span>
+                      </div>
+                      <div className="flex items-center gap-2 flex-shrink-0">
+                        <span className={`pill text-[10px] ${hasResult ? 'bg-surface-container-low text-on-surface-variant' : 'bg-secondary-container text-on-secondary-container'}`}>
+                          {hasResult ? 'Played' : 'Pending'}
+                        </span>
+                        <a
+                          href={`https://walruscan.com/blob/${p.memwalBlobId}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-primary text-white text-[10px] font-bold hover:bg-primary/80 transition-colors"
+                          title={p.memwalBlobId}
+                        >
+                          🦭 WalrusScan ↗
+                        </a>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+
+            {/* Live recall blobs — shown when stored blobs are unavailable */}
+            {storedBlobs.length === 0 && liveBlobs.length > 0 && (
+              <div className="space-y-2">
+                <p className="text-[10px] text-on-surface-variant font-bold uppercase tracking-wide">
+                  Live from Walrus · {liveBlobs.length} blobs found via recall
+                </p>
+                {liveBlobs.map((b, i) => (
+                  <div key={i} className="flex items-center gap-3 rounded-xl bg-surface-container px-4 py-3 text-xs">
                     <div className="flex-1 min-w-0">
-                      <span className="font-semibold text-on-surface">
-                        {home?.flag} {home?.name} vs {away?.name} {away?.flag}
-                      </span>
-                      <span className="ml-2 text-on-surface-variant">
-                        · Pick: <strong className="text-on-surface">{predicted}</strong>
-                        {p.predictedHomeScore !== undefined && p.predictedAwayScore !== undefined && ` (${p.predictedHomeScore}–${p.predictedAwayScore})`}
-                        {' · '}Conf {p.confidence}/5
-                      </span>
+                      <p className="text-on-surface-variant truncate leading-snug">{b.text.slice(0, 120)}{b.text.length > 120 ? '…' : ''}</p>
                     </div>
-                    <div className="flex items-center gap-2 flex-shrink-0">
-                      <span className={`pill text-[10px] ${hasResult ? 'bg-surface-container-low text-on-surface-variant' : 'bg-secondary-container text-on-secondary-container'}`}>
-                        {hasResult ? 'Played' : 'Pending'}
-                      </span>
-                      <a
-                        href={`https://walruscan.com/blob/${p.memwalBlobId}`}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-primary text-white text-[10px] font-bold hover:bg-primary/80 transition-colors"
-                        title={p.memwalBlobId}
-                      >
-                        🦭 WalrusScan ↗
-                      </a>
-                    </div>
+                    <a
+                      href={`https://walruscan.com/blob/${b.blobId}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-primary text-white text-[10px] font-bold hover:bg-primary/80 transition-colors flex-shrink-0"
+                      title={b.blobId}
+                    >
+                      🦭 WalrusScan ↗
+                    </a>
                   </div>
-                );
-              })}
-          </div>
+                ))}
+              </div>
+            )}
 
-          <p className="text-[10px] text-on-surface-variant text-center">
-            Namespace: <code className="text-primary">wc2026-{userId}</code>
-            {' · '}Stored permanently on Walrus decentralized storage
-          </p>
-        </div>
-      )}
+            <p className="text-[10px] text-on-surface-variant text-center">
+              Namespace: <code className="text-primary">wc2026-{userId}</code>
+              {' · '}Walrus decentralized storage · always tracked to this wallet
+            </p>
+          </div>
+        );
+      })()}
     </div>
   );
 }

@@ -510,14 +510,30 @@ function PredictContent() {
           </div>
         )}
 
-        {/* Persistent Commentator image — always visible */}
-        <div className="flex items-center justify-center pt-3 pb-2 border-b border-outline-variant/30 flex-shrink-0">
-          <Image src="/imgs/judge.png" alt="The Commentator" width={110} height={80} className="object-contain" />
-        </div>
+        {/* Main body: judge left + chat right */}
+        <div className="flex flex-1 min-h-0">
+          {/* Judge image — large, fixed left column */}
+          <div className="hidden sm:flex w-36 lg:w-44 flex-shrink-0 flex-col items-center justify-start pt-6 pb-4 px-2 border-r border-outline-variant/40 bg-surface-container-low/50">
+            <Image
+              src="/imgs/judge.png"
+              alt="The Commentator"
+              width={160}
+              height={220}
+              className="object-contain w-full drop-shadow-lg"
+            />
+            <p className="text-[9px] text-on-surface-variant font-bold uppercase tracking-widest mt-3 text-center leading-tight">
+              The<br />Commentator
+            </p>
+          </div>
 
-        <div className="flex-1 overflow-y-auto p-4 space-y-4 min-h-0">
+          {/* Chat messages + suggestions */}
+          <div className="flex-1 overflow-y-auto p-4 space-y-4 min-h-0">
           {messages.length === 0 && (
             <div className="pt-2 space-y-3">
+              {/* Mobile-only judge image */}
+              <div className="flex sm:hidden justify-center mb-2">
+                <Image src="/imgs/judge.png" alt="The Commentator" width={80} height={110} className="object-contain drop-shadow" />
+              </div>
               <p className="text-on-surface-variant text-xs text-center max-w-xs mx-auto">
                 Ask <strong className="text-primary">THE COMMENTATOR</strong> — it remembers everything via Walrus!
               </p>
@@ -607,7 +623,8 @@ function PredictContent() {
             </div>
           )}
           <div ref={bottomRef} />
-        </div>
+          </div>{/* end chat messages column */}
+        </div>{/* end flex body */}
 
         <form onSubmit={handleSubmit} className="px-4 py-3 border-t border-outline-variant flex gap-2 flex-shrink-0">
           <input
