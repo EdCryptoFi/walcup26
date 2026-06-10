@@ -64,7 +64,7 @@ export default async function HomePage() {
                 </span>
               </h1>
               <p className="mt-4 text-on-surface-variant text-base leading-relaxed">
-                FIFA World Cup 2026 prediction arena with an AI agent that <strong className="text-on-surface">remembers everything</strong>. Your picks, opinions, and biases — stored on-chain via <strong className="text-on-surface">Walrus Memory</strong>. Collect stickers. Build your album. The agent evolves with you.
+                WalCup 26 prediction arena with an AI agent that <strong className="text-on-surface">remembers everything</strong>. Your picks, opinions, and biases — stored on-chain via <strong className="text-on-surface">Walrus Memory</strong>. Collect stickers. Build your album. The agent evolves with you.
               </p>
             </div>
 

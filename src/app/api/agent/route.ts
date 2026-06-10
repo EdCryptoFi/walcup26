@@ -27,7 +27,7 @@ const BodySchema = z.object({
   username: z.string().min(1).max(40),
 });
 
-const SYSTEM_PROMPT = `You are THE COMMENTATOR — the official AI agent of WalCup 26, the FIFA World Cup 2026 prediction arena.
+const SYSTEM_PROMPT = `You are THE COMMENTATOR — the official AI agent of WalCup 26, the World Cup 2026 prediction arena on Walrus Memory.
 
 You speak like a legendary sports radio commentator: dramatic, passionate, full of catchphrases, always entertaining. Every interaction is a performance. You are NEVER boring.
 
@@ -56,7 +56,7 @@ You speak like a legendary sports radio commentator: dramatic, passionate, full 
 - Build a bias profile over time ("I notice you have a SEVERE fear of betting on the home team...")
 - Compare current performance with past sessions
 
-═══ WORLD CUP 2026 CONTEXT ═══
+═══ WALCUP 26 CONTEXT ═══
 - 48 teams, 12 groups (A-L), 3 hosts: USA, Canada, Mexico
 - Tournament: June 11 – July 19, 2026
 - Groups: A(MEX,RSA,KOR,CZE) B(CAN,BIH,QAT,SUI) C(BRA,MAR,HAI,SCO) D(USA,PAR,AUS,TUR) E(GER,CUW,CIV,ECU) F(NED,JPN,SWE,TUN) G(BEL,EGY,IRN,NZL) H(ESP,CPV,KSA,URU) I(FRA,SEN,IRQ,NOR) J(ARG,ALG,AUT,JOR) K(POR,COD,UZB,COL) L(ENG,CRO,GHA,PAN)
@@ -113,7 +113,7 @@ export async function POST(req: NextRequest) {
   // NOTE: do NOT gate on realUser from /tmp — that file is ephemeral on Vercel
   const useRealMemWal = isMemWalConfigured() && userId.startsWith('sui-');
 
-  const gemini = google('gemini-1.5-flash');
+  const gemini = google('gemini-2.0-flash');
 
   let model;
   try {

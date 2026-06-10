@@ -21,7 +21,7 @@ export default function DocsPage() {
       <section className="sticker-card rounded-2xl p-6 space-y-3">
         <h2 className="text-2xl font-black text-on-surface">What is WalCup 26?</h2>
         <p className="text-on-surface-variant leading-relaxed">
-          WalCup 26 is a FIFA World Cup 2026 prediction game built on the <strong className="text-on-surface">Sui blockchain</strong> and powered by <strong className="text-on-surface">Walrus Memory (MemWal)</strong> — a decentralized storage protocol that gives your AI agent persistent, cross-session memory.
+          WalCup 26 is a World Cup 2026 prediction game built on the <strong className="text-on-surface">Sui blockchain</strong> and powered by <strong className="text-on-surface">Walrus Memory (MemWal)</strong> — a decentralized storage protocol that gives your AI agent persistent, cross-session memory.
         </p>
         <p className="text-on-surface-variant leading-relaxed">
           Built for the <a href="https://thewalrussessions.wal.app" className="text-primary hover:underline">Walrus Sessions 4 hackathon</a>, WalCup 26 demonstrates how on-chain memory can power genuinely intelligent, personalized AI agents.
@@ -117,7 +117,7 @@ export default function DocsPage() {
       <section className="sticker-card rounded-xl p-5 space-y-2 border-l-4 border-secondary-container">
         <h2 className="text-lg font-black text-on-surface">⚠️ About Match Data</h2>
         <p className="text-sm text-on-surface-variant leading-relaxed">
-          Match fixtures and results in WalCup 26 are based on the official FIFA World Cup 2026 schedule but are <strong className="text-on-surface">not automatically synced</strong> with real-time FIFA data. Results shown in the app are updated manually and may not reflect the latest scores. For official standings, visit{' '}
+          Match fixtures and results in WalCup 26 are based on the official World Cup 2026 schedule but are <strong className="text-on-surface">not automatically synced</strong> with real-time data. Results shown in the app are updated manually and may not reflect the latest scores. For official standings, visit{' '}
           <a href="https://www.fifa.com/en/tournaments/mens/worldcup/canadamexicousa2026/standings" className="text-primary hover:underline" target="_blank" rel="noopener noreferrer">
             fifa.com
           </a>.
