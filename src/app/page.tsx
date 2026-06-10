@@ -51,18 +51,9 @@ export default async function HomePage() {
 
           {/* Text side */}
           <div className="px-8 py-12 lg:px-12 space-y-6 z-10">
-            <div className="flex items-center gap-2">
-              <span className="pill bg-secondary-container text-on-secondary-container border border-secondary-container rotate-[-2deg] font-bold text-xs px-4 py-1.5">
-                🔴 LIVE
-              </span>
-              <span className="pill bg-surface-container text-on-surface-variant border border-outline-variant">
-                Sui Testnet
-              </span>
-            </div>
-
             <div>
               <h1 className="text-4xl lg:text-5xl font-black leading-none tracking-tight text-on-surface">
-                Predict.<br />
+                Predict.{' '}
                 <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-sky-blue">
                   Collect.
                 </span><br />
@@ -116,7 +107,6 @@ export default async function HomePage() {
           {[
             {
               step: 1,
-              icon: '🔗',
               title: 'Connect & Collect',
               desc: 'Link your Sui wallet. Every prediction earns you team stickers for your on-chain album — like Panini, but permanent.',
               tilt: 'sticker-tilt-1',
@@ -124,7 +114,6 @@ export default async function HomePage() {
             },
             {
               step: 2,
-              icon: '⚽',
               title: 'Predict & Store',
               desc: 'Pick winners, predict scores, share hot takes. Each prediction is saved to Walrus Memory — on-chain, forever.',
               tilt: 'sticker-tilt-2',
@@ -132,16 +121,14 @@ export default async function HomePage() {
             },
             {
               step: 3,
-              icon: '🦭',
               title: 'Agent Evolves',
               desc: 'The AI recalls your history across sessions, detects your biases, and roasts your patterns. Day 1 ≠ Day 5.',
               tilt: 'sticker-tilt-3',
               stepBg: 'bg-tertiary text-white',
             },
-          ].map(({ step, icon, title, desc, tilt, stepBg }) => (
+          ].map(({ step, title, desc, tilt, stepBg }) => (
             <div key={step} className={`sticker-card ${tilt} peel-corner rounded-2xl p-6 space-y-3 relative overflow-hidden group`}>
               <div className={`inline-flex h-8 w-8 items-center justify-center rounded-full text-sm font-black ${stepBg}`}>{step}</div>
-              <div className="text-3xl">{icon}</div>
               <h3 className="text-lg font-bold text-on-surface">{title}</h3>
               <p className="text-on-surface-variant text-sm leading-relaxed">{desc}</p>
             </div>

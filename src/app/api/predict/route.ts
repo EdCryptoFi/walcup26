@@ -6,7 +6,9 @@ import { Prediction, User } from '@/types';
 import fs from 'fs';
 import path from 'path';
 
-const REAL_USERS_FILE = path.join(process.cwd(), 'data', 'real-users.json');
+const REAL_USERS_FILE = process.env.VERCEL
+  ? '/tmp/wc-real-users.json'
+  : path.join(process.cwd(), 'data', 'real-users.json');
 
 const PredictSchema = z.object({
   userId: z.string().min(1).max(40),
@@ -132,7 +134,7 @@ export async function POST(req: NextRequest) {
     user.stats.totalPredictions++;
   }
 
-  saveRealUsers(users);
+  try { saveRealUsers(users); } catch (err) { console.error('saveRealUsers failed:', err); }
 
   return NextResponse.json({ prediction, memwalBlobId, stored: !!memwalBlobId });
 }

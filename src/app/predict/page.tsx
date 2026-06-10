@@ -114,9 +114,14 @@ function PredictContent() {
           opinion: opinion || undefined,
         }),
       });
-      const data = await res.json();
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({}));
+        setLastSaved(`⚠ Error: ${err.error ?? 'Save failed — try again'}`);
+        return;
+      }
+      const data = await res.json().catch(() => ({}));
       setSavedCount((c) => c + 1);
-      setLastSaved(data.memwalBlobId ? `🦭 Saved on Walrus: ${data.memwalBlobId.slice(0, 12)}…` : '✓ Prediction saved');
+      setLastSaved(data.memwalBlobId ? `Saved on Walrus: ${data.memwalBlobId.slice(0, 12)}…` : '✓ Prediction saved');
       // Award both team stickers as collectibles
       if (userId) {
         addToCollection(userId, [selectedMatch.home, selectedMatch.away]);
@@ -305,10 +310,20 @@ function PredictContent() {
               disabled={!winner || saving}
               className="w-full bg-white text-primary rounded-xl px-4 py-3 font-black hover:scale-105 hover:shadow-lg transition-all disabled:opacity-40 disabled:cursor-not-allowed"
             >
-              {saving ? '🦭 Saving to Walrus...' : '🦭 Save to Walrus Memory'}
+              {saving ? 'Saving to Walrus...' : 'Save to Walrus Memory'}
             </button>
 
-            {lastSaved && <p className="text-xs text-white/60 text-center font-mono mt-2">{lastSaved}</p>}
+            {!account && (
+              <p className="text-[10px] text-white/50 text-center mt-1">
+                Connect a Sui Testnet wallet to store predictions on-chain
+              </p>
+            )}
+
+            {lastSaved && (
+              <p className={`text-xs text-center font-mono mt-2 ${lastSaved.startsWith('⚠') ? 'text-red-300' : 'text-white/60'}`}>
+                {lastSaved}
+              </p>
+            )}
             {newStickers.length > 0 && (
               <div className="flex items-center gap-2 justify-center animate-bounce p-2 rounded-xl bg-white/10 border border-white/20 mt-2">
                 <span className="text-xs font-bold text-white">🎉 New stickers earned!</span>
