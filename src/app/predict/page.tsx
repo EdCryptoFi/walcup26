@@ -4,7 +4,7 @@ import { useState, useEffect, useRef, Suspense } from 'react';
 import Image from 'next/image';
 import { useSearchParams } from 'next/navigation';
 import { useChat } from 'ai/react';
-import { useCurrentAccount } from '@mysten/dapp-kit';
+import { useCurrentAccount, useSignPersonalMessage } from '@mysten/dapp-kit';
 import { ConnectButton } from '@mysten/dapp-kit';
 import { TeamSticker } from '@/components/team-sticker';
 import { addToCollection } from '@/lib/sticker-collection';
@@ -57,6 +57,12 @@ function PredictContent() {
   const [newStickers, setNewStickers] = useState<string[]>([]);
   const [agentError, setAgentError] = useState('');
   const [walrusPhase, setWalrusPhase] = useState<'idle' | 'searching' | 'found'>('idle');
+  const [savedPredictions, setSavedPredictions] = useState<Array<{
+    matchLabel: string; homeFlag: string; awayFlag: string;
+    winnerLabel: string; score: string; walrusId?: string; signed: boolean;
+  }>>([]);
+
+  const { mutateAsync: signMessage } = useSignPersonalMessage();
   const bottomRef = useRef<HTMLDivElement>(null);
 
   const { messages, input, handleInputChange, handleSubmit, isLoading } = useChat({
@@ -99,6 +105,29 @@ function PredictContent() {
     e.preventDefault();
     if (!winner || !userId) return;
     setSaving(true);
+
+    const winnerLabel = winner === 'draw'
+      ? 'Draw'
+      : winner === selectedMatch.home
+        ? `${selectedMatch.homeFlag} ${selectedMatch.homeName}`
+        : `${selectedMatch.awayFlag} ${selectedMatch.awayName}`;
+
+    let signature: string | undefined;
+
+    // Wallet signature — proves ownership on-chain
+    if (account) {
+      try {
+        const predText = `WalCup26 Prediction\nMatch: ${selectedMatch.homeName} vs ${selectedMatch.awayName}\nPick: ${winnerLabel}${homeScore !== '' ? `\nScore: ${homeScore}-${awayScore}` : ''}\nConfidence: ${confidence}/5\nUser: ${userId}`;
+        const encoded = new TextEncoder().encode(predText);
+        const result = await signMessage({ message: encoded });
+        signature = result.signature;
+      } catch {
+        setLastSaved('⚠ Wallet signing rejected — prediction not saved');
+        setSaving(false);
+        return;
+      }
+    }
+
     try {
       const res = await fetch('/api/predict', {
         method: 'POST',
@@ -112,6 +141,7 @@ function PredictContent() {
           predictedAwayScore: awayScore !== '' ? parseInt(awayScore) : undefined,
           confidence,
           opinion: opinion || undefined,
+          signature,
         }),
       });
       if (!res.ok) {
@@ -121,8 +151,24 @@ function PredictContent() {
       }
       const data = await res.json().catch(() => ({}));
       setSavedCount((c) => c + 1);
-      setLastSaved(data.memwalBlobId ? `Saved on Walrus: ${data.memwalBlobId.slice(0, 12)}…` : '✓ Prediction saved');
-      // Award both team stickers as collectibles
+      setLastSaved(
+        data.memwalBlobId
+          ? `Stored on Walrus: ${data.memwalBlobId.slice(0, 10)}…`
+          : signature
+            ? '✓ Signed & saved'
+            : '✓ Prediction saved'
+      );
+
+      setSavedPredictions((prev) => [{
+        matchLabel: `${selectedMatch.homeName} vs ${selectedMatch.awayName}`,
+        homeFlag: selectedMatch.homeFlag,
+        awayFlag: selectedMatch.awayFlag,
+        winnerLabel,
+        score: homeScore !== '' ? `${homeScore}–${awayScore}` : '',
+        walrusId: data.memwalBlobId,
+        signed: !!signature,
+      }, ...prev]);
+
       if (userId) {
         addToCollection(userId, [selectedMatch.home, selectedMatch.away]);
         setNewStickers([selectedMatch.home, selectedMatch.away]);
@@ -310,7 +356,10 @@ function PredictContent() {
               disabled={!winner || saving}
               className="w-full bg-white text-primary rounded-xl px-4 py-3 font-black hover:scale-105 hover:shadow-lg transition-all disabled:opacity-40 disabled:cursor-not-allowed"
             >
-              {saving ? 'Saving to Walrus...' : 'Save to Walrus Memory'}
+              {saving
+                ? (account ? 'Signing & Saving...' : 'Saving to Walrus...')
+                : (account ? 'Sign & Save to Walrus' : 'Save to Walrus Memory')
+              }
             </button>
 
             {!account && (
@@ -337,7 +386,7 @@ function PredictContent() {
 
         {/* Points guide */}
         <div className="sticker-card sticker-tilt-2 rounded-xl p-4 text-xs space-y-2" style={{ background: 'rgba(255,195,41,0.1)' }}>
-          <p className="font-bold text-on-surface mb-1">🏆 Points System</p>
+          <p className="font-bold text-on-surface mb-1">Points System</p>
           {[
             ['Correct winner (group)', '3 pts'],
             ['Exact score bonus', '+2 pts'],
@@ -350,6 +399,32 @@ function PredictContent() {
             </div>
           ))}
         </div>
+
+        {/* My Predictions this session */}
+        {savedPredictions.length > 0 && (
+          <div className="sticker-card sticker-tilt-1 rounded-xl p-4 space-y-2">
+            <div className="flex items-center justify-between mb-2">
+              <p className="font-bold text-on-surface text-sm">My Predictions</p>
+              <span className="pill bg-primary/10 text-primary text-[10px] border border-primary/20">{savedPredictions.length}</span>
+            </div>
+            <div className="space-y-1.5 max-h-48 overflow-y-auto">
+              {savedPredictions.map((p, i) => (
+                <div key={i} className="flex items-start gap-2 text-xs bg-surface-container rounded-lg px-2.5 py-2">
+                  <div className="flex-1 min-w-0">
+                    <p className="text-on-surface-variant truncate">{p.homeFlag} {p.matchLabel} {p.awayFlag}</p>
+                    <p className="font-bold text-on-surface">
+                      {p.winnerLabel}{p.score ? ` · ${p.score}` : ''}
+                    </p>
+                  </div>
+                  <div className="flex flex-col items-end gap-0.5 flex-shrink-0">
+                    {p.signed && <span className="text-tertiary font-bold text-[9px]">✓ signed</span>}
+                    {p.walrusId && <span className="font-mono text-[9px] text-on-surface-variant">{p.walrusId.slice(0, 8)}…</span>}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
       </div>
 
       {/* RIGHT: AI Agent Chat */}

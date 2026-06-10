@@ -10,7 +10,9 @@ import { User } from '@/types';
 import fs from 'fs';
 import path from 'path';
 
-const REAL_USERS_FILE = path.join(process.cwd(), 'data', 'real-users.json');
+const REAL_USERS_FILE = process.env.VERCEL
+  ? '/tmp/wc-real-users.json'
+  : path.join(process.cwd(), 'data', 'real-users.json');
 
 function loadRealUsers(): User[] {
   try {
