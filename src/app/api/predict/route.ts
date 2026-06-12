@@ -36,7 +36,7 @@ const PredictSchema = z.object({
   predictedAwayScore: z.number().int().min(0).max(20).optional(),
   confidence: z.number().int().min(1).max(5),
   opinion: z.string().max(500).optional(),
-  signature: z.string().max(256).optional(),
+  signature: z.string().max(2048).optional(),
 });
 
 export async function POST(req: NextRequest) {
