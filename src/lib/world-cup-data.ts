@@ -214,7 +214,7 @@ export const ALL_GROUPS: Group[] = ['A','B','C','D','E','F','G','H','I','J','K',
 // Demo results — simulates matches played June 11-15 for leaderboard demo
 export const DEMO_RESULTS: Record<string, { homeScore: number; awayScore: number }> = {
   A1: { homeScore: 2, awayScore: 0 }, // MEX 2-0 RSA
-  A2: { homeScore: 1, awayScore: 1 }, // KOR 1-1 CZE
+  A2: { homeScore: 2, awayScore: 1 }, // KOR 2-1 CZE
   B1: { homeScore: 3, awayScore: 1 }, // CAN 3-1 BIH
   B2: { homeScore: 0, awayScore: 2 }, // QAT 0-2 SUI
   C1: { homeScore: 4, awayScore: 0 }, // BRA 4-0 MAR

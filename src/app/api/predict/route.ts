@@ -74,6 +74,11 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: 'Match not found' }, { status: 404 });
   }
 
+  // Block predictions for matches that have already started
+  if (new Date(match.date) <= new Date()) {
+    return NextResponse.json({ error: 'This match has already started — predictions are closed.' }, { status: 400 });
+  }
+
   // Validate predictedWinner is a valid team or 'draw'
   if (
     data.predictedWinner !== 'draw' &&

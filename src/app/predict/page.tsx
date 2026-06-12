@@ -8,7 +8,7 @@ import { useCurrentAccount, useSignPersonalMessage } from '@mysten/dapp-kit';
 import { ConnectButton } from '@mysten/dapp-kit';
 import { TeamSticker } from '@/components/team-sticker';
 import { addToCollection } from '@/lib/sticker-collection';
-
+import { MATCH_MAP } from '@/lib/world-cup-data';
 
 const MATCHES = [
   { id: 'A1', home: 'MEX', away: 'RSA', homeName: 'Mexico',       awayName: 'South Africa', homeFlag: '🇲🇽', awayFlag: '🇿🇦', group: 'A', date: 'Jun 11' },
@@ -31,6 +31,14 @@ const MATCHES = [
   { id: 'L1', home: 'ENG', away: 'CRO', homeName: 'England',      awayName: 'Croatia',      homeFlag: '🏴󠁧󠁢󠁥󠁮󠁧󠁿', awayFlag: '🇭🇷', group: 'L', date: 'Jun 17' },
 ];
 
+// Only matches that haven't started yet (uses real UTC dates from MATCH_MAP)
+const now = new Date();
+const OPEN_MATCHES = MATCHES.filter((m) => {
+  const fullMatch = MATCH_MAP.get(m.id);
+  return fullMatch ? new Date(fullMatch.date) > now : true;
+});
+const CLOSED_COUNT = MATCHES.length - OPEN_MATCHES.length;
+
 function PredictContent() {
   const searchParams = useSearchParams();
   const account = useCurrentAccount();
@@ -45,7 +53,7 @@ function PredictContent() {
   const userId = walletUserId ?? manualUserId;
   const username = walletUsername ?? manualUsername;
 
-  const [selectedMatch, setSelectedMatch] = useState(MATCHES[0]);
+  const [selectedMatch, setSelectedMatch] = useState(OPEN_MATCHES[0] ?? MATCHES[0]);
   const [winner, setWinner] = useState('');
   const [homeScore, setHomeScore] = useState('');
   const [awayScore, setAwayScore] = useState('');
@@ -265,22 +273,31 @@ function PredictContent() {
           <form onSubmit={handleSavePrediction} className="px-5 pb-5 pt-3">
             {/* Match selector */}
             <label className="block text-xs text-white/60 mb-1.5 font-bold uppercase tracking-wide">Select Match</label>
-            <select
-              value={selectedMatch.id}
-              onChange={(e) => {
-                const m = MATCHES.find((x) => x.id === e.target.value) ?? MATCHES[0];
-                setSelectedMatch(m);
-                setWinner('');
-              }}
-              className="w-full bg-white/10 border border-white/20 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-white/60 mb-5 backdrop-blur-sm"
-              style={{ colorScheme: 'dark' }}
-            >
-              {MATCHES.map((m) => (
-                <option key={m.id} value={m.id}>
-                  {m.homeFlag} {m.homeName} vs {m.awayName} {m.awayFlag} — Grp {m.group} · {m.date}
-                </option>
-              ))}
-            </select>
+            {CLOSED_COUNT > 0 && (
+              <p className="text-white/50 text-[10px] mb-1.5">
+                🔒 {CLOSED_COUNT} match{CLOSED_COUNT > 1 ? 'es' : ''} already started — predictions closed
+              </p>
+            )}
+            {OPEN_MATCHES.length === 0 ? (
+              <p className="text-white/60 text-xs text-center py-3">No upcoming matches available for predictions.</p>
+            ) : (
+              <select
+                value={selectedMatch.id}
+                onChange={(e) => {
+                  const m = OPEN_MATCHES.find((x) => x.id === e.target.value) ?? OPEN_MATCHES[0];
+                  setSelectedMatch(m);
+                  setWinner('');
+                }}
+                className="w-full bg-white/10 border border-white/20 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-white/60 mb-5 backdrop-blur-sm"
+                style={{ colorScheme: 'dark' }}
+              >
+                {OPEN_MATCHES.map((m) => (
+                  <option key={m.id} value={m.id}>
+                    {m.homeFlag} {m.homeName} vs {m.awayName} {m.awayFlag} — Grp {m.group} · {m.date}
+                  </option>
+                ))}
+              </select>
+            )}
 
             {/* Team picker */}
             <label className="block text-xs text-white/60 mb-3 font-bold uppercase tracking-wide">Who wins?</label>
