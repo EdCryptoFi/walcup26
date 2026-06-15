@@ -1,0 +1,4 @@
+# Large files not needed for deployment
+*.mov
+*.mp4
+/imgs/
