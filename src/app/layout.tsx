@@ -17,6 +17,10 @@ const plusJakartaSans = Plus_Jakarta_Sans({
 export const metadata: Metadata = {
   title: 'WalCup 26 — Sticker Album & Predictions on Walrus Memory',
   description: 'WalCup 26 — prediction arena with an AI agent that evolves across sessions. Collect stickers, make predictions, get roasted — all stored on-chain via Walrus Memory.',
+  icons: {
+    icon: '/imgs/logo.png',
+    apple: '/imgs/logo.png',
+  },
   openGraph: {
     title: 'WalCup 26 — Collect. Predict. Get Roasted.',
     description: 'AI agent with persistent Walrus Memory tracks your World Cup 2026 predictions, detects your biases, and never forgets. Collect all 48 team stickers.',
