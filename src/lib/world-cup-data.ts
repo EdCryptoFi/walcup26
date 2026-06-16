@@ -115,7 +115,7 @@ export const MATCHES: Match[] = [
   { id: 'F1', homeTeamId: 'NED', awayTeamId: 'TUN', date: '2026-06-14T18:00:00Z', venue: 'Arrowhead Stadium',  city: 'Kansas City',  stage: 'group', group: 'F', matchday: 1 },
   { id: 'F2', homeTeamId: 'JPN', awayTeamId: 'SWE', date: '2026-06-15T00:00:00Z', venue: 'Lumen Field',        city: 'Seattle',      stage: 'group', group: 'F', matchday: 1 },
   { id: 'F3', homeTeamId: 'NED', awayTeamId: 'JPN', date: '2026-06-21T18:00:00Z', venue: 'Lumen Field',        city: 'Seattle',      stage: 'group', group: 'F', matchday: 2 },
-  { id: 'F4', homeTeamId: 'SWE', awayTeamId: 'TUN', date: '2026-06-22T00:00:00Z', venue: 'Arrowhead Stadium',  city: 'Kansas City',  stage: 'group', group: 'F', matchday: 2 },
+  { id: 'F4', homeTeamId: 'SWE', awayTeamId: 'TUN', date: '2026-06-14T21:00:00Z', venue: 'Arrowhead Stadium',  city: 'Kansas City',  stage: 'group', group: 'F', matchday: 1 },
   { id: 'F5', homeTeamId: 'NED', awayTeamId: 'SWE', date: '2026-06-27T23:00:00Z', venue: 'Arrowhead Stadium',  city: 'Kansas City',  stage: 'group', group: 'F', matchday: 3 },
   { id: 'F6', homeTeamId: 'TUN', awayTeamId: 'JPN', date: '2026-06-27T23:00:00Z', venue: 'Lumen Field',        city: 'Seattle',      stage: 'group', group: 'F', matchday: 3 },
   // ── Group G ──────────────────────────────────
@@ -225,6 +225,7 @@ export const DEMO_RESULTS: Record<string, { homeScore: number; awayScore: number
   E2: { homeScore: 1, awayScore: 1 }, // CIV 1-1 ECU
   F1: { homeScore: 3, awayScore: 0 }, // NED 3-0 TUN
   F2: { homeScore: 2, awayScore: 1 }, // JPN 2-1 SWE
+  F4: { homeScore: 5, awayScore: 1 }, // SWE 5-1 TUN
   G1: { homeScore: 2, awayScore: 0 }, // BEL 2-0 EGY
   G2: { homeScore: 1, awayScore: 0 }, // IRN 1-0 NZL
   H1: { homeScore: 3, awayScore: 0 }, // ESP 3-0 CPV
