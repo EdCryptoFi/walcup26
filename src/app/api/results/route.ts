@@ -5,12 +5,7 @@ import { getMemWal, isMemWalConfigured, formatResultMemory } from '@/lib/memwal'
 import { scorePrediction } from '@/lib/scoring';
 import { loadRealUsers, saveRealUsers } from '@/lib/users-data';
 import { logError } from '@/lib/error-logger';
-import fs from 'fs';
-import path from 'path';
-
-const RESULTS_FILE = process.env.VERCEL
-  ? '/tmp/wc-results.json'
-  : path.join(process.cwd(), 'data', 'results.json');
+import { convexQuery, convexMutation, isConvexConfigured } from '@/lib/convex-client';
 
 const ResultSchema = z.object({
   matchId: z.string(),
@@ -18,30 +13,20 @@ const ResultSchema = z.object({
   awayScore: z.number().int().min(0).max(20),
 });
 
-function loadResults(): Record<string, { homeScore: number; awayScore: number }> {
-  try {
-    if (fs.existsSync(RESULTS_FILE)) return JSON.parse(fs.readFileSync(RESULTS_FILE, 'utf-8'));
-  } catch {}
-  return {};
-}
-
-function saveResults(results: Record<string, { homeScore: number; awayScore: number }>) {
-  const dir = path.dirname(RESULTS_FILE);
-  if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
-  fs.writeFileSync(RESULTS_FILE, JSON.stringify(results, null, 2));
-}
-
-// GET /api/results — fetch current results (demo + real)
-export function GET() {
-  const results = loadResults();
+// GET /api/results — fetch all scored match results from Convex
+export async function GET() {
+  if (!isConvexConfigured()) {
+    return NextResponse.json({ results: {} });
+  }
+  const results = await convexQuery<Record<string, { homeScore: number; awayScore: number }>>('matchResults:getAll') ?? {};
   return NextResponse.json({ results });
 }
 
-// POST /api/results — add a match result and score all user predictions (admin only)
+// POST /api/results — add a result and score all user predictions (admin only, idempotent)
 export async function POST(req: NextRequest) {
   const secret = req.headers.get('x-admin-secret');
   if (!process.env.ADMIN_SECRET || secret !== process.env.ADMIN_SECRET) {
-    return NextResponse.json({ error: 'Unauthorized — admin secret required' }, { status: 401 });
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
   const body = await req.json().catch(() => null);
@@ -54,10 +39,13 @@ export async function POST(req: NextRequest) {
   const match = MATCH_MAP.get(matchId);
   if (!match) return NextResponse.json({ error: 'Match not found' }, { status: 404 });
 
-  // Persist result
-  const results = loadResults();
-  results[matchId] = { homeScore, awayScore };
-  saveResults(results);
+  // Idempotency check — skip if already scored (prevents double-counting)
+  if (isConvexConfigured()) {
+    const existing = await convexQuery<{ matchId: string } | null>('matchResults:getById', { matchId });
+    if (existing) {
+      return NextResponse.json({ matchId, alreadyScored: true, skipped: true });
+    }
+  }
 
   // Score all real users' predictions for this match
   const matchWithResult = {
@@ -68,6 +56,11 @@ export async function POST(req: NextRequest) {
   const users = await loadRealUsers();
   const updated: string[] = [];
 
+  const actualWinner =
+    homeScore > awayScore ? match.homeTeamId
+    : homeScore < awayScore ? match.awayTeamId
+    : 'draw';
+
   for (const user of users) {
     const pred = user.predictions.find((p) => p.matchId === matchId);
     if (!pred) continue;
@@ -76,34 +69,30 @@ export async function POST(req: NextRequest) {
     pred.pointsEarned = pts;
     user.stats.points += pts;
 
-    const actualWinner =
-      homeScore > awayScore ? match.homeTeamId
-      : homeScore < awayScore ? match.awayTeamId
-      : 'draw';
-
     if (pred.predictedWinner === actualWinner) {
       user.stats.correctWinners++;
-      if (
-        pred.predictedHomeScore === homeScore &&
-        pred.predictedAwayScore === awayScore
-      ) {
+      if (pred.predictedHomeScore === homeScore && pred.predictedAwayScore === awayScore) {
         user.stats.exactScores++;
       }
     }
 
-    const played = user.predictions.filter((p) => results[p.matchId]).length;
+    // Recalculate accuracy over all played matches
+    const allResults = isConvexConfigured()
+      ? (await convexQuery<Record<string, unknown>>('matchResults:getAll') ?? {})
+      : {};
+    const tempResults = { ...allResults, [matchId]: { homeScore, awayScore } };
+    const played = user.predictions.filter((p) => tempResults[p.matchId]).length;
     user.stats.winnerAccuracy = played > 0 ? user.stats.correctWinners / played : 0;
 
-    // Store result memory in MemWal
+    // Write result memory to MemWal
     if (isMemWalConfigured()) {
       try {
         const memwal = getMemWal(user.id);
         const home = TEAM_MAP.get(match.homeTeamId);
         const away = TEAM_MAP.get(match.awayTeamId);
         const predictedLabel =
-          pred.predictedWinner === 'draw'
-            ? 'a draw'
-            : `${TEAM_MAP.get(pred.predictedWinner)?.name ?? pred.predictedWinner} win`;
+          pred.predictedWinner === 'draw' ? 'a draw'
+          : `${TEAM_MAP.get(pred.predictedWinner)?.name ?? pred.predictedWinner} win`;
 
         const text = formatResultMemory({
           username: user.username,
@@ -124,12 +113,22 @@ export async function POST(req: NextRequest) {
     updated.push(user.id);
   }
 
-  await saveRealUsers(users);
+  await saveRealUsers(users).catch((err) =>
+    logError('results:save', 'saveRealUsers failed', err instanceof Error ? err.message : String(err))
+  );
 
-  return NextResponse.json({
-    matchId,
-    homeScore,
-    awayScore,
-    usersScored: updated.length,
-  });
+  // Persist result to Convex (prevents double-scoring on future calls)
+  if (isConvexConfigured()) {
+    await convexMutation('matchResults:upsert', {
+      matchId,
+      homeScore,
+      awayScore,
+      scoredAt: new Date().toISOString(),
+      usersScored: updated.length,
+    }).catch((err) =>
+      logError('results:convex', 'Convex upsert failed', err instanceof Error ? err.message : String(err))
+    );
+  }
+
+  return NextResponse.json({ matchId, homeScore, awayScore, usersScored: updated.length });
 }

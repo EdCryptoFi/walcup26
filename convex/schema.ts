@@ -21,4 +21,12 @@ export default defineSchema({
     message: v.string(),
     details: v.optional(v.string()),
   }).index("by_timestamp", ["timestamp"]),
+
+  matchResults: defineTable({
+    matchId: v.string(),           // e.g. "A1", "F4"
+    homeScore: v.number(),
+    awayScore: v.number(),
+    scoredAt: v.string(),          // ISO timestamp when users were scored
+    usersScored: v.number(),
+  }).index("by_matchId", ["matchId"]),
 });
