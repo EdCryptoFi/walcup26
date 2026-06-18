@@ -10,6 +10,7 @@
 
 import type * as backups from "../backups.js";
 import type * as errorLogs from "../errorLogs.js";
+import type * as matchResults from "../matchResults.js";
 import type * as realUsers from "../realUsers.js";
 
 import type {
@@ -21,6 +22,7 @@ import type {
 declare const fullApi: ApiFromModules<{
   backups: typeof backups;
   errorLogs: typeof errorLogs;
+  matchResults: typeof matchResults;
   realUsers: typeof realUsers;
 }>;
 

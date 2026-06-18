@@ -20,6 +20,14 @@ export const getById = query({
   },
 });
 
+export const deleteAll = mutation({
+  args: {},
+  handler: async (ctx) => {
+    const rows = await ctx.db.query('matchResults').collect();
+    for (const r of rows) await ctx.db.delete(r._id);
+  },
+});
+
 export const upsert = mutation({
   args: {
     matchId: v.string(),

@@ -114,7 +114,7 @@ export const MATCHES: Match[] = [
   // ── Group F ──────────────────────────────────
   { id: 'F1', homeTeamId: 'NED', awayTeamId: 'TUN', date: '2026-06-14T18:00:00Z', venue: 'Arrowhead Stadium',  city: 'Kansas City',  stage: 'group', group: 'F', matchday: 1 },
   { id: 'F2', homeTeamId: 'JPN', awayTeamId: 'SWE', date: '2026-06-15T00:00:00Z', venue: 'Lumen Field',        city: 'Seattle',      stage: 'group', group: 'F', matchday: 1 },
-  { id: 'F3', homeTeamId: 'NED', awayTeamId: 'JPN', date: '2026-06-21T18:00:00Z', venue: 'Lumen Field',        city: 'Seattle',      stage: 'group', group: 'F', matchday: 2 },
+  { id: 'F3', homeTeamId: 'NED', awayTeamId: 'JPN', date: '2026-06-14T18:00:00Z', venue: 'Lumen Field',        city: 'Seattle',      stage: 'group', group: 'F', matchday: 1 },
   { id: 'F4', homeTeamId: 'SWE', awayTeamId: 'TUN', date: '2026-06-14T21:00:00Z', venue: 'Arrowhead Stadium',  city: 'Kansas City',  stage: 'group', group: 'F', matchday: 1 },
   { id: 'F5', homeTeamId: 'NED', awayTeamId: 'SWE', date: '2026-06-27T23:00:00Z', venue: 'Arrowhead Stadium',  city: 'Kansas City',  stage: 'group', group: 'F', matchday: 3 },
   { id: 'F6', homeTeamId: 'TUN', awayTeamId: 'JPN', date: '2026-06-27T23:00:00Z', venue: 'Lumen Field',        city: 'Seattle',      stage: 'group', group: 'F', matchday: 3 },
@@ -211,23 +211,26 @@ export function computeGroupStandings(group: Group, matches: Match[]) {
 
 export const ALL_GROUPS: Group[] = ['A','B','C','D','E','F','G','H','I','J','K','L'];
 
-// Demo results — simulates matches played June 11-15 for leaderboard demo
+// Real results sourced from ESPN — updated Jun 18 2026
 export const DEMO_RESULTS: Record<string, { homeScore: number; awayScore: number }> = {
-  A1: { homeScore: 2, awayScore: 0 }, // MEX 2-0 RSA
-  A2: { homeScore: 2, awayScore: 1 }, // KOR 2-1 CZE
-  B1: { homeScore: 3, awayScore: 1 }, // CAN 3-1 BIH
-  B2: { homeScore: 0, awayScore: 2 }, // QAT 0-2 SUI
-  C1: { homeScore: 4, awayScore: 0 }, // BRA 4-0 MAR
-  C2: { homeScore: 0, awayScore: 2 }, // HAI 0-2 SCO
-  D1: { homeScore: 1, awayScore: 0 }, // USA 1-0 PAR
-  D2: { homeScore: 0, awayScore: 2 }, // AUS 0-2 TUR
-  E1: { homeScore: 3, awayScore: 0 }, // GER 3-0 CUW
-  E2: { homeScore: 1, awayScore: 1 }, // CIV 1-1 ECU
-  F1: { homeScore: 3, awayScore: 0 }, // NED 3-0 TUN
-  F2: { homeScore: 2, awayScore: 1 }, // JPN 2-1 SWE
-  F4: { homeScore: 5, awayScore: 1 }, // SWE 5-1 TUN
-  G1: { homeScore: 2, awayScore: 0 }, // BEL 2-0 EGY
-  G2: { homeScore: 1, awayScore: 0 }, // IRN 1-0 NZL
-  H1: { homeScore: 3, awayScore: 0 }, // ESP 3-0 CPV
-  H2: { homeScore: 0, awayScore: 2 }, // KSA 0-2 URU
+  A1: { homeScore: 2, awayScore: 0 }, // MEX 2-0 RSA  ✓ ESPN Jun 11
+  A2: { homeScore: 2, awayScore: 1 }, // KOR 2-1 CZE  ✓ ESPN Jun 11
+  B1: { homeScore: 1, awayScore: 1 }, // CAN 1-1 BIH    ESPN Jun 12
+  B2: { homeScore: 1, awayScore: 1 }, // QAT 1-1 SUI    ESPN Jun 13
+  C1: { homeScore: 1, awayScore: 1 }, // BRA 1-1 MAR    ESPN Jun 13
+  C2: { homeScore: 0, awayScore: 1 }, // HAI 0-1 SCO    ESPN Jun 13
+  D1: { homeScore: 4, awayScore: 1 }, // USA 4-1 PAR    ESPN Jun 12
+  D2: { homeScore: 2, awayScore: 0 }, // AUS 2-0 TUR    ESPN Jun 14
+  E1: { homeScore: 7, awayScore: 1 }, // GER 7-1 CUW    ESPN Jun 14
+  E2: { homeScore: 1, awayScore: 0 }, // CIV 1-0 ECU    ESPN Jun 14
+  F3: { homeScore: 2, awayScore: 2 }, // NED 2-2 JPN    ESPN Jun 14
+  F4: { homeScore: 5, awayScore: 1 }, // SWE 5-1 TUN  ✓ ESPN Jun 14
+  G1: { homeScore: 1, awayScore: 1 }, // BEL 1-1 EGY    ESPN Jun 15
+  G2: { homeScore: 2, awayScore: 2 }, // IRN 2-2 NZL    ESPN Jun 15
+  H1: { homeScore: 0, awayScore: 0 }, // ESP 0-0 CPV    ESPN Jun 15
+  H2: { homeScore: 1, awayScore: 1 }, // KSA 1-1 URU    ESPN Jun 15
+  I1: { homeScore: 3, awayScore: 1 }, // FRA 3-1 SEN    ESPN Jun 16
+  J1: { homeScore: 3, awayScore: 0 }, // ARG 3-0 ALG    ESPN Jun 16
+  K1: { homeScore: 1, awayScore: 1 }, // POR 1-1 COD    ESPN Jun 17
+  L1: { homeScore: 4, awayScore: 2 }, // ENG 4-2 CRO    ESPN Jun 17
 };

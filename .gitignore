@@ -24,3 +24,6 @@ Thumbs.db
 *.log
 npm-debug.log*
 .vercel
+WalCup 26.mov
+imgs/video/*.mov
+imgs/video/*.mp4
