@@ -233,4 +233,8 @@ export const DEMO_RESULTS: Record<string, { homeScore: number; awayScore: number
   J1: { homeScore: 3, awayScore: 0 }, // ARG 3-0 ALG    ESPN Jun 16
   K1: { homeScore: 1, awayScore: 1 }, // POR 1-1 COD    ESPN Jun 17
   L1: { homeScore: 4, awayScore: 2 }, // ENG 4-2 CRO    ESPN Jun 17
+  I2: { homeScore: 1, awayScore: 4 }, // IRQ 1-4 NOR    ESPN Jun 16
+  J2: { homeScore: 3, awayScore: 1 }, // AUT 3-1 JOR    ESPN Jun 17
+  K2: { homeScore: 1, awayScore: 3 }, // UZB 1-3 COL    ESPN Jun 18
+  L2: { homeScore: 1, awayScore: 0 }, // GHA 1-0 PAN    ESPN Jun 18
 };

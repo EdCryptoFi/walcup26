@@ -8,28 +8,28 @@ import { useCurrentAccount, useSignPersonalMessage } from '@mysten/dapp-kit';
 import { ConnectButton } from '@mysten/dapp-kit';
 import { TeamSticker } from '@/components/team-sticker';
 import { addToCollection } from '@/lib/sticker-collection';
-import { MATCH_MAP } from '@/lib/world-cup-data';
+import { MATCHES as ALL_MATCHES, MATCH_MAP, TEAM_MAP } from '@/lib/world-cup-data';
 
-const MATCHES = [
-  { id: 'A1', home: 'MEX', away: 'RSA', homeName: 'Mexico',       awayName: 'South Africa', homeFlag: '🇲🇽', awayFlag: '🇿🇦', group: 'A', date: 'Jun 11' },
-  { id: 'A2', home: 'KOR', away: 'CZE', homeName: 'South Korea',  awayName: 'Czechia',      homeFlag: '🇰🇷', awayFlag: '🇨🇿', group: 'A', date: 'Jun 11' },
-  { id: 'B1', home: 'CAN', away: 'BIH', homeName: 'Canada',       awayName: 'Bosnia',       homeFlag: '🇨🇦', awayFlag: '🇧🇦', group: 'B', date: 'Jun 12' },
-  { id: 'B2', home: 'QAT', away: 'SUI', homeName: 'Qatar',        awayName: 'Switzerland',  homeFlag: '🇶🇦', awayFlag: '🇨🇭', group: 'B', date: 'Jun 13' },
-  { id: 'C1', home: 'BRA', away: 'MAR', homeName: 'Brazil',       awayName: 'Morocco',      homeFlag: '🇧🇷', awayFlag: '🇲🇦', group: 'C', date: 'Jun 13' },
-  { id: 'C2', home: 'HAI', away: 'SCO', homeName: 'Haiti',        awayName: 'Scotland',     homeFlag: '🇭🇹', awayFlag: '🏴󠁧󠁢󠁳󠁣󠁴󠁿', group: 'C', date: 'Jun 13' },
-  { id: 'D1', home: 'USA', away: 'PAR', homeName: 'USA',          awayName: 'Paraguay',     homeFlag: '🇺🇸', awayFlag: '🇵🇾', group: 'D', date: 'Jun 12' },
-  { id: 'D2', home: 'AUS', away: 'TUR', homeName: 'Australia',    awayName: 'Türkiye',      homeFlag: '🇦🇺', awayFlag: '🇹🇷', group: 'D', date: 'Jun 13' },
-  { id: 'E1', home: 'GER', away: 'CUW', homeName: 'Germany',      awayName: 'Curaçao',      homeFlag: '🇩🇪', awayFlag: '🇨🇼', group: 'E', date: 'Jun 14' },
-  { id: 'E2', home: 'CIV', away: 'ECU', homeName: 'Ivory Coast',  awayName: 'Ecuador',      homeFlag: '🇨🇮', awayFlag: '🇪🇨', group: 'E', date: 'Jun 14' },
-  { id: 'F1', home: 'NED', away: 'TUN', homeName: 'Netherlands',  awayName: 'Tunisia',      homeFlag: '🇳🇱', awayFlag: '🇹🇳', group: 'F', date: 'Jun 14' },
-  { id: 'F2', home: 'JPN', away: 'SWE', homeName: 'Japan',        awayName: 'Sweden',       homeFlag: '🇯🇵', awayFlag: '🇸🇪', group: 'F', date: 'Jun 14' },
-  { id: 'G1', home: 'BEL', away: 'EGY', homeName: 'Belgium',      awayName: 'Egypt',        homeFlag: '🇧🇪', awayFlag: '🇪🇬', group: 'G', date: 'Jun 15' },
-  { id: 'H1', home: 'ESP', away: 'CPV', homeName: 'Spain',        awayName: 'Cape Verde',   homeFlag: '🇪🇸', awayFlag: '🇨🇻', group: 'H', date: 'Jun 15' },
-  { id: 'I1', home: 'FRA', away: 'SEN', homeName: 'France',       awayName: 'Senegal',      homeFlag: '🇫🇷', awayFlag: '🇸🇳', group: 'I', date: 'Jun 16' },
-  { id: 'J1', home: 'ARG', away: 'ALG', homeName: 'Argentina',    awayName: 'Algeria',      homeFlag: '🇦🇷', awayFlag: '🇩🇿', group: 'J', date: 'Jun 16' },
-  { id: 'K1', home: 'POR', away: 'COD', homeName: 'Portugal',     awayName: 'DR Congo',     homeFlag: '🇵🇹', awayFlag: '🇨🇩', group: 'K', date: 'Jun 17' },
-  { id: 'L1', home: 'ENG', away: 'CRO', homeName: 'England',      awayName: 'Croatia',      homeFlag: '🏴󠁧󠁢󠁥󠁮󠁧󠁿', awayFlag: '🇭🇷', group: 'L', date: 'Jun 17' },
-];
+// Build display list from world-cup-data so it auto-includes MD2/MD3 and never goes stale
+const MATCHES = ALL_MATCHES
+  .filter((m) => m.stage === 'group')
+  .map((m) => {
+    const home = TEAM_MAP.get(m.homeTeamId)!;
+    const away = TEAM_MAP.get(m.awayTeamId)!;
+    const d = new Date(m.date);
+    const dateLabel = d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', timeZone: 'UTC' });
+    return {
+      id: m.id,
+      home: m.homeTeamId,
+      away: m.awayTeamId,
+      homeName: home?.name ?? m.homeTeamId,
+      awayName: away?.name ?? m.awayTeamId,
+      homeFlag: home?.flag ?? '🏳️',
+      awayFlag: away?.flag ?? '🏳️',
+      group: m.group,
+      date: dateLabel,
+    };
+  });
 
 function computeOpenMatches() {
   const now = new Date();
