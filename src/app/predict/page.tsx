@@ -31,12 +31,10 @@ const MATCHES = ALL_MATCHES
     };
   });
 
-function computeOpenMatches() {
-  const now = new Date();
-  return MATCHES.filter((m) => {
-    const fullMatch = MATCH_MAP.get(m.id);
-    return fullMatch ? new Date(fullMatch.date) > now : true;
-  });
+// A match is open if it has no result yet (fetched from Convex via API)
+// This is the source of truth — no hardcoded dates needed
+function computeOpenMatches(scoredIds: Set<string>) {
+  return MATCHES.filter((m) => !scoredIds.has(m.id));
 }
 
 function PredictContent() {
@@ -53,18 +51,37 @@ function PredictContent() {
   const userId = walletUserId ?? manualUserId;
   const username = walletUsername ?? manualUsername;
 
-  const [openMatches, setOpenMatches] = useState(computeOpenMatches);
+  const [scoredIds, setScoredIds] = useState<Set<string>>(new Set());
+  const [openMatches, setOpenMatches] = useState<typeof MATCHES>([]);
   const closedCount = MATCHES.length - openMatches.length;
 
+  // Fetch results from API and derive open matches — auto-syncs every 60s
   useEffect(() => {
-    const timer = setInterval(() => setOpenMatches(computeOpenMatches()), 60_000);
+    async function refresh() {
+      try {
+        const res = await fetch('/api/results');
+        const data = await res.json();
+        const ids = new Set<string>(Object.keys(data.results ?? {}));
+        setScoredIds(ids);
+        setOpenMatches(computeOpenMatches(ids));
+      } catch {
+        // On error keep current state
+      }
+    }
+    refresh();
+    const timer = setInterval(refresh, 60_000);
     return () => clearInterval(timer);
   }, []);
 
-  const [selectedMatch, setSelectedMatch] = useState(() => {
-    const open = computeOpenMatches();
-    return open[0] ?? MATCHES[0];
-  });
+  const [selectedMatch, setSelectedMatch] = useState(MATCHES[0]);
+
+  // Update selected match when open list loads
+  useEffect(() => {
+    setSelectedMatch((prev) => {
+      if (prev && openMatches.find((m) => m.id === prev.id)) return prev;
+      return openMatches[0] ?? MATCHES[0];
+    });
+  }, [openMatches]);
   const [winner, setWinner] = useState('');
   const [homeScore, setHomeScore] = useState('');
   const [awayScore, setAwayScore] = useState('');
