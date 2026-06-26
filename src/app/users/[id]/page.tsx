@@ -1,6 +1,7 @@
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
-import { MATCH_MAP, TEAM_MAP, DEMO_RESULTS } from '@/lib/world-cup-data';
+import { MATCH_MAP, TEAM_MAP } from '@/lib/world-cup-data';
+import { getResults } from '@/lib/get-results';
 import { getUserById } from '@/lib/users-data';
 import { MemoryDepth } from '@/components/memory-depth';
 
@@ -18,7 +19,7 @@ export const dynamic = 'force-dynamic';
 
 export default async function UserProfilePage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
-  const user = await getUserById(id);
+  const [user, results] = await Promise.all([getUserById(id), getResults()]);
   if (!user) notFound();
 
   const predictionsWithMatch = user.predictions
@@ -27,7 +28,7 @@ export default async function UserProfilePage({ params }: { params: Promise<{ id
       if (!match) return null;
       const home = TEAM_MAP.get(match.homeTeamId);
       const away = TEAM_MAP.get(match.awayTeamId);
-      const result = DEMO_RESULTS[p.matchId];
+      const result = results[p.matchId];
       const actualWinner = result
         ? result.homeScore > result.awayScore
           ? match.homeTeamId

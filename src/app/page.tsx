@@ -1,6 +1,7 @@
 import Image from 'next/image';
 import Link from 'next/link';
-import { MATCHES, DEMO_RESULTS, TEAM_MAP, ALL_GROUPS, getGroupTeams } from '@/lib/world-cup-data';
+import { MATCHES, TEAM_MAP, ALL_GROUPS, getGroupTeams } from '@/lib/world-cup-data';
+import { getResults } from '@/lib/get-results';
 import { TeamSticker } from '@/components/team-sticker';
 import { PlayerCount } from '@/components/player-count';
 import { getLeaderboard } from '@/lib/users-data';
@@ -18,9 +19,9 @@ function RankBadge({ rank }: { rank: number }) {
 }
 
 export default async function HomePage() {
-  const leaderboard = await getLeaderboard();
+  const [leaderboard, results] = await Promise.all([getLeaderboard(), getResults()]);
   const top8 = leaderboard.slice(0, 8);
-  const playedCount = Object.keys(DEMO_RESULTS).length;
+  const playedCount = Object.keys(results).length;
 
   return (
     <div className="space-y-16">
@@ -208,7 +209,7 @@ export default async function HomePage() {
           <div>
             <h3 className="text-lg font-bold text-on-surface mb-3">📋 Latest Results</h3>
             <div className="space-y-1.5">
-              {Object.entries(DEMO_RESULTS).slice(0, 6).map(([id, res]) => {
+              {Object.entries(results).slice(-6).reverse().map(([id, res]) => {
                 const m = MATCHES.find((x) => x.id === id)!;
                 const home = TEAM_MAP.get(m.homeTeamId);
                 const away = TEAM_MAP.get(m.awayTeamId);

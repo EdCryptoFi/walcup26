@@ -1,5 +1,6 @@
 import Link from 'next/link';
-import { ALL_GROUPS, TEAM_MAP, getGroupTeams, getGroupMatches, DEMO_RESULTS } from '@/lib/world-cup-data';
+import { ALL_GROUPS, TEAM_MAP, getGroupTeams, getGroupMatches } from '@/lib/world-cup-data';
+import { getResults, ResultMap } from '@/lib/get-results';
 import { Group } from '@/types';
 import { TeamSticker } from '@/components/team-sticker';
 
@@ -13,7 +14,7 @@ const LABEL_COLORS = [
   'bg-primary-container text-on-primary-container',
 ];
 
-function GroupCard({ group, index }: { group: Group; index: number }) {
+function GroupCard({ group, index, results }: { group: Group; index: number; results: ResultMap }) {
   const teams = getGroupTeams(group);
   const matches = getGroupMatches(group);
   const tilt = ['sticker-tilt-1', 'sticker-tilt-2', 'sticker-tilt-3'][index % 3];
@@ -24,7 +25,7 @@ function GroupCard({ group, index }: { group: Group; index: number }) {
   );
 
   for (const m of matches) {
-    const res = DEMO_RESULTS[m.id];
+    const res = results[m.id];
     if (!res) continue;
     const h = standings.get(m.homeTeamId);
     const a = standings.get(m.awayTeamId);
@@ -41,7 +42,7 @@ function GroupCard({ group, index }: { group: Group; index: number }) {
     (a, b) => b.pts - a.pts || (b.gf - b.ga) - (a.gf - a.ga) || b.gf - a.gf
   );
 
-  const playedMatches = matches.filter((m) => DEMO_RESULTS[m.id]);
+  const playedMatches = matches.filter((m) => results[m.id]);
 
   return (
     <div className={`sticker-card ${tilt} peel-corner rounded-xl overflow-hidden`}>
@@ -96,7 +97,7 @@ function GroupCard({ group, index }: { group: Group; index: number }) {
           {playedMatches.map((m) => {
             const home = TEAM_MAP.get(m.homeTeamId);
             const away = TEAM_MAP.get(m.awayTeamId);
-            const res = DEMO_RESULTS[m.id];
+            const res = results[m.id]!;
             return (
               <div key={m.id} className="flex items-center text-sm gap-2 bg-surface-container rounded-lg px-2 py-1.5">
                 <span className="flex-1 text-on-surface-variant truncate">{home?.flag} {home?.code}</span>
@@ -111,7 +112,11 @@ function GroupCard({ group, index }: { group: Group; index: number }) {
   );
 }
 
-export default function GroupsPage() {
+export const revalidate = 60; // Next.js ISR: re-fetch Convex every 60s
+
+export default async function GroupsPage() {
+  const results = await getResults();
+
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between flex-wrap gap-3">
@@ -131,7 +136,7 @@ export default function GroupsPage() {
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-4">
-        {ALL_GROUPS.map((g, i) => <GroupCard key={g} group={g} index={i} />)}
+        {ALL_GROUPS.map((g, i) => <GroupCard key={g} group={g} index={i} results={results} />)}
       </div>
 
       <div className="sticker-card sticker-tilt-1 rounded-xl p-4 text-sm text-on-surface-variant" style={{ background: 'rgba(0,74,198,0.04)' }}>

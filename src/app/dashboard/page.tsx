@@ -6,7 +6,7 @@ import Link from 'next/link';
 import { useCurrentAccount } from '@mysten/dapp-kit';
 import { ConnectButton } from '@mysten/dapp-kit';
 import { User, MemWalQueryResponse } from '@/types';
-import { MATCH_MAP, TEAM_MAP, DEMO_RESULTS } from '@/lib/world-cup-data';
+import { MATCH_MAP, TEAM_MAP } from '@/lib/world-cup-data';
 import { TeamSticker, TeamBadge } from '@/components/team-sticker';
 import { getCollection } from '@/lib/sticker-collection';
 
@@ -54,10 +54,24 @@ export default function DashboardPage() {
   const [collection, setCollection] = useState<string[]>([]);
   const [liveMemoryCount, setLiveMemoryCount] = useState<number | null>(null);
   const [liveBlobs, setLiveBlobs] = useState<Array<{ blobId: string; text: string }>>([]);
+  const [results, setResults] = useState<Record<string, { homeScore: number; awayScore: number }>>({});
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const userId = account ? `sui-${account.address.slice(2, 10)}` : null;
   const username = account ? `${account.address.slice(0, 6)}…${account.address.slice(-4)}` : null;
+
+  // Auto-sync results from Convex every 60s
+  useEffect(() => {
+    function fetchResults() {
+      fetch('/api/results')
+        .then((r) => r.json())
+        .then((d) => setResults(d.results ?? {}))
+        .catch(() => {});
+    }
+    fetchResults();
+    const t = setInterval(fetchResults, 60_000);
+    return () => clearInterval(t);
+  }, []);
 
   useEffect(() => {
     if (!userId) { setLiveMemoryCount(null); setLiveBlobs([]); return; }
@@ -131,10 +145,10 @@ export default function DashboardPage() {
 
   const addr = account.address;
   const predictions = user?.predictions ?? [];
-  const playedPreds = predictions.filter((p) => !!DEMO_RESULTS[p.matchId]);
-  const upcomingPreds = predictions.filter((p) => !DEMO_RESULTS[p.matchId]);
+  const playedPreds = predictions.filter((p) => !!results[p.matchId]);
+  const upcomingPreds = predictions.filter((p) => !results[p.matchId]);
   const correctPreds = playedPreds.filter((p) => {
-    const res = DEMO_RESULTS[p.matchId];
+    const res = results[p.matchId];
     const m = MATCH_MAP.get(p.matchId);
     if (!m || !res) return false;
     const actual = res.homeScore > res.awayScore ? m.homeTeamId : res.homeScore < res.awayScore ? m.awayTeamId : 'draw';
@@ -302,7 +316,7 @@ export default function DashboardPage() {
             {playedPreds.slice(-10).map((p) => {
               const match = MATCH_MAP.get(p.matchId);
               if (!match) return null;
-              const res = DEMO_RESULTS[p.matchId];
+              const res = results[p.matchId];
               const actual = res
                 ? res.homeScore > res.awayScore ? match.homeTeamId
                 : res.homeScore < res.awayScore ? match.awayTeamId : 'draw'
@@ -405,7 +419,7 @@ export default function DashboardPage() {
                   {playedPreds.map((p) => {
                     const match = MATCH_MAP.get(p.matchId);
                     if (!match) return null;
-                    const res = DEMO_RESULTS[p.matchId];
+                    const res = results[p.matchId];
                     const actual = res
                       ? res.homeScore > res.awayScore ? match.homeTeamId
                       : res.homeScore < res.awayScore ? match.awayTeamId : 'draw'
@@ -621,7 +635,7 @@ export default function DashboardPage() {
                   const predicted = p.predictedWinner === 'draw'
                     ? '🤝 Draw'
                     : `${TEAM_MAP.get(p.predictedWinner)?.flag} ${TEAM_MAP.get(p.predictedWinner)?.name ?? p.predictedWinner}`;
-                  const hasResult = !!DEMO_RESULTS[p.matchId];
+                  const hasResult = !!results[p.matchId];
                   return (
                     <div key={p.id} className="flex items-center gap-3 rounded-xl bg-surface-container px-4 py-3 text-xs group">
                       <div className="flex-1 min-w-0">

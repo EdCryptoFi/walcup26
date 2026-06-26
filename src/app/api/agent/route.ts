@@ -4,7 +4,8 @@ import { withMemWal } from '@mysten-incubation/memwal/ai';
 import { NextRequest } from 'next/server';
 import { z } from 'zod';
 import { isMemWalConfigured } from '@/lib/memwal';
-import { TEAMS, MATCHES, TEAM_MAP, DEMO_RESULTS } from '@/lib/world-cup-data';
+import { TEAMS, MATCHES, TEAM_MAP } from '@/lib/world-cup-data';
+import { getResults } from '@/lib/get-results';
 import { SEED_USERS } from '@/lib/seed-data';
 import { loadRealUsers } from '@/lib/users-data';
 
@@ -74,7 +75,7 @@ export async function POST(req: NextRequest) {
 
   const { messages, userId, username } = parsed.data;
 
-  const realUsers = await loadRealUsers();
+  const [realUsers, liveResults] = await Promise.all([loadRealUsers(), getResults()]);
   const seedUser = SEED_USERS.find((u) => u.id === userId);
   const realUser = realUsers.find((u) => u.id === userId);
   const user = realUser ?? seedUser;
@@ -87,7 +88,7 @@ export async function POST(req: NextRequest) {
       if (!match) return null;
       const h = TEAM_MAP.get(match.homeTeamId);
       const a = TEAM_MAP.get(match.awayTeamId);
-      const res = DEMO_RESULTS[p.matchId];
+      const res = liveResults[p.matchId];
       const winnerName = p.predictedWinner === 'draw' ? 'Draw' : (TEAM_MAP.get(p.predictedWinner)?.name ?? p.predictedWinner);
       const scoreStr = p.predictedHomeScore !== undefined ? ` (${p.predictedHomeScore}-${p.predictedAwayScore})` : '';
       const resultStr = res ? ` | RESULT: ${res.homeScore}-${res.awayScore}` : ' | Not played yet';
@@ -101,10 +102,10 @@ export async function POST(req: NextRequest) {
   }
 
   // Demo results context
-  const playedMatches = Object.keys(DEMO_RESULTS)
+  const playedMatches = Object.keys(liveResults)
     .map((id) => {
       const m = MATCHES.find((x) => x.id === id)!;
-      const res = DEMO_RESULTS[id];
+      const res = liveResults[id];
       const h = TEAM_MAP.get(m.homeTeamId);
       const a = TEAM_MAP.get(m.awayTeamId);
       return `${h?.flag}${h?.name} ${res.homeScore}-${res.awayScore} ${a?.name}${a?.flag}`;
