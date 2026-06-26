@@ -269,4 +269,10 @@ export const DEMO_RESULTS: Record<string, { homeScore: number; awayScore: number
   B6: { homeScore: 2, awayScore: 1 }, // SUI 2-1 CAN    ESPN Jun 24
   C5: { homeScore: 4, awayScore: 2 }, // MAR 4-2 HAI    ESPN Jun 24
   C6: { homeScore: 0, awayScore: 3 }, // SCO 0-3 BRA    ESPN Jun 24
+  D5: { homeScore: 0, awayScore: 0 }, // PAR 0-0 AUS    ESPN Jun 25
+  D6: { homeScore: 3, awayScore: 2 }, // TUR 3-2 USA    ESPN Jun 25
+  E5: { homeScore: 0, awayScore: 2 }, // CUW 0-2 CIV    ESPN Jun 25
+  E6: { homeScore: 2, awayScore: 1 }, // ECU 2-1 GER    ESPN Jun 25
+  F1: { homeScore: 1, awayScore: 3 }, // TUN 1-3 NED    ESPN Jun 25
+  F2: { homeScore: 1, awayScore: 1 }, // JPN 1-1 SWE    ESPN Jun 25
 };
