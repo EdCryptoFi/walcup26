@@ -10,9 +10,8 @@ import { TeamSticker } from '@/components/team-sticker';
 import { addToCollection } from '@/lib/sticker-collection';
 import { MATCHES as ALL_MATCHES, MATCH_MAP, TEAM_MAP } from '@/lib/world-cup-data';
 
-// Build display list from world-cup-data so it auto-includes MD2/MD3 and never goes stale
+// All matches across all stages — open ones derived from Convex results
 const MATCHES = ALL_MATCHES
-  .filter((m) => m.stage === 'group')
   .map((m) => {
     const home = TEAM_MAP.get(m.homeTeamId)!;
     const away = TEAM_MAP.get(m.awayTeamId)!;
