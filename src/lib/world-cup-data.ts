@@ -160,6 +160,23 @@ export const MATCHES: Match[] = [
   { id: 'L4', homeTeamId: 'PAN', awayTeamId: 'CRO', date: '2026-06-24T00:00:00Z', venue: 'SoFi Stadium',       city: 'Inglewood',    stage: 'group', group: 'L', matchday: 2 },
   { id: 'L5', homeTeamId: 'PAN', awayTeamId: 'ENG', date: '2026-06-27T21:00:00Z', venue: 'SoFi Stadium',       city: 'Inglewood',    stage: 'group', group: 'L', matchday: 3 },
   { id: 'L6', homeTeamId: 'CRO', awayTeamId: 'GHA', date: '2026-06-27T21:00:00Z', venue: 'AT&T Stadium',       city: 'Arlington',    stage: 'group', group: 'L', matchday: 3 },
+  // ── Round of 32 ─────────────────────────────────────────────────────────
+  { id: 'R01', homeTeamId: 'RSA', awayTeamId: 'CAN', date: '2026-06-28T21:00:00Z', venue: 'Estadio Azteca',          city: 'Mexico City',     stage: 'r32' },
+  { id: 'R02', homeTeamId: 'BRA', awayTeamId: 'JPN', date: '2026-06-29T18:00:00Z', venue: 'MetLife Stadium',          city: 'East Rutherford', stage: 'r32' },
+  { id: 'R03', homeTeamId: 'GER', awayTeamId: 'PAR', date: '2026-06-29T21:00:00Z', venue: 'AT&T Stadium',             city: 'Arlington',       stage: 'r32' },
+  { id: 'R04', homeTeamId: 'NED', awayTeamId: 'MAR', date: '2026-06-30T00:00:00Z', venue: 'Rose Bowl',                city: 'Pasadena',        stage: 'r32' },
+  { id: 'R05', homeTeamId: 'CIV', awayTeamId: 'NOR', date: '2026-06-30T18:00:00Z', venue: 'Hard Rock Stadium',        city: 'Miami',           stage: 'r32' },
+  { id: 'R06', homeTeamId: 'FRA', awayTeamId: 'SWE', date: '2026-06-30T21:00:00Z', venue: 'Mercedes-Benz Stadium',    city: 'Atlanta',         stage: 'r32' },
+  { id: 'R07', homeTeamId: 'MEX', awayTeamId: 'ECU', date: '2026-07-01T00:00:00Z', venue: 'Estadio Akron',            city: 'Zapopan',         stage: 'r32' },
+  { id: 'R08', homeTeamId: 'ENG', awayTeamId: 'COD', date: '2026-07-01T18:00:00Z', venue: 'Lincoln Financial Field',  city: 'Philadelphia',    stage: 'r32' },
+  { id: 'R09', homeTeamId: 'BEL', awayTeamId: 'SEN', date: '2026-07-01T21:00:00Z', venue: 'Levi\'s Stadium',          city: 'Santa Clara',     stage: 'r32' },
+  { id: 'R10', homeTeamId: 'USA', awayTeamId: 'BIH', date: '2026-07-02T00:00:00Z', venue: 'SoFi Stadium',             city: 'Inglewood',       stage: 'r32' },
+  { id: 'R11', homeTeamId: 'ESP', awayTeamId: 'AUT', date: '2026-07-02T18:00:00Z', venue: 'Hard Rock Stadium',        city: 'Miami',           stage: 'r32' },
+  { id: 'R12', homeTeamId: 'POR', awayTeamId: 'CRO', date: '2026-07-02T21:00:00Z', venue: 'Gillette Stadium',         city: 'Foxborough',      stage: 'r32' },
+  { id: 'R13', homeTeamId: 'SUI', awayTeamId: 'ALG', date: '2026-07-03T00:00:00Z', venue: 'Lumen Field',              city: 'Seattle',         stage: 'r32' },
+  { id: 'R14', homeTeamId: 'AUS', awayTeamId: 'EGY', date: '2026-07-03T18:00:00Z', venue: 'BMO Field',                city: 'Toronto',         stage: 'r32' },
+  { id: 'R15', homeTeamId: 'ARG', awayTeamId: 'CPV', date: '2026-07-03T21:00:00Z', venue: 'NRG Stadium',              city: 'Houston',         stage: 'r32' },
+  { id: 'R16', homeTeamId: 'COL', awayTeamId: 'GHA', date: '2026-07-04T00:00:00Z', venue: 'Estadio BBVA',             city: 'Monterrey',       stage: 'r32' },
 ];
 
 export const MATCH_MAP = new Map<string, Match>(MATCHES.map((m) => [m.id, m]));
@@ -275,4 +292,19 @@ export const DEMO_RESULTS: Record<string, { homeScore: number; awayScore: number
   E6: { homeScore: 2, awayScore: 1 }, // ECU 2-1 GER    ESPN Jun 25
   F1: { homeScore: 1, awayScore: 3 }, // TUN 1-3 NED    ESPN Jun 25
   F2: { homeScore: 1, awayScore: 1 }, // JPN 1-1 SWE    ESPN Jun 25
+  // MD3 Jun 26-27
+  G5: { homeScore: 1, awayScore: 1 }, // EGY 1-1 IRN    ESPN Jun 26
+  G6: { homeScore: 1, awayScore: 5 }, // NZL 1-5 BEL    ESPN Jun 26
+  H5: { homeScore: 0, awayScore: 0 }, // CPV 0-0 KSA    ESPN Jun 26
+  H6: { homeScore: 0, awayScore: 1 }, // URU 0-1 ESP    ESPN Jun 26
+  I5: { homeScore: 1, awayScore: 4 }, // NOR 1-4 FRA    ESPN Jun 26
+  I6: { homeScore: 5, awayScore: 0 }, // SEN 5-0 IRQ    ESPN Jun 26
+  J5: { homeScore: 3, awayScore: 3 }, // ALG 3-3 AUT    ESPN Jun 27
+  J6: { homeScore: 1, awayScore: 3 }, // JOR 1-3 ARG    ESPN Jun 27
+  K5: { homeScore: 0, awayScore: 0 }, // COL 0-0 POR    ESPN Jun 27
+  K6: { homeScore: 3, awayScore: 1 }, // COD 3-1 UZB    ESPN Jun 27
+  L5: { homeScore: 0, awayScore: 2 }, // PAN 0-2 ENG    ESPN Jun 27
+  L6: { homeScore: 2, awayScore: 1 }, // CRO 2-1 GHA    ESPN Jun 27
+  // Round of 32
+  R01: { homeScore: 0, awayScore: 1 }, // RSA 0-1 CAN   ESPN Jun 28
 };
